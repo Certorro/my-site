@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель управления — Certorro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="admin-body">
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="admin-login">
+  <div class="admin-login-box">
+    <div class="admin-login-logo">
+      <div class="logo-name">Certorro</div>
+      <div class="logo-sub">Панель управления</div>
+    </div>
+    <h2>Вход</h2>
+    <p>Введите пароль для доступа к редактированию сайта</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginPassword">Пароль</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-navy" style="width:100%">Войти</button>
+      <div class="admin-login-error" id="loginError">Неверный пароль. Попробуйте снова.</div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="adminPanel" class="admin-layout" style="display:none">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <div class="logo-name">Certorro</div>
+      <div class="logo-sub" style="color:var(--gold);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase">Панель управления</div>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" data-tab="lawyers">
+        <span class="nav-icon">👥</span> Адвокаты
+      </div>
+      <div class="admin-nav-item" data-tab="articles">
+        <span class="nav-icon">📝</span> Статьи
+      </div>
+      <div class="admin-nav-item" data-tab="settings">
+        <span class="nav-icon">⚙️</span> Настройки
+      </div>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <a href="../index.html" target="_blank" style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:14px;transition:color 0.3s">
+        <span>🌐</span> Открыть сайт
+      </a>
+      <div class="admin-logout" id="logoutBtn">
+        <span>🚪</span> Выйти
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 id="tabTitle">Управление адвокатами</h1>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:0.82rem;color:var(--text-light)">Администратор</span>
+        <div style="width:36px;height:36px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:0.9rem">A</div>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- ===== TAB: LAWYERS ===== -->
+      <div class="admin-section active" id="tab-lawyers">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Список адвокатов</h2>
+            <button class="btn btn-navy btn-sm" onclick="openLawyerModal()">+ Добавить адвоката</button>
+          </div>
+          <div class="admin-card-body" style="padding:0">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width:50px"></th>
+                  <th>Имя</th>
+                  <th>Специализация</th>
+                  <th>Опыт</th>
+                  <th>Рег. №</th>
+                  <th style="width:140px">Действия</th>
+                </tr>
+              </thead>
+              <tbody id="lawyersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TAB: ARTICLES ===== -->
+      <div class="admin-section" id="tab-articles">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Список статей</h2>
+            <button class="btn btn-navy btn-sm" onclick="openArticleModal()">+ Добавить статью</button>
+          </div>
+          <div class="admin-card-body" style="padding:0">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Заголовок</th>
+                  <th>Категория</th>
+                  <th>Дата</th>
+                  <th>Краткое описание</th>
+                  <th style="width:140px">Действия</th>
+                </tr>
+              </thead>
+              <tbody id="articlesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TAB: SETTINGS ===== -->
+      <div class="admin-section" id="tab-settings">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Общие настройки сайта</h2>
+            <button class="btn btn-navy btn-sm" onclick="saveSettings()">💾 Сохранить</button>
+          </div>
+          <div class="admin-card-body">
+            <form id="settingsForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Название коллегии</label>
+                  <input type="text" id="set-siteName" placeholder="Адвокатская коллегия Certorro">
+                </div>
+                <div class="form-group">
+                  <label>Подзаголовок (Hero)</label>
+                  <input type="text" id="set-heroSubtitle" placeholder="Профессиональная защита...">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Телефон</label>
+                  <input type="text" id="set-phone" placeholder="+7 (495) 123-45-67">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" id="set-email" placeholder="info@certorro-law.ru">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Адрес офиса</label>
+                <input type="text" id="set-address" placeholder="Москва, ул. Тверская, 15">
+              </div>
+              <div class="form-group">
+                <label>Текст «О нас»</label>
+                <textarea id="set-about" style="min-height:140px" placeholder="Описание коллегии..."></textarea>
+              </div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:24px 0">
+              <h4 style="margin-bottom:16px;color:var(--navy);font-family:var(--font-head)">Правовые реквизиты</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>ИНН</label>
+                  <input type="text" id="set-inn" placeholder="7700000000">
+                </div>
+                <div class="form-group">
+                  <label>ОГРН</label>
+                  <input type="text" id="set-ogrn" placeholder="1027700000000">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Номер в реестре адвокатских образований</label>
+                  <input type="text" id="set-reestry" placeholder="77/...">
+                </div>
+                <div class="form-group">
+                  <label>Адвокатская палата</label>
+                  <input type="text" id="set-palata" placeholder="АП г. Москвы">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Юридический адрес</label>
+                  <input type="text" id="set-legalAddress" placeholder="г. Москва, ул. Тверская, д. 15">
+                </div>
+                <div class="form-group">
+                  <label>Полное наименование</label>
+                  <input type="text" id="set-fullName" placeholder="Адвокатская коллегия «Certorro»">
+                </div>
+              </div>
+              <hr style="border:none;border-top:1px solid var(--border);margin:24px 0">
+              <h4 style="margin-bottom:16px;color:var(--navy);font-family:var(--font-head)">Социальные сети</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Telegram (ссылка)</label>
+                  <input type="url" id="set-telegram" placeholder="https://t.me/...">
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp (ссылка)</label>
+                  <input type="url" id="set-whatsapp" placeholder="https://wa.me/...">
+                </div>
+              </div>
+              <div class="form-group" style="max-width:340px">
+                <label>ВКонтакте (ссылка)</label>
+                <input type="url" id="set-vk" placeholder="https://vk.com/...">
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Экспорт / Импорт данных</h2>
+          </div>
+          <div class="admin-card-body">
+            <p style="color:var(--text-light);font-size:0.88rem;margin-bottom:20px">Сохраните все данные в JSON-файл для резервной копии или импортируйте ранее сохранённые данные.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" style="color:var(--navy);border-color:var(--border)" onclick="exportData()">📥 Экспорт JSON</button>
+              <label class="btn btn-outline btn-sm" style="color:var(--navy);border-color:var(--border);cursor:pointer">
+                📤 Импорт JSON
+                <input type="file" accept=".json" style="display:none" onchange="importData(event)">
+              </label>
+              <button class="btn btn-sm btn-delete" onclick="clearAllData()">🗑 Сбросить все данные</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ===== MODAL: Lawyer ===== -->
+<div class="admin-modal-overlay" id="lawyerModal">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h3 id="lawyerModalTitle">Добавить адвоката</h3>
+      <span class="modal-close" onclick="closeLawyerModal()">✕</span>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="lawyer-id">
+      <div class="form-group">
+        <label>ФИО *</label>
+        <input type="text" id="lawyer-name" placeholder="Иванов Иван Иванович" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Должность</label>
+          <input type="text" id="lawyer-position" placeholder="Адвокат">
+        </div>
+        <div class="form-group">
+          <label>Регистрационный №</label>
+          <input type="text" id="lawyer-regNumber" placeholder="77/1234">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Специализация *</label>
+          <input type="text" id="lawyer-specialization" placeholder="Уголовное право">
+        </div>
+        <div class="form-group">
+          <label>Опыт</label>
+          <input type="text" id="lawyer-experience" placeholder="Более 10 лет">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Биография</label>
+        <textarea id="lawyer-bio" style="min-height:100px" placeholder="Краткая биография адвоката..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Фото (URL или путь)</label>
+        <input type="text" id="lawyer-photo" placeholder="images/lawyer1.jpg или https://...">
+        <div style="margin-top:8px">
+          <label style="font-size:0.8rem;color:var(--text-light);cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            <input type="file" accept="image/*" onchange="handleLawyerPhoto(event)" style="display:none">
+            📷 Загрузить файл (base64)
+          </label>
+        </div>
+        <div id="lawyer-photo-preview" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="btn btn-sm btn-edit" onclick="closeLawyerModal()">Отмена</button>
+      <button class="btn btn-navy btn-sm" onclick="saveLawyer()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Article ===== -->
+<div class="admin-modal-overlay" id="articleModal">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h3 id="articleModalTitle">Добавить статью</h3>
+      <span class="modal-close" onclick="closeArticleModal()">✕</span>
+    </div>
+    <div class="admin-modal-body">
+      <!-- Предупреждение об адвокатской тайне -->
+      <div class="admin-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span><strong>Напоминание:</strong> Не разглашайте адвокатскую тайну в публикуемых материалах. Все данные клиентов и детали конкретных дел должны быть обезличены перед публикацией.</span>
+      </div>
+      <input type="hidden" id="article-id">
+      <div class="form-group">
+        <label>Заголовок *</label>
+        <input type="text" id="article-title" placeholder="Заголовок статьи">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Категория</label>
+          <select id="article-category">
+            <option value="">Без категории</option>
+            <option value="Уголовное право">Уголовное право</option>
+            <option value="Гражданское право">Гражданское право</option>
+            <option value="Арбитраж">Арбитраж</option>
+            <option value="Семейное право">Семейное право</option>
+            <option value="Недвижимость">Недвижимость</option>
+            <option value="Аналитика">Аналитика</option>
+            <option value="Новости">Новости</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Дата публикации</label>
+          <input type="date" id="article-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Фото (путь: images/articles/имя.jpg)</label>
+        <input type="text" id="article-photo" placeholder="images/articles/article1.jpg или https://...">
+      </div>
+      <div class="form-group">
+        <label>Краткое описание *</label>
+        <textarea id="article-summary" style="min-height:80px" placeholder="2–3 предложения для карточки на главной..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Полный текст статьи</label>
+        <textarea id="article-content" style="min-height:160px" placeholder="Полный текст статьи. Используйте переносы строк для абзацев."></textarea>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="btn btn-sm btn-edit" onclick="closeArticleModal()">Отмена</button>
+      <button class="btn btn-navy btn-sm" onclick="saveArticle()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DIALOG ===== -->
+<div class="admin-modal-overlay" id="confirmModal">
+  <div class="admin-modal" style="max-width:400px">
+    <div class="admin-modal-header">
+      <h3>Подтверждение</h3>
+      <span class="modal-close" onclick="closeConfirm()">✕</span>
+    </div>
+    <div class="admin-modal-body">
+      <p id="confirmText" style="color:var(--text-light)">Вы уверены?</p>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="btn btn-sm btn-edit" onclick="closeConfirm()">Отмена</button>
+      <button class="btn btn-sm btn-delete" id="confirmOkBtn">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>

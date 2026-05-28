@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Публикации — Адвокатская коллегия Certorro</title>
+  <meta name="description" content="Статьи и аналитика адвокатов коллегии Certorro по актуальным вопросам уголовного, гражданского и семейного права.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-name">Certorro</span>
+      <span class="logo-sub">Адвокатская коллегия</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Главная</a>
+      <a href="index.html#about">О нас</a>
+      <a href="index.html#services">Услуги</a>
+      <a href="index.html#team">Команда</a>
+      <a href="articles.html">Статьи</a>
+      <a href="index.html#contacts" class="nav-cta">Связаться</a>
+    </nav>
+    <div class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO MINI -->
+<section class="articles-page-hero">
+  <div class="hero-base" style="opacity:.65"></div>
+  <div class="grid-bg"></div>
+  <div class="grid-shimmer"></div>
+  <div class="container">
+    <div style="position:relative;z-index:2;padding-top:8px">
+      <span class="hero-badge" style="margin-bottom:18px">Знания и практика</span>
+      <h1>Публикации коллегии</h1>
+      <p>Аналитика, разбор кейсов и актуальные изменения в законодательстве</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES CONTENT -->
+<section class="section section-alt" id="articlesPage" style="position:relative;overflow:hidden">
+  <div class="grid-bg grid-bg-light" style="opacity:.45"></div>
+  <div class="container" style="position:relative;z-index:1">
+
+    <!-- Category filter -->
+    <div class="category-filter" id="categoryFilter">
+      <button class="cat-btn active" data-cat="all">Все</button>
+      <button class="cat-btn" data-cat="Уголовное право">Уголовное право</button>
+      <button class="cat-btn" data-cat="Гражданское право">Гражданское право</button>
+      <button class="cat-btn" data-cat="Арбитраж">Арбитраж</button>
+      <button class="cat-btn" data-cat="Семейное право">Семейное право</button>
+      <button class="cat-btn" data-cat="Недвижимость">Недвижимость</button>
+      <button class="cat-btn" data-cat="Аналитика">Аналитика</button>
+    </div>
+
+    <!-- Articles grid -->
+    <div class="articles-all-grid" id="allArticlesGrid"></div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-name">Certorro</span>
+          <span class="logo-sub">Адвокатская коллегия</span>
+        </div>
+        <p style="margin-top:16px">Профессиональная юридическая помощь. Действуем на основании ФЗ-63 «Об адвокатской деятельности и адвокатуре в РФ».</p>
+      </div>
+      <div class="footer-nav">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="index.html#about">О коллегии</a></li>
+          <li><a href="index.html#services">Услуги</a></li>
+          <li><a href="index.html#team">Команда</a></li>
+          <li><a href="articles.html">Публикации</a></li>
+          <li><a href="index.html#contacts">Контакты</a></li>
+        </ul>
+      </div>
+      <div class="footer-nav">
+        <h4>Правовое</h4>
+        <ul>
+          <li><a href="privacy.html">Политика конфиденциальности</a></li>
+          <li><a href="index.html#contacts">Обратная связь</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <div class="footer-bottom">
+        <div>
+          <div>© 2024 Адвокатская коллегия Certorro. Все права защищены.</div>
+          <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
+        </div>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Telegram">✈</a>
+          <a href="#" class="social-link" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ARTICLE MODAL -->
+<div class="article-modal-overlay" id="articleModal" role="dialog" aria-modal="true">
+  <div class="article-modal-box">
+    <div class="article-modal-header">
+      <h2 id="articleModalTitle"></h2>
+      <button class="modal-close-btn" id="articleModalClose" aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="article-modal-meta" id="articleModalMeta"></div>
+    <div class="article-modal-body" id="articleModalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ===== SHARED DATA LAYER ===== */
+const DATA_KEYS = { articles: 'certorro_articles' };
+const PER_PAGE = 6;
+
+async function loadArticles() {
+  const cached = localStorage.getItem(DATA_KEYS.articles);
+  if (cached) { try { return JSON.parse(cached); } catch(e) {} }
+  try {
+    const res = await fetch('data/articles.json');
+    const data = await res.json();
+    localStorage.setItem(DATA_KEYS.articles, JSON.stringify(data));
+    return data;
+  } catch(e) { return []; }
+}
+
+function formatDate(d) {
+  try { return new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}); }
+  catch { return d; }
+}
+
+/* ===== ARTICLE CARD HTML ===== */
+function articleCardHTML(a) {
+  return `
+  <div class="article-card fade-up">
+    <div class="article-photo">
+      ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : `<div class="article-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`}
+      ${a.category ? `<div class="article-cat-badge"><span class="cat-badge">${a.category}</span></div>` : ''}
+    </div>
+    <div class="article-body">
+      <div class="article-date">${formatDate(a.date)}</div>
+      <h3>${a.title}</h3>
+      <p>${a.summary}</p>
+      <a href="#" class="article-link" onclick="openArticleModal(${a.id});return false;">
+        Читать <span class="article-link-arrow">→</span>
+      </a>
+    </div>
+  </div>`;
+}
+
+/* ===== ARTICLE MODAL ===== */
+let allArticlesData = [];
+
+function openArticleModal(id) {
+  const a = allArticlesData.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('articleModalTitle').textContent = a.title;
+  document.getElementById('articleModalMeta').innerHTML = `
+    <span class="article-date" style="margin:0">${formatDate(a.date)}</span>
+    ${a.category ? `<span class="cat-badge" style="background:rgba(10,31,68,0.08);color:var(--navy)">${a.category}</span>` : ''}
+  `;
+  const body = (a.content || a.summary).split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('');
+  document.getElementById('articleModalBody').innerHTML = body;
+  document.getElementById('articleModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeArticleModal() {
+  document.getElementById('articleModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ===== STATE ===== */
+let currentCat = 'all';
+let currentPage = 1;
+
+/* ===== RENDER ===== */
+function getFiltered() {
+  return currentCat === 'all'
+    ? allArticlesData
+    : allArticlesData.filter(a => a.category === currentCat);
+}
+
+function renderGrid(articles) {
+  const grid = document.getElementById('allArticlesGrid');
+  if (!articles.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-light)">Статьи не найдены</div>`;
+    return;
+  }
+  const start = (currentPage - 1) * PER_PAGE;
+  const page = articles.slice(start, start + PER_PAGE);
+  grid.innerHTML = page.map(articleCardHTML).join('');
+  requestAnimationFrame(() => {
+    grid.querySelectorAll('.fade-up').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    });
+  });
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / PER_PAGE);
+  const pag = document.getElementById('pagination');
+  if (pages <= 1) { pag.innerHTML = ''; return; }
+  let html = '';
+  html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let i = 1; i <= pages; i++) {
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+  pag.innerHTML = html;
+}
+
+function goPage(n) {
+  const total = getFiltered().length;
+  const pages = Math.ceil(total / PER_PAGE);
+  if (n < 1 || n > pages) return;
+  currentPage = n;
+  const filtered = getFiltered();
+  renderGrid(filtered);
+  renderPagination(filtered.length);
+  window.scrollTo({ top: document.getElementById('articlesPage').offsetTop - 80, behavior: 'smooth' });
+}
+
+function applyFilter(cat) {
+  currentCat = cat;
+  currentPage = 1;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  const filtered = getFiltered();
+  renderGrid(filtered);
+  renderPagination(filtered.length);
+}
+
+/* ===== INIT ===== */
+(async () => {
+  allArticlesData = await loadArticles();
+  applyFilter('all');
+
+  // Category filter
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyFilter(btn.dataset.cat));
+  });
+
+  // Modal close
+  document.getElementById('articleModalClose').addEventListener('click', closeArticleModal);
+  document.getElementById('articleModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('articleModal')) closeArticleModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleModal(); });
+
+  // Header scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Burger
+  const burger = document.getElementById('burger');
+  const nav = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    nav.classList.toggle('open');
+  });
+})();
+</script>
+</body>
+</html>
