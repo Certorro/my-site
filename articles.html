@@ -288,14 +288,14 @@ function applyFilter(cat) {
   const closeNav = () => {
     burger.classList.remove('open');
     nav.classList.remove('open');
+    document.body.classList.remove('nav-open');
     burger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
   };
   burger.addEventListener('click', () => {
     const open = burger.classList.toggle('open');
     nav.classList.toggle('open', open);
+    document.body.classList.toggle('nav-open', open);
     burger.setAttribute('aria-expanded', open);
-    document.body.style.overflow = open ? 'hidden' : '';
   });
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
   document.addEventListener('click', e => {
@@ -303,6 +303,7 @@ function applyFilter(cat) {
       closeNav();
     }
   });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
 })();
 </script>
 </body>
