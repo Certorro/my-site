@@ -851,3 +851,84 @@ html, body { overflow-x: hidden; }
   footer { padding: 48px 0 24px; }
 }
 
+/* ============================================================
+   PAGE LOADER — Весы Фемиды
+   ============================================================ */
+#pageLoader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--navy-deep);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.55s ease;
+}
+
+.loader-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 26px;
+}
+
+/* SVG scales */
+.loader-scales {
+  width: 160px; height: 160px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 18px rgba(201,160,61,0.22));
+}
+
+/*
+ * Rotating group: beam + both pans.
+ * Pivot is at SVG coordinate (40, 24).
+ * transform-box: view-box (SVG default) → origin is relative to viewBox (0 0 80 80).
+ * 40/80 = 50%,  24/80 = 30%
+ */
+.loader-beam {
+  transform-box: view-box;
+  transform-origin: 50% 30%;
+  animation: scaleRock 2s linear 0.1s 1 both;
+}
+
+@keyframes scaleRock {
+  /* Damped pendulum oscillation: amplitude shrinks ~65% each half-swing */
+  0%   { transform: rotate(-13deg); animation-timing-function: cubic-bezier(0.37,0,0.63,1); }
+  26%  { transform: rotate(9.5deg); animation-timing-function: cubic-bezier(0.37,0,0.63,1); }
+  48%  { transform: rotate(-5.5deg); animation-timing-function: cubic-bezier(0.37,0,0.63,1); }
+  66%  { transform: rotate(3deg);  animation-timing-function: cubic-bezier(0.37,0,0.63,1); }
+  80%  { transform: rotate(-1.2deg); animation-timing-function: cubic-bezier(0.37,0,0.63,1); }
+  91%  { transform: rotate(0.5deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(0deg); }
+}
+
+/* Brand text below SVG */
+.loader-brand {
+  text-align: center;
+  animation: loaderFadeUp 0.6s ease 0.35s both;
+}
+.loader-brand-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.35rem; color: #fff;
+  letter-spacing: 0.06em;
+}
+.loader-brand-sub {
+  display: block;
+  font-size: 0.6rem; color: var(--gold);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  margin-top: 6px; opacity: 0.85;
+}
+
+/* Thin separator line */
+.loader-line {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.5;
+  animation: loaderFadeUp 0.5s ease 0.55s both;
+}
+
+@keyframes loaderFadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile: scale down the loader SVG slightly */
+@media (max-width: 480px) {
+  .loader-scales { width: 120px; height: 120px; }
+  .loader-brand-name { font-size: 1.15rem; }
+}
+
