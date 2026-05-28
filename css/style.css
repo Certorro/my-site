@@ -59,40 +59,47 @@ p:last-child { margin-bottom: 0; }
 /* ===== BUTTONS ===== */
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 14px 34px; border-radius: 3px;
+  padding: 14px 34px; border-radius: 6px;
   font-family: var(--font-head); font-weight: 600; font-size: 0.9rem;
   letter-spacing: 0.04em; cursor: pointer;
   border: 2px solid transparent;
-  transition: background var(--transition), color var(--transition), border-color var(--transition), transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative; overflow: hidden;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform 0.2s ease;
 }
 .btn-gold   { background: var(--gold); color: var(--navy); border-color: var(--gold); }
-.btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,160,61,0.35); }
+.btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); transform: translateY(-2px); }
 .btn-outline{ background: transparent; color: #fff; border-color: rgba(255,255,255,0.6); }
 .btn-outline:hover{ background: #fff; color: var(--navy); border-color: #fff; transform: translateY(-2px); }
 .btn-navy   { background: var(--navy); color: #fff; border-color: var(--navy); }
-.btn-navy:hover { background: var(--navy-mid); border-color: var(--navy-mid); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-navy:hover { background: var(--navy-mid); border-color: var(--navy-mid); transform: translateY(-2px); }
 
 /* ===== ANIMATED GRID BACKGROUND ===== */
 .grid-bg {
   position: absolute; inset: -5%;
   background-image:
-    linear-gradient(rgba(201,160,61,0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201,160,61,0.07) 1px, transparent 1px);
+    linear-gradient(rgba(201,160,61,0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,160,61,0.09) 1px, transparent 1px);
   background-size: 64px 64px;
-  animation: gridDrift 28s linear infinite;
-  will-change: transform;
+  filter: blur(1px);
+  animation: gridDrift 28s linear infinite, gridPulse 6s ease-in-out infinite;
+  will-change: transform, opacity;
   pointer-events: none;
 }
 .grid-bg-light {
   background-image:
-    linear-gradient(rgba(10,31,68,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(10,31,68,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(220,227,236,0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(220,227,236,0.9) 1px, transparent 1px);
   background-size: 64px 64px;
-  animation: gridDrift 32s linear infinite reverse;
+  filter: blur(1px);
+  animation: gridDrift 32s linear infinite reverse, gridPulse 6s ease-in-out infinite 2s;
 }
 @keyframes gridDrift {
   0%   { background-position: 0 0; }
   100% { background-position: 64px 64px; }
+}
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
 }
 
 /* Light shimmer over grid */
@@ -204,9 +211,9 @@ p:last-child { margin-bottom: 0; }
 /* ===== SERVICES ===== */
 .services-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; position: relative; z-index: 1; }
 .service-card {
-  background: var(--bg-white); border: 1px solid var(--border);
-  border-radius: 4px; padding: 36px 28px;
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  background: var(--bg-white); border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px; padding: 36px 28px;
+  transition: transform var(--transition), border-color var(--transition);
   position: relative; overflow: hidden;
 }
 .service-card::before {
@@ -215,7 +222,7 @@ p:last-child { margin-bottom: 0; }
   transform: scaleX(0); transform-origin: left;
   transition: transform var(--transition);
 }
-.service-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: rgba(201,160,61,0.25); }
+.service-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .service-card:hover::before { transform: scaleX(1); }
 .service-icon { width: 52px; height: 52px; background: var(--gold-dim); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--gold); flex-shrink: 0; }
 .service-icon svg { width: 26px; height: 26px; }
@@ -226,11 +233,11 @@ p:last-child { margin-bottom: 0; }
 .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; position: relative; z-index: 1; }
 .lawyer-card {
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform var(--transition), border-color var(--transition);
 }
-.lawyer-card:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(0,0,0,0.35); }
+.lawyer-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .lawyer-photo {
   height: 260px; background: linear-gradient(135deg,rgba(255,255,255,0.04),rgba(201,160,61,0.06));
   display: flex; align-items: center; justify-content: center;
@@ -252,12 +259,12 @@ p:last-child { margin-bottom: 0; }
 .articles-more { text-align: center; margin-top: 48px; }
 
 .article-card {
-  background: var(--bg-white); border-radius: 4px;
-  border: 1px solid var(--border);
-  transition: transform var(--transition), box-shadow var(--transition);
+  background: var(--bg-white); border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  transition: transform var(--transition), border-color var(--transition);
   display: flex; flex-direction: column; overflow: hidden;
 }
-.article-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.article-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .article-photo {
   height: 200px; background: linear-gradient(135deg,var(--navy),var(--navy-mid));
   display: flex; align-items: center; justify-content: center;
@@ -445,9 +452,8 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 .privacy-content strong { color: var(--text); }
 .privacy-updated { background: #fdfaf4; border: 1px solid rgba(201,160,61,0.2); border-radius: 3px; padding: 12px 18px; font-size: 0.82rem; color: var(--text-light); margin-bottom: 32px; }
 
-/* ===== SCROLL ANIMATION ===== */
-.fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.55s ease, transform 0.55s ease; }
-.fade-up.visible { opacity: 1; transform: translateY(0); }
+/* ===== SCROLL ANIMATION — instant (no scroll-triggered delay) ===== */
+.fade-up { opacity: 1; transform: none; }
 
 /* ===== ADMIN STYLES ===== */
 .admin-body { font-family: var(--font-head); background: #f0f2f5; min-height: 100vh; color: var(--text); }
@@ -564,10 +570,25 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 
 @media (max-width:768px) {
   .section { padding: 64px 0; }
-  .nav-links { display: none; flex-direction: column; position: fixed; inset: 72px 0 0; background: var(--navy); padding: 28px 20px; gap: 0; z-index: 999; overflow-y: auto; }
-  .nav-links.open { display: flex; }
-  .nav-links a { padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.95rem; }
-  .nav-cta { margin-top: 10px; border-bottom: none !important; text-align: center; }
+
+  /* ---- Sidebar nav (Variant B) ---- */
+  .nav-links {
+    display: flex; flex-direction: column; align-items: flex-start;
+    position: fixed; left: 0; top: 0;
+    height: 100dvh; width: 250px;
+    background: var(--navy-deep);
+    padding: 92px 0 32px;
+    gap: 0; z-index: 999; overflow-y: auto;
+    transform: translateX(-250px);
+    transition: transform 0.3s ease;
+  }
+  .nav-links.open { transform: translateX(0); }
+  .nav-links a {
+    width: 100%; padding: 16px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 1rem; display: block;
+  }
+  .nav-cta { margin-top: 8px; border-bottom: none !important; text-align: center; }
   .burger { display: flex; }
   .services-grid  { grid-template-columns: 1fr; }
   .team-grid      { grid-template-columns: 1fr; }
@@ -644,11 +665,11 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 
 .values-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 48px; }
 .value-card {
-  background: var(--bg-white); border: 1px solid var(--border);
-  border-radius: 4px; padding: 28px;
-  transition: transform var(--transition), box-shadow var(--transition);
+  background: var(--bg-white); border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px; padding: 28px;
+  transition: transform var(--transition), border-color var(--transition);
 }
-.value-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-sm); }
+.value-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .value-card .value-icon { width: 48px; height: 48px; background: var(--gold-dim); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 16px; }
 .value-card .value-icon svg { width: 24px; height: 24px; }
 .value-card h3 { color: var(--navy); margin-bottom: 8px; font-size: 1.05rem; }
@@ -666,17 +687,17 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 /* ===== SERVICES PAGE ===== */
 .services-full-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 .service-full-card {
-  background: var(--bg-white); border: 1px solid var(--border);
-  border-radius: 4px; padding: 36px 32px;
+  background: var(--bg-white); border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px; padding: 36px 32px;
   display: flex; gap: 24px; align-items: flex-start;
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  transition: transform var(--transition), border-color var(--transition);
   position: relative; overflow: hidden;
 }
 .service-full-card::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
   background: var(--gold); transform: scaleY(0); transition: transform var(--transition);
 }
-.service-full-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(201,160,61,0.25); }
+.service-full-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .service-full-card:hover::before { transform: scaleY(1); }
 .service-full-icon { width: 54px; height: 54px; background: var(--gold-dim); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
 .service-full-icon svg { width: 26px; height: 26px; }
@@ -700,11 +721,11 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
 }
 .lawyer-full-card {
-  background: var(--bg-white); border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg-white); border: 1px solid rgba(0,0,0,0.08); border-radius: 6px;
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform var(--transition), border-color var(--transition);
 }
-.lawyer-full-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+.lawyer-full-card:hover { transform: translateY(-4px); border-color: var(--gold); }
 .lawyer-full-photo {
   height: 280px; background: linear-gradient(135deg, var(--navy), var(--navy-mid));
   display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -757,7 +778,6 @@ html, body { overflow-x: hidden; }
 /* Respect OS-level reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   .grid-bg, .grid-shimmer, .scroll-line { animation: none !important; }
-  .fade-up { transition: none !important; opacity: 1 !important; transform: none !important; }
 }
 
 /* ===== TABLET (769px – 1024px) ===== */
@@ -770,8 +790,8 @@ html, body { overflow-x: hidden; }
 
 /* ===== MOBILE (≤ 768px) ===== */
 @media (max-width: 768px) {
-  /* ----- Performance: stop GPU-heavy grid animations ----- */
-  .grid-bg    { animation: none !important; }
+  /* ----- Performance: stop GPU-heavy grid animations on mobile ----- */
+  .grid-bg    { animation: none !important; filter: none !important; }
   .grid-shimmer { animation: none !important; }
 
   /* ----- Section spacing ----- */
@@ -930,5 +950,51 @@ html, body { overflow-x: hidden; }
 @media (max-width: 480px) {
   .loader-scales { width: 120px; height: 120px; }
   .loader-brand-name { font-size: 1.15rem; }
+}
+
+/* ============================================================
+   MOBILE NAV OVERLAY  — shown when body.nav-open on ≤768px
+   ============================================================ */
+@media (max-width: 768px) {
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 998;
+    background: rgba(6,19,43,0.62);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  body.nav-open::before {
+    opacity: 1; pointer-events: auto;
+  }
+  /* Prevent body scroll while sidebar is open */
+  body.nav-open { overflow: hidden; }
+}
+
+/* ============================================================
+   RIPPLE EFFECT — for .btn, .cat-btn, .page-btn
+   ============================================================ */
+.cat-btn, .page-btn { position: relative; overflow: hidden; }
+
+.ripple {
+  position: absolute; border-radius: 50%;
+  width: 0; height: 0;
+  background: rgba(255,255,255,0.32);
+  transform: translate(-50%, -50%);
+  animation: rippleEffect 0.65s ease-out forwards;
+  pointer-events: none;
+}
+.btn-gold .ripple, .btn-outline .ripple { background: rgba(10,31,68,0.18); }
+
+@keyframes rippleEffect {
+  from { width: 0; height: 0; opacity: 0.7; }
+  to   { width: 320px; height: 320px; opacity: 0; }
+}
+
+/* ============================================================
+   GRID PARALLAX — .grid-bg elements use JS transform override
+   ============================================================ */
+.grid-bg[data-parallax] {
+  transition: none; /* JS handles smooth motion */
 }
 
