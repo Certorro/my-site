@@ -554,17 +554,17 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 .admin-sidebar-header { padding: 26px 22px; border-bottom: 1px solid rgba(255,255,255,0.08); }
 .admin-sidebar-header .logo-name { font-size: 1rem; }
 .admin-sidebar-header .logo-sub  { color: var(--gold); }
-.admin-nav { padding: 14px 0; flex: 1; }
+.admin-nav { padding: 10px 10px; flex: 1; }
 .admin-nav-item {
-  display: flex; align-items: center; gap: 11px;
-  padding: 12px 22px; cursor: pointer;
-  color: rgba(255,255,255,0.6); font-size: 0.88rem; font-weight: 500;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; cursor: pointer;
+  color: rgba(255,255,255,0.55); font-size: 0.87rem; font-weight: 500;
   transition: background var(--transition), color var(--transition);
-  border-left: 3px solid transparent;
+  border-radius: 8px; margin-bottom: 2px; border-left: none;
 }
-.admin-nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
-.admin-nav-item.active { background: rgba(201,160,61,0.1); color: var(--gold); border-left-color: var(--gold); }
-.admin-nav-item .nav-icon { width: 18px; text-align: center; flex-shrink: 0; }
+.admin-nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.admin-nav-item.active { background: rgba(201,160,61,0.13); color: var(--gold); }
+.admin-nav-item .nav-icon { width: 20px; text-align: center; flex-shrink: 0; font-size: 1rem; line-height: 1; }
 .admin-nav-item .nav-icon svg { width: 16px; height: 16px; }
 .admin-sidebar-footer { padding: 18px 22px; border-top: 1px solid rgba(255,255,255,0.08); }
 .admin-logout { display: flex; align-items: center; gap: 9px; color: rgba(255,255,255,0.45); font-size: 0.84rem; cursor: pointer; transition: color var(--transition); }
@@ -1107,48 +1107,60 @@ html, body { overflow-x: hidden; }
    ADMIN PANEL — MOBILE ADAPTATION
    ============================================================ */
 
-/* ── ≤ 640px: sidebar becomes top tab bar, tables become cards ── */
+/* ── ≤ 640px: sidebar becomes bottom nav bar, tables become cards ── */
 @media (max-width: 640px) {
   /* Layout */
   .admin-layout { flex-direction: column; }
+
+  /* Sidebar → fixed bottom nav */
   .admin-sidebar {
     width: 100%; height: auto;
-    position: static !important;
+    position: fixed !important; bottom: 0; top: auto; left: 0; right: 0;
     transform: none !important;
-    overflow: visible; flex-direction: column;
+    overflow: visible; flex-direction: row;
+    z-index: 300;
+    box-shadow: 0 -1px 0 rgba(255,255,255,0.07), 0 -8px 32px rgba(6,19,43,0.22);
+    border-right: none;
   }
   .admin-sidebar-header { display: none; }
   .admin-sidebar-footer { display: none; }
 
-  /* Tab row */
+  /* Bottom nav row */
   .admin-nav {
     flex-direction: row !important; display: flex !important;
-    overflow-x: auto; padding: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    overflow: hidden; padding: 0; width: 100%;
+    border-bottom: none; scrollbar-width: none;
   }
   .admin-nav::-webkit-scrollbar { display: none; }
   .admin-nav-item {
     flex: 1; flex-shrink: 0;
-    border-left: none !important; border-bottom: 3px solid transparent;
-    padding: 14px 6px; text-align: center;
-    white-space: nowrap; font-size: 0.82rem; justify-content: center;
+    flex-direction: column; gap: 4px;
+    border-left: none !important; border-radius: 0;
+    border-top: 2px solid transparent; margin-bottom: 0;
+    padding: 10px 4px 8px; text-align: center;
+    justify-content: center; align-items: center;
+    font-size: 0;          /* hide text node */
+    line-height: 1;
+    transition: background var(--transition), color var(--transition), border-top-color var(--transition);
+  }
+  .admin-nav-item .nav-icon {
+    font-size: 1.35rem; display: block; width: auto;
+    line-height: 1; margin-bottom: 2px;
   }
   .admin-nav-item.active {
-    background: rgba(201,160,61,0.12);
-    border-left-color: transparent !important;
-    border-bottom-color: var(--gold) !important;
+    background: rgba(201,160,61,0.1);
+    border-top-color: var(--gold) !important;
     color: var(--gold);
   }
   /* Mobile-only icon items (logout, open site) */
   .admin-nav-mobile-only {
-    display: flex; flex: 0; flex-shrink: 0; padding: 14px 16px;
+    display: flex; flex: 0 0 52px; padding: 10px 4px 8px;
   }
 
-  /* Main */
-  .admin-main { margin-left: 0; }
-  .admin-content { padding: 10px; }
-  .admin-topbar { padding: 0 12px; height: auto; min-height: 50px; }
+  /* Main — push content above bottom nav */
+  .admin-main { margin-left: 0; padding-bottom: 64px; }
+  .admin-content { padding: 12px 10px; }
+  .admin-topbar { padding: 0 14px; height: auto; min-height: 52px; }
   .admin-topbar h1 { font-size: 0.9rem; }
   .admin-card-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
 
@@ -1189,8 +1201,8 @@ html, body { overflow-x: hidden; }
   .admin-modal input, .admin-modal textarea, .admin-modal select { min-height: 44px; font-size: 1rem; }
   .admin-modal-footer .btn, .admin-modal-footer .btn-sm { flex: 1; min-height: 44px; justify-content: center; }
 
-  /* ── FAB ── */
-  .admin-fab { display: flex; }
+  /* ── FAB — above bottom nav ── */
+  .admin-fab { display: flex; bottom: 76px; }
 
   /* ── Misc ── */
   .btn-sm { min-height: 40px; padding: 8px 12px; }
