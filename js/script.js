@@ -27,6 +27,16 @@ function formatDate(d) {
   catch { return d; }
 }
 
+/* ===== ACTIVE NAV ===== */
+function setActiveNav() {
+  const page = window.location.pathname.split('/').pop() || 'home.html';
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const href = a.getAttribute('href') || '';
+    const hPage = href.split('/').pop().split('#')[0] || 'home.html';
+    a.classList.toggle('nav-active', hPage === page);
+  });
+}
+
 /* ===== SETTINGS ===== */
 async function applySettings() {
   const s = await loadData(DATA_KEYS.settings, 'data/settings.json');
@@ -41,44 +51,38 @@ async function applySettings() {
     }
   }
   if (s.heroSubtitle) setEl('heroSubtitle', s.heroSubtitle);
-  if (s.about)        setEl('aboutText', s.about);
+  if (s.about)        { setEl('aboutText', s.about); setEl('aboutFullText', s.about); }
   if (s.phone) {
-    const el = document.getElementById('contactPhone');
-    if (el) { el.textContent = s.phone; el.href = 'tel:' + s.phone.replace(/\D/g,''); }
+    ['contactPhone','contactPhone2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = s.phone; el.href = 'tel:' + s.phone.replace(/\D/g,''); }
+    });
   }
   if (s.email) {
-    const el = document.getElementById('contactEmail');
-    if (el) { el.textContent = s.email; el.href = 'mailto:' + s.email; }
+    ['contactEmail','contactEmail2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = s.email; el.href = 'mailto:' + s.email; }
+    });
   }
-  if (s.address)        setEl('contactAddress', s.address);
-  if (s.fullName)       setEl('legalFullName', s.fullName);
-  if (s.inn)            setEl('legalINN', s.inn);
-  if (s.ogrn)           setEl('legalOGRN', s.ogrn);
-  if (s.reestryNumber)  setEl('legalReestry', s.reestryNumber);
-  if (s.legalAddress)   setEl('legalAddress', s.legalAddress);
-  if (s.address)        setEl('factAddress', s.address);
-  if (s.advokatPalata)  setEl('advokatPalata', s.advokatPalata);
+  if (s.address)       { setEl('contactAddress', s.address); setEl('contactAddress2', s.address); }
+  if (s.fullName)      setEl('legalFullName', s.fullName);
+  if (s.inn)           setEl('legalINN', s.inn);
+  if (s.ogrn)          setEl('legalOGRN', s.ogrn);
+  if (s.reestryNumber) setEl('legalReestry', s.reestryNumber);
+  if (s.legalAddress)  setEl('legalAddress', s.legalAddress);
+  if (s.address)       setEl('factAddress', s.address);
+  if (s.advokatPalata) setEl('advokatPalata', s.advokatPalata);
 }
 function setEl(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
 
-/* ===== TEAM ===== */
-async function renderTeam() {
-  const lawyers = await loadData(DATA_KEYS.lawyers, 'data/lawyers.json');
-  const grid = document.getElementById('teamGrid');
-  if (!grid) return;
-
-  if (!lawyers.length) {
-    grid.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;grid-column:1/-1;padding:32px">Информация о команде скоро появится</p>';
-    return;
-  }
-
-  grid.innerHTML = lawyers.map(l => `
+/* ===== LAWYER CARD HTML (dark team section on home.html) ===== */
+function lawyerCardHTML(l) {
+  const photo = l.photo
+    ? `<img src="${l.photo}" alt="${l.name}" loading="lazy">`
+    : `<div class="lawyer-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+  return `
     <div class="lawyer-card fade-up">
-      <div class="lawyer-photo">
-        ${l.photo
-          ? `<img src="${l.photo}" alt="${l.name}" loading="lazy">`
-          : `<div class="lawyer-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`}
-      </div>
+      <div class="lawyer-photo">${photo}</div>
       <div class="lawyer-info">
         <h3>${l.name}</h3>
         <div class="lawyer-spec">${l.specialization || l.position}</div>
@@ -87,22 +91,64 @@ async function renderTeam() {
         ${l.regNumber ? `<div class="lawyer-reg">Рег. № ${l.regNumber}</div>` : ''}
         ${l.palata    ? `<div class="lawyer-palata">${l.palata}</div>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
 }
 
-/* ===== ARTICLES (MAIN PAGE — last 3) ===== */
+/* ===== LAWYER FULL CARD HTML (team.html) ===== */
+function lawyerFullCardHTML(l) {
+  const photo = l.photo
+    ? `<img src="${l.photo}" alt="${l.name}" loading="lazy">`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  return `
+    <div class="lawyer-full-card fade-up">
+      <div class="lawyer-full-photo">${photo}</div>
+      <div class="lawyer-full-info">
+        <h3>${l.name}</h3>
+        <div class="lawyer-full-spec">${l.specialization || l.position}</div>
+        ${l.bio ? `<p class="lawyer-full-bio">${l.bio}</p>` : ''}
+        <div class="lawyer-full-meta">
+          ${l.experience ? `<span><strong>Опыт:</strong> ${l.experience}</span>` : ''}
+          ${l.regNumber  ? `<span><strong>Рег. №</strong> ${l.regNumber}</span>` : ''}
+          ${l.palata     ? `<span><strong>Палата:</strong> ${l.palata}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ===== TEAM (home page — max 3) ===== */
+async function renderTeam() {
+  const lawyers = await loadData(DATA_KEYS.lawyers, 'data/lawyers.json');
+  const grid = document.getElementById('teamGrid');
+  if (!grid) return;
+  if (!lawyers.length) {
+    grid.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;grid-column:1/-1;padding:32px">Информация о команде скоро появится</p>';
+    return;
+  }
+  grid.innerHTML = lawyers.slice(0, 3).map(lawyerCardHTML).join('');
+}
+
+/* ===== TEAM FULL (team.html) ===== */
+async function renderFullTeam() {
+  const lawyers = await loadData(DATA_KEYS.lawyers, 'data/lawyers.json');
+  const grid = document.getElementById('teamFullGrid');
+  if (!grid) return;
+  if (!lawyers.length) {
+    grid.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:48px">Информация о команде скоро появится</p>';
+    return;
+  }
+  grid.innerHTML = lawyers.map(lawyerFullCardHTML).join('');
+}
+
+/* ===== ARTICLES (home page — first 3) ===== */
 async function renderArticles() {
   const articles = await loadData(DATA_KEYS.articles, 'data/articles.json');
   const grid = document.getElementById('articlesGrid');
   if (!grid) return;
-
   const recent = articles.slice(0, 3);
   if (!recent.length) {
     grid.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1">Статьи скоро появятся</p>';
     return;
   }
-
   grid.innerHTML = recent.map(a => `
     <div class="article-card fade-up">
       <div class="article-photo">
@@ -115,38 +161,10 @@ async function renderArticles() {
         <div class="article-date">${formatDate(a.date)}</div>
         <h3>${a.title}</h3>
         <p>${a.summary}</p>
-        <a href="#" class="article-link" onclick="openArticleModal(${a.id});return false;">
-          Читать <span class="article-link-arrow">→</span>
-        </a>
+        <a href="articles.html" class="article-link">Читать <span class="article-link-arrow">→</span></a>
       </div>
     </div>
   `).join('');
-}
-
-/* ===== ARTICLE MODAL ===== */
-async function openArticleModal(id) {
-  const articles = await loadData(DATA_KEYS.articles, 'data/articles.json');
-  const a = articles.find(x => x.id === id);
-  if (!a) return;
-
-  const modal = document.getElementById('articleModal');
-  if (!modal) return;
-
-  document.getElementById('articleModalTitle').textContent = a.title;
-  document.getElementById('articleModalMeta').innerHTML = `
-    <span style="font-size:0.78rem;color:var(--gold)">${formatDate(a.date)}</span>
-    ${a.category ? `<span class="cat-badge" style="background:rgba(10,31,68,0.08);color:var(--navy)">${a.category}</span>` : ''}
-  `;
-  const body = (a.content || a.summary).split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('');
-  document.getElementById('articleModalBody').innerHTML = body;
-
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeArticleModal() {
-  const modal = document.getElementById('articleModal');
-  if (modal) { modal.classList.remove('open'); document.body.style.overflow = ''; }
 }
 
 /* ===== HEADER ===== */
@@ -179,19 +197,16 @@ function initHeader() {
 
 /* ===== CONTACT FORM ===== */
 function initContactForm() {
-  const form    = document.getElementById('contactForm');
-  const modal   = document.getElementById('successModal');
+  const form     = document.getElementById('contactForm');
+  const modal    = document.getElementById('successModal');
   const closeBtn = document.getElementById('modalCloseBtn');
-  const closeX  = document.getElementById('modalClose');
+  const closeX   = document.getElementById('modalClose');
   if (!form) return;
 
   form.addEventListener('submit', e => {
     e.preventDefault();
     const consent = form.querySelector('#consent');
-    if (consent && !consent.checked) {
-      consent.focus();
-      return;
-    }
+    if (consent && !consent.checked) { consent.focus(); return; }
     if (modal) modal.classList.add('open');
     form.reset();
   });
@@ -200,15 +215,6 @@ function initContactForm() {
   closeBtn?.addEventListener('click', closeModal);
   closeX?.addEventListener('click', closeModal);
   modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-}
-
-/* ===== ARTICLE MODAL EVENTS ===== */
-function initArticleModal() {
-  const closeBtn = document.getElementById('articleModalClose');
-  const overlay  = document.getElementById('articleModal');
-  closeBtn?.addEventListener('click', closeArticleModal);
-  overlay?.addEventListener('click', e => { if (e.target === overlay) closeArticleModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleModal(); });
 }
 
 /* ===== MOUSE PARALLAX ===== */
@@ -245,16 +251,27 @@ function initScrollAnimations() {
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded', async () => {
+  const page = window.location.pathname.split('/').pop() || 'home.html';
+
   initHeader();
-  initContactForm();
-  initArticleModal();
+  setActiveNav();
   initParallax();
 
   await applySettings();
-  await renderTeam();
-  await renderArticles();
 
-  // Run scroll animations after content is in DOM
+  if (!page || page === 'home.html' || page === 'index.html') {
+    await renderTeam();
+    await renderArticles();
+  }
+
+  if (page === 'team.html') {
+    await renderFullTeam();
+  }
+
+  if (page === 'contact.html') {
+    initContactForm();
+  }
+
   requestAnimationFrame(() => {
     requestAnimationFrame(initScrollAnimations);
   });
