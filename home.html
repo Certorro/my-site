@@ -9,6 +9,55 @@
 </head>
 <body>
 
+<!-- ===== PAGE LOADER — Весы Фемиды ===== -->
+<div id="pageLoader" role="status" aria-label="Загрузка">
+  <div class="loader-inner">
+
+    <svg class="loader-scales"
+         viewBox="0 0 80 80"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="1.15"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         aria-hidden="true">
+
+      <!-- Static: вертикальная стойка + основание + навершие -->
+      <line x1="40" y1="10" x2="40" y2="70"/>
+      <line x1="28" y1="70" x2="52" y2="70"/>
+      <path d="M33 10 Q40 5.5 47 10"/>
+
+      <!-- Точка опоры (пивот) -->
+      <circle cx="40" cy="24" r="2" fill="currentColor" stroke="none" opacity="0.7"/>
+
+      <!-- Animated group: коромысло + обе чаши
+           Pivot: SVG (40, 24) → transform-origin 50% 30% при view-box -->
+      <g class="loader-beam">
+        <!-- Коромысло -->
+        <line x1="13" y1="24" x2="67" y2="24"/>
+
+        <!-- Левая цепь + чаша (линзообразный силуэт) -->
+        <line x1="13" y1="24" x2="13" y2="37"/>
+        <path d="M13 37 l-7 17 c0 7 14 7 14 0 l-7-17z"/>
+
+        <!-- Правая цепь + чаша -->
+        <line x1="67" y1="24" x2="67" y2="37"/>
+        <path d="M67 37 l-7 17 c0 7 14 7 14 0 l-7-17z"/>
+      </g>
+    </svg>
+
+    <div class="loader-line"></div>
+
+    <div class="loader-brand">
+      <span class="loader-brand-name">Альтер-Эго</span>
+      <span class="loader-brand-sub">Адвокатская коллегия</span>
+    </div>
+
+  </div>
+</div>
+<!-- Если JS отключён — скрываем лоадер сразу -->
+<noscript><style>#pageLoader{display:none!important}</style></noscript>
+
 <!-- ===== HEADER ===== -->
 <header id="header">
   <div class="container header-inner">
@@ -300,5 +349,29 @@
 </footer>
 
 <script src="js/script.js"></script>
+
+<script>
+/* ===== LOADER DISMISS =====
+ * Animation: 0.1s delay + 2s duration = 2.1s total.
+ * Wait 2.35s (buffer), then fade out over 0.55s (matches CSS transition).
+ * Reduced-motion: skip animation, close in 300ms.
+ */
+(function () {
+  var loader = document.getElementById('pageLoader');
+  if (!loader) return;
+
+  var reduced = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+  function dismiss() {
+    loader.style.opacity = '0';
+    loader.style.pointerEvents = 'none';
+    setTimeout(function () { loader.style.display = 'none'; }, 580);
+  }
+
+  setTimeout(dismiss, reduced ? 300 : 2350);
+}());
+</script>
 </body>
 </html>
