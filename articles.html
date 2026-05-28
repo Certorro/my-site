@@ -6,6 +6,7 @@
   <title>Публикации — Адвокатская коллегия Альтер-Эго</title>
   <meta name="description" content="Статьи и аналитика адвокатов коллегии Альтер-Эго по актуальным вопросам уголовного, гражданского и семейного права.">
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -72,7 +73,7 @@
     </div>
 
     <!-- Articles grid -->
-    <div class="ac-grid" id="allArticlesGrid"></div>
+    <div class="articles-grid" id="allArticlesGrid"></div>
 
     <!-- Pagination -->
     <div class="pagination" id="pagination"></div>
@@ -159,57 +160,15 @@ function formatDate(d) {
   catch { return d; }
 }
 
-/* ===== ARTICLE CRYSTAL CARD HTML ===== */
+/* ===== ARTICLE CARD HTML ===== */
 function articleCardHTML(a) {
-  const ph = `<div class="ac-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`;
   return `
-  <div class="ac-wrap">
-    <!--
-      SVG-граница: z-index:4, рендерится ПОВЕРХ .ac-inner.
-      preserveAspectRatio="none" + vector-effect="non-scaling-stroke"
-      = линии всегда 1px независимо от размеров карточки.
-      Видимые грани: верхняя + нижняя горизонтали + 4 диагонали (золото).
-      Скрытые грани: левая и правая вертикали (opacity:0, дашировано).
-    -->
-    <svg class="ac-border"
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 100 100"
-         preserveAspectRatio="none"
-         aria-hidden="true">
-      <!-- Верхняя часть: левая диагональ + горизонталь + правая диагональ -->
-      <polyline class="ac-edge-vis"
-                points="0,12 12,0 88,0 100,12"
-                vector-effect="non-scaling-stroke"/>
-      <!-- Нижняя часть: правая диагональ + горизонталь + левая диагональ -->
-      <polyline class="ac-edge-vis"
-                points="100,88 88,100 12,100 0,88"
-                vector-effect="non-scaling-stroke"/>
-      <!-- Правая вертикаль — невидима -->
-      <line class="ac-edge-hid"
-            x1="100" y1="12" x2="100" y2="88"
-            vector-effect="non-scaling-stroke"/>
-      <!-- Левая вертикаль — невидима -->
-      <line class="ac-edge-hid"
-            x1="0" y1="88" x2="0" y2="12"
-            vector-effect="non-scaling-stroke"/>
-    </svg>
-
-    <!-- Клипированный октагон -->
-    <div class="ac-inner">
-      <div class="ac-photo">
-        ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : ph}
-        ${a.category ? `<div class="ac-cat-badge">${a.category}</div>` : ''}
-      </div>
-      <div class="ac-body">
-        <div class="ac-date">${formatDate(a.date)}</div>
-        <h3 class="ac-title">${a.title}</h3>
-        <p class="ac-excerpt">${a.summary}</p>
-        <a href="#" class="ac-read-link"
-           onclick="openArticleModal(${a.id});return false;">
-          Читать далее <span class="ac-read-arrow">→</span>
-        </a>
-      </div>
-    </div>
+  <div class="article-card">
+    <div class="article-category">${a.category || ''}</div>
+    <h3>${a.title}</h3>
+    <div class="article-date">${formatDate(a.date)}</div>
+    <div class="article-excerpt">${a.summary}</div>
+    <a href="#" class="read-more" onclick="openArticleModal(${a.id});return false;">Читать далее →</a>
   </div>`;
 }
 
@@ -259,37 +218,28 @@ function renderGrid(articles) {
   requestAnimationFrame(() => requestAnimationFrame(initCardScrollAnimation));
 }
 
-/* ===== CRYSTAL CARD: СЛУЧАЙНЫЙ СДВИГ + SCROLL REVEAL ===== */
+/* ===== АНИМАЦИЯ КАРТОЧЕК ПРИ СКРОЛЛЕ ===== */
 function initCardScrollAnimation() {
-  const cards = document.querySelectorAll('#allArticlesGrid .ac-wrap');
+  const cards = document.querySelectorAll('#allArticlesGrid .article-card');
   if (!cards.length) return;
 
-  /*
-   * Случайное translateY от -8 до +8px через CSS custom property --ty.
-   * Это сохраняется на всех состояниях (до/после появления, hover)
-   * потому что CSS использует var(--ty) во всех transform-правилах.
-   */
-  const tyValues = [-8, -5, -3, 0, 2, 4, 6, 8, -6, 3];
-  cards.forEach((card, i) => {
-    card.style.setProperty('--ty', tyValues[i % tyValues.length] + 'px');
-  });
-
-  /*
-   * IntersectionObserver: при появлении добавляет .ac-visible,
-   * что переключает opacity / scale / blur в финальные значения.
-   * Стаггер: задержка 80ms × (позиция в строке, то есть idx % 3).
-   */
-  const observer = new IntersectionObserver(entries => {
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const card = entry.target;
-      const colIdx = Array.from(cards).indexOf(card) % 3;
-      setTimeout(() => card.classList.add('ac-visible'), colIdx * 80);
-      observer.unobserve(card);
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.filter = 'blur(0px)';
+        entry.target.style.transform = 'scale(1)';
+        observer.unobserve(entry.target);
+      }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
-
+  }, { threshold: 0.2 });
   cards.forEach(card => observer.observe(card));
+
+  const shifts = [-8, -4, 0, 4, 8];
+  cards.forEach(card => {
+    const randomShift = shifts[Math.floor(Math.random() * shifts.length)];
+    card.style.transform = `translateY(${randomShift}px)`;
+  });
 }
 
 function renderPagination(total) {

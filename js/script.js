@@ -322,3 +322,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     initContactForm();
   }
 });
+
+// Анимация карточек при скролле
+const cards = document.querySelectorAll('.article-card');
+if (cards.length) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.filter = 'blur(0px)';
+        entry.target.style.transform = 'scale(1)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(card => observer.observe(card));
+}
+
+// Случайный вертикальный сдвиг карточек
+const shifts = [-8, -4, 0, 4, 8];
+document.querySelectorAll('.article-card').forEach(card => {
+  const randomShift = shifts[Math.floor(Math.random() * shifts.length)];
+  card.style.transform = `translateY(${randomShift}px)`;
+});
