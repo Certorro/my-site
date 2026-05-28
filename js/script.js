@@ -178,6 +178,13 @@ function initHeader() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  const closeNav = () => {
+    burger.classList.remove('open');
+    nav.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
   burger?.addEventListener('click', () => {
     const open = burger.classList.toggle('open');
     nav.classList.toggle('open', open);
@@ -185,13 +192,13 @@ function initHeader() {
     document.body.style.overflow = open ? 'hidden' : '';
   });
 
-  nav?.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      burger.classList.remove('open');
-      nav.classList.remove('open');
-      burger.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    });
+  nav?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+
+  // Close nav when tapping outside it on mobile
+  document.addEventListener('click', e => {
+    if (nav?.classList.contains('open') && !nav.contains(e.target) && !burger?.contains(e.target)) {
+      closeNav();
+    }
   });
 }
 

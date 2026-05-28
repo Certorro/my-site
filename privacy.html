@@ -182,7 +182,22 @@
   });
   const burger = document.getElementById('burger');
   const nav = document.getElementById('navLinks');
-  burger.addEventListener('click', () => { burger.classList.toggle('open'); nav.classList.toggle('open'); });
+  const closeNav = () => {
+    burger.classList.remove('open');
+    nav.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+  burger.addEventListener('click', () => {
+    const open = burger.classList.toggle('open');
+    nav.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('click', e => {
+    if (nav.classList.contains('open') && !nav.contains(e.target) && !burger.contains(e.target)) closeNav();
+  });
 </script>
 </body>
 </html>
