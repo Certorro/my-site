@@ -27,6 +27,12 @@ function formatDate(d) {
   catch { return d; }
 }
 
+/* ===== READING TIME ===== */
+function readingTime(text) {
+  const words = (text || '').trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 /* ===== ACTIVE NAV ===== */
 function setActiveNav() {
   const page = window.location.pathname.split('/').pop() || 'home.html';
@@ -139,30 +145,17 @@ async function renderFullTeam() {
   grid.innerHTML = lawyers.map(lawyerFullCardHTML).join('');
 }
 
-/* ===== CRYSTAL CARD HTML (shared helper, те же ac-* классы) ===== */
-function crystalArticleCardHTML(a, linkHref) {
-  const ph = `<div class="ac-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`;
+/* ===== ARTICLE CARD HTML (home page — links to articles.html) ===== */
+function homeArticleCardHTML(a) {
+  const mins = readingTime(a.content || a.summary || '');
   return `
-    <div class="ac-wrap">
-      <svg class="ac-border" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <polyline class="ac-edge-vis" points="0,12 12,0 88,0 100,12" vector-effect="non-scaling-stroke"/>
-        <polyline class="ac-edge-vis" points="100,88 88,100 12,100 0,88" vector-effect="non-scaling-stroke"/>
-        <line class="ac-edge-hid" x1="100" y1="12" x2="100" y2="88" vector-effect="non-scaling-stroke"/>
-        <line class="ac-edge-hid" x1="0" y1="88" x2="0" y2="12" vector-effect="non-scaling-stroke"/>
-      </svg>
-      <div class="ac-inner">
-        <div class="ac-photo">
-          ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : ph}
-          ${a.category ? `<div class="ac-cat-badge">${a.category}</div>` : ''}
-        </div>
-        <div class="ac-body">
-          <div class="ac-date">${formatDate(a.date)}</div>
-          <h3 class="ac-title">${a.title}</h3>
-          <p class="ac-excerpt">${a.summary}</p>
-          <a href="${linkHref}" class="ac-read-link">Читать далее <span class="ac-read-arrow">→</span></a>
-        </div>
-      </div>
-    </div>`;
+  <div class="article-card">
+    <div class="article-category">${a.category || ''}</div>
+    <h3>${a.title}</h3>
+    <div class="article-date">${formatDate(a.date)}<span class="article-reading-time">${mins} мин</span></div>
+    <div class="article-excerpt">${a.summary}</div>
+    <a href="articles.html" class="read-more">Читать далее →</a>
+  </div>`;
 }
 
 /* ===== ARTICLES (home page — first 3) ===== */
@@ -175,24 +168,26 @@ async function renderArticles() {
     grid.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1">Статьи скоро появятся</p>';
     return;
   }
-  grid.innerHTML = recent.map(a => crystalArticleCardHTML(a, 'articles.html')).join('');
+  grid.innerHTML = recent.map(homeArticleCardHTML).join('');
 
-  /* Случайные сдвиги + scroll-reveal для карточек на главной */
-  const tyHome = [-6, 4, -4];
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const cards = grid.querySelectorAll('.ac-wrap');
-    cards.forEach((card, i) => {
-      card.style.setProperty('--ty', tyHome[i % tyHome.length] + 'px');
-    });
+    const cards = grid.querySelectorAll('.article-card');
+    const shifts = [-6, 0, 4];
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
+      entries.forEach((entry, i) => {
         if (!entry.isIntersecting) return;
-        const idx = Array.from(cards).indexOf(entry.target);
-        setTimeout(() => entry.target.classList.add('ac-visible'), idx * 90);
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.filter = 'drop-shadow(0 0 0 rgba(201,160,61,0))';
+          entry.target.style.transform = 'scale(1)';
+        }, i * 80);
         obs.unobserve(entry.target);
       });
     }, { threshold: 0.12 });
-    cards.forEach(c => obs.observe(c));
+    cards.forEach((card, i) => {
+      card.style.transform = `translateY(${shifts[i % shifts.length]}px)`;
+      obs.observe(card);
+    });
   }));
 }
 
@@ -321,27 +316,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (page === 'contact.html') {
     initContactForm();
   }
-});
-
-// Анимация карточек при скролле
-const cards = document.querySelectorAll('.article-card');
-if (cards.length) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.filter = 'blur(0px)';
-        entry.target.style.transform = 'scale(1)';
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  cards.forEach(card => observer.observe(card));
-}
-
-// Случайный вертикальный сдвиг карточек
-const shifts = [-8, -4, 0, 4, 8];
-document.querySelectorAll('.article-card').forEach(card => {
-  const randomShift = shifts[Math.floor(Math.random() * shifts.length)];
-  card.style.transform = `translateY(${randomShift}px)`;
 });

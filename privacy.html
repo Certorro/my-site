@@ -176,29 +176,6 @@
   </div>
 </footer>
 
-<script>
-  window.addEventListener('scroll', () => {
-    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 40);
-  });
-  const burger = document.getElementById('burger');
-  const nav = document.getElementById('navLinks');
-  const closeNav = () => {
-    burger.classList.remove('open');
-    nav.classList.remove('open');
-    document.body.classList.remove('nav-open');
-    burger.setAttribute('aria-expanded', 'false');
-  };
-  burger.addEventListener('click', () => {
-    const open = burger.classList.toggle('open');
-    nav.classList.toggle('open', open);
-    document.body.classList.toggle('nav-open', open);
-    burger.setAttribute('aria-expanded', open);
-  });
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
-  document.addEventListener('click', e => {
-    if (nav.classList.contains('open') && !nav.contains(e.target) && !burger.contains(e.target)) closeNav();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
-</script>
+<script src="js/script.js"></script>
 </body>
 </html>
