@@ -56,7 +56,7 @@
 </section>
 
 <!-- ARTICLES CONTENT -->
-<section class="section section-alt" id="articlesPage" style="position:relative;overflow:hidden">
+<section class="section section-alt" id="articlesPage" style="position:relative">
   <div class="grid-bg grid-bg-light" style="opacity:.45"></div>
   <div class="container" style="position:relative;z-index:1">
 
@@ -159,22 +159,35 @@ function formatDate(d) {
   catch { return d; }
 }
 
-/* ===== ARTICLE CARD HTML ===== */
+/* ===== CRYSTAL ARTICLE CARD HTML ===== */
 function articleCardHTML(a) {
+  const placeholder = `<div class="article-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`;
   return `
-  <div class="article-card fade-up">
-    <div class="article-photo">
-      ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : `<div class="article-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`}
-      ${a.category ? `<div class="article-cat-badge"><span class="cat-badge">${a.category}</span></div>` : ''}
-    </div>
-    <div class="article-body">
-      <div class="article-date">${formatDate(a.date)}</div>
-      <h3>${a.title}</h3>
-      <p>${a.summary}</p>
-      <a href="#" class="article-link" onclick="openArticleModal(${a.id});return false;">
-        Читать <span class="article-link-arrow">→</span>
-      </a>
-    </div>
+  <div class="card-crystal-wrap fade-in-card">
+    <svg class="card-edges" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <line class="edge-h"    x1="12"  y1="0"   x2="88"  y2="0"   vector-effect="non-scaling-stroke"/>
+      <line class="edge-diag" x1="88"  y1="0"   x2="100" y2="12"  vector-effect="non-scaling-stroke"/>
+      <line class="edge-diag" x1="100" y1="88"  x2="88"  y2="100" vector-effect="non-scaling-stroke"/>
+      <line class="edge-h"    x1="88"  y1="100" x2="12"  y2="100" vector-effect="non-scaling-stroke"/>
+      <line class="edge-diag" x1="12"  y1="100" x2="0"   y2="88"  vector-effect="non-scaling-stroke"/>
+      <line class="edge-diag" x1="0"   y1="12"  x2="12"  y2="0"   vector-effect="non-scaling-stroke"/>
+      <line class="edge-side" x1="100" y1="12"  x2="100" y2="88"  vector-effect="non-scaling-stroke"/>
+      <line class="edge-side" x1="0"   y1="88"  x2="0"   y2="12"  vector-effect="non-scaling-stroke"/>
+    </svg>
+    <article class="article-card card-crystal">
+      <div class="article-photo">
+        ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : placeholder}
+        ${a.category ? `<div class="article-cat-badge"><span class="cat-badge">${a.category}</span></div>` : ''}
+      </div>
+      <div class="article-body">
+        <div class="article-date">${formatDate(a.date)}</div>
+        <h3>${a.title}</h3>
+        <p>${a.summary}</p>
+        <a href="#" class="article-link" onclick="openArticleModal(${a.id});return false;">
+          Читать далее <span class="article-link-arrow">→</span>
+        </a>
+      </div>
+    </article>
   </div>`;
 }
 
@@ -220,11 +233,31 @@ function renderGrid(articles) {
   const start = (currentPage - 1) * PER_PAGE;
   const page = articles.slice(start, start + PER_PAGE);
   grid.innerHTML = page.map(articleCardHTML).join('');
-  requestAnimationFrame(() => {
-    grid.querySelectorAll('.fade-up').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), i * 80);
-    });
+  requestAnimationFrame(initCardScrollAnimation);
+}
+
+/* ===== CRYSTAL CARD SCROLL ANIMATION + STAGGER ===== */
+function initCardScrollAnimation() {
+  const cards = document.querySelectorAll('#allArticlesGrid .fade-in-card');
+  if (!cards.length) return;
+
+  /* Staggered vertical offsets for an organic, non-grid feel */
+  const offsets = [-8, 4, -4, 10, 0, -10, 6, -6, 8, 2];
+  cards.forEach((card, i) => {
+    card.style.marginTop = offsets[i % offsets.length] + 'px';
   });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const card = entry.target;
+      const idx = Array.from(cards).indexOf(card);
+      setTimeout(() => card.classList.add('visible'), (idx % 3) * 80);
+      observer.unobserve(card);
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  cards.forEach(card => observer.observe(card));
 }
 
 function renderPagination(total) {
