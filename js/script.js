@@ -139,33 +139,29 @@ async function renderFullTeam() {
   grid.innerHTML = lawyers.map(lawyerFullCardHTML).join('');
 }
 
-/* ===== CRYSTAL CARD HTML (shared helper) ===== */
+/* ===== CRYSTAL CARD HTML (shared helper, те же ac-* классы) ===== */
 function crystalArticleCardHTML(a, linkHref) {
-  const ph = `<div class="article-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`;
+  const ph = `<div class="ac-photo-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>`;
   return `
-    <div class="card-crystal-wrap fade-in-card">
-      <svg class="card-edges" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <line class="edge-h"    x1="12"  y1="0"   x2="88"  y2="0"   vector-effect="non-scaling-stroke"/>
-        <line class="edge-diag" x1="88"  y1="0"   x2="100" y2="12"  vector-effect="non-scaling-stroke"/>
-        <line class="edge-diag" x1="100" y1="88"  x2="88"  y2="100" vector-effect="non-scaling-stroke"/>
-        <line class="edge-h"    x1="88"  y1="100" x2="12"  y2="100" vector-effect="non-scaling-stroke"/>
-        <line class="edge-diag" x1="12"  y1="100" x2="0"   y2="88"  vector-effect="non-scaling-stroke"/>
-        <line class="edge-diag" x1="0"   y1="12"  x2="12"  y2="0"   vector-effect="non-scaling-stroke"/>
-        <line class="edge-side" x1="100" y1="12"  x2="100" y2="88"  vector-effect="non-scaling-stroke"/>
-        <line class="edge-side" x1="0"   y1="88"  x2="0"   y2="12"  vector-effect="non-scaling-stroke"/>
+    <div class="ac-wrap">
+      <svg class="ac-border" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <polyline class="ac-edge-vis" points="0,12 12,0 88,0 100,12" vector-effect="non-scaling-stroke"/>
+        <polyline class="ac-edge-vis" points="100,88 88,100 12,100 0,88" vector-effect="non-scaling-stroke"/>
+        <line class="ac-edge-hid" x1="100" y1="12" x2="100" y2="88" vector-effect="non-scaling-stroke"/>
+        <line class="ac-edge-hid" x1="0" y1="88" x2="0" y2="12" vector-effect="non-scaling-stroke"/>
       </svg>
-      <article class="article-card card-crystal">
-        <div class="article-photo">
+      <div class="ac-inner">
+        <div class="ac-photo">
           ${a.photo ? `<img src="${a.photo}" alt="${a.title}" loading="lazy">` : ph}
-          ${a.category ? `<div class="article-cat-badge"><span class="cat-badge">${a.category}</span></div>` : ''}
+          ${a.category ? `<div class="ac-cat-badge">${a.category}</div>` : ''}
         </div>
-        <div class="article-body">
-          <div class="article-date">${formatDate(a.date)}</div>
-          <h3>${a.title}</h3>
-          <p>${a.summary}</p>
-          <a href="${linkHref}" class="article-link">Читать далее <span class="article-link-arrow">→</span></a>
+        <div class="ac-body">
+          <div class="ac-date">${formatDate(a.date)}</div>
+          <h3 class="ac-title">${a.title}</h3>
+          <p class="ac-excerpt">${a.summary}</p>
+          <a href="${linkHref}" class="ac-read-link">Читать далее <span class="ac-read-arrow">→</span></a>
         </div>
-      </article>
+      </div>
     </div>`;
 }
 
@@ -181,23 +177,23 @@ async function renderArticles() {
   }
   grid.innerHTML = recent.map(a => crystalArticleCardHTML(a, 'articles.html')).join('');
 
-  /* Stagger entry animation on home page cards */
-  const offsets = [-6, 4, -4];
-  requestAnimationFrame(() => {
-    const cards = grid.querySelectorAll('.fade-in-card');
+  /* Случайные сдвиги + scroll-reveal для карточек на главной */
+  const tyHome = [-6, 4, -4];
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const cards = grid.querySelectorAll('.ac-wrap');
     cards.forEach((card, i) => {
-      card.style.marginTop = offsets[i] + 'px';
+      card.style.setProperty('--ty', tyHome[i % tyHome.length] + 'px');
     });
     const obs = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         const idx = Array.from(cards).indexOf(entry.target);
-        setTimeout(() => entry.target.classList.add('visible'), idx * 90);
+        setTimeout(() => entry.target.classList.add('ac-visible'), idx * 90);
         obs.unobserve(entry.target);
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.12 });
     cards.forEach(c => obs.observe(c));
-  });
+  }));
 }
 
 /* ===== HEADER ===== */
