@@ -257,7 +257,7 @@ p:last-child { margin-bottom: 0; }
 .lawyer-palata     { font-size: 0.75rem; color: rgba(201,160,61,0.6); margin-top: 3px; }
 
 /* ===== ARTICLES (MAIN PAGE) ===== */
-.articles-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; position: relative; z-index: 1; overflow: visible; }
+.articles-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 32px; align-items: start; position: relative; z-index: 1; overflow: visible; }
 .articles-more { text-align: center; margin-top: 48px; }
 
 .article-card {
@@ -1001,124 +1001,176 @@ html, body { overflow-x: hidden; }
 }
 
 /* ============================================================
-   CRYSTAL ARTICLE CARDS  («неравноугольные с исчезающими гранями»)
+   AC — ARTICLE CRYSTAL CARDS (неравноугольники с исчезающими гранями)
+   Архитектура:
+     .ac-wrap     — внешний враппер: transform (offset+scale) + opacity
+     .ac-border   — SVG поверх всего: рисует только видимые золотые грани
+     .ac-inner    — clip-path октагон: белый фон + blur до появления
    ============================================================ */
 
-/* Outer wrapper: full grid cell, holds SVG edge overlay + clipped card */
-.card-crystal-wrap {
-  position: relative;
-  /* JS adds random marginTop -10…+10px for staggered layout */
+/* ── Сетка ────────────────────────────────────────────────── */
+.ac-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: start; /* карточки не тянутся до одной высоты */
+  overflow: visible;
 }
+@media (max-width: 1024px) { .ac-grid { grid-template-columns: repeat(2,1fr); gap: 28px; } }
+@media (max-width: 768px)  { .ac-grid { grid-template-columns: 1fr; gap: 28px; } }
 
-/* Clipped octagon shape */
-.card-crystal {
+/* ── Враппер ──────────────────────────────────────────────── */
+.ac-wrap {
+  --ty: 0px; /* JS устанавливает случайное значение через setProperty */
+  position: relative;
+  /* Состояние ДО появления в viewport */
+  opacity: 0.4;
+  transform: translateY(var(--ty)) scale(0.95);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
+  will-change: transform, opacity;
+}
+/* Состояние ПОСЛЕ появления */
+.ac-wrap.ac-visible {
+  opacity: 1;
+  transform: translateY(var(--ty)) scale(1);
+}
+/* Hover (только после появления, чтобы не срабатывал на невидимых) */
+.ac-wrap.ac-visible:hover {
+  transform: translateY(var(--ty)) scale(1.02);
+  filter: drop-shadow(0 0 15px rgba(201,160,61,0.5));
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-wrap { opacity: 1 !important; transform: translateY(var(--ty)) scale(1) !important; transition: none !important; }
+}
+/* На мобильных убираем случайный сдвиг */
+@media (max-width: 768px) { .ac-wrap { --ty: 0px !important; } }
+
+/* ── SVG-граница (рендерится НАД ac-inner) ────────────────── */
+.ac-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 4; /* выше всего содержимого карточки */
+}
+/* Видимые грани: верхняя + нижняя + 4 диагонали — золотые */
+.ac-edge-vis {
+  fill: none;
+  stroke: #c9a03d;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+/* Боковые грани: невидимы по умолчанию, появляются на hover с пунктиром */
+.ac-edge-hid {
+  fill: none;
+  stroke: #c9a03d;
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.ac-wrap.ac-visible:hover .ac-edge-vis { opacity: 1; stroke-width: 2; }
+.ac-wrap.ac-visible:hover .ac-edge-hid { opacity: 0.6; }
+
+/* ── Клипированный октагон ────────────────────────────────── */
+.ac-inner {
   clip-path: polygon(
     12% 0%,  88% 0%,
     100% 12%, 100% 88%,
     88% 100%, 12% 100%,
     0%  88%,  0%  12%
   );
-  background: var(--bg-white);
+  background: #ffffff;
   display: flex;
   flex-direction: column;
+  min-height: 400px;
   overflow: hidden;
-  transition: transform 0.35s ease, filter 0.35s ease;
-  border: none; /* shape is controlled by clip-path */
+  position: relative; /* для z-index дочерних */
+  /* Blur ДО появления (отдельно от враппера, чтобы не конфликтовать с drop-shadow) */
+  filter: blur(3px);
+  transition: filter 0.5s ease-out;
+}
+.ac-wrap.ac-visible .ac-inner { filter: blur(0); }
+
+/* ── Фото ─────────────────────────────────────────────────── */
+.ac-photo {
+  height: 210px;
+  flex-shrink: 0;
+  background: linear-gradient(140deg, #060f22 0%, #0a1f44 60%, #0d2d5e 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.ac-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ac-photo::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 45%, rgba(6,19,43,0.55));
+  pointer-events: none;
+}
+.ac-photo-ph { color: rgba(255,255,255,0.1); }
+.ac-photo-ph svg { width: 52px; height: 52px; }
+.ac-cat-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: rgba(6,19,43,0.72); color: rgba(255,255,255,0.88);
+  padding: 3px 10px; border-radius: 2px;
+  backdrop-filter: blur(6px);
 }
 
-.card-crystal-wrap:hover .card-crystal {
-  transform: scale(1.025);
-  filter: drop-shadow(0 0 14px rgba(201,160,61,0.4));
+/* ── Текстовое тело ───────────────────────────────────────── */
+.ac-body {
+  padding: 22px 24px 26px;
+  flex: 1;
+  display: flex; flex-direction: column;
+  gap: 8px;
 }
-
-/* SVG edge overlay — drawn over the clipped card */
-.card-edges {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; overflow: visible; z-index: 2;
+.ac-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #666;
+  letter-spacing: 0.02em;
 }
-
-/* Horizontal edges: top and bottom (navy, semi-visible) */
-.edge-h {
-  stroke: rgba(10,31,68,0.45);
-  stroke-width: 1.2;
-  fill: none;
-  transition: stroke 0.35s ease;
-}
-/* Diagonal corner edges (gold accent) */
-.edge-diag {
-  stroke: rgba(201,160,61,0.65);
-  stroke-width: 1.2;
-  fill: none;
-  transition: stroke 0.35s ease, stroke-opacity 0.35s ease;
-}
-/* Vertical side edges — invisible by default, dashed on hover */
-.edge-side {
-  stroke: rgba(10,31,68,0.3);
-  stroke-width: 0.8;
-  fill: none;
-  stroke-dasharray: 4 4;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-
-.card-crystal-wrap:hover .edge-h    { stroke: rgba(10,31,68,0.75); }
-.card-crystal-wrap:hover .edge-diag { stroke: rgba(201,160,61,1); }
-.card-crystal-wrap:hover .edge-side { opacity: 0.5; }
-
-/* Disable conflicting hover from base .article-card when inside crystal wrapper */
-.card-crystal-wrap .article-card.card-crystal { border: none; border-radius: 0; }
-.card-crystal-wrap .article-card.card-crystal:hover { transform: none; border-color: transparent; }
-
-/* Inner content tweaks */
-.card-crystal .article-body h3 {
-  font-size: 1.25rem;
+.ac-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
   font-weight: 600;
-  color: var(--navy);
-  transition: transform 0.3s ease, color 0.3s;
+  color: #0a1f44;
+  line-height: 1.3;
+  margin: 0;
+  transition: color 0.25s ease;
 }
-.card-crystal-wrap:hover .article-body h3 {
-  transform: translateY(-2px);
-  color: var(--gold);
-}
-.card-crystal .article-body p {
+.ac-wrap.ac-visible:hover .ac-title { color: #c9a03d; }
+.ac-excerpt {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #5a6a7a;
+  line-height: 1.6;
+  flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin: 0;
 }
-.card-crystal .article-date { font-size: 0.875rem; }
-.card-crystal .article-link { color: var(--gold); }
-
-/* Phone: slightly tighter cut */
-@media (max-width: 480px) {
-  .card-crystal {
-    clip-path: polygon(
-      6%  0%,  94% 0%,
-      100% 6%, 100% 94%,
-      94% 100%, 6% 100%,
-      0%  94%,  0%  6%
-    );
-  }
+.ac-read-link {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #c9a03d;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 4px;
+  transition: gap 0.25s ease;
+  text-decoration: none;
 }
-
-/* ============================================================
-   SCROLL ENTRY ANIMATION FOR CRYSTAL CARDS
-   ============================================================ */
-.fade-in-card {
-  opacity: 0.6;
-  filter: blur(2px);
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease;
-}
-.fade-in-card.visible {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
-}
-@media (prefers-reduced-motion: reduce) {
-  .fade-in-card { opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; }
-}
+.ac-read-link:hover { gap: 10px; }
+.ac-read-arrow { display: inline-block; transition: transform 0.25s ease; }
+.ac-read-link:hover .ac-read-arrow { transform: translateX(3px); }
 
 /* ============================================================
    ARTICLES PAGE — background micro-gradient
