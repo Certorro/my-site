@@ -71,11 +71,14 @@ document.getElementById('loginForm').addEventListener('submit', e => {
   }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
+function doLogout() {
   sessionStorage.removeItem('certorro_admin');
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
-});
+}
+
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+document.getElementById('logoutBtnMobile').addEventListener('click', doLogout);
 
 function showPanel() {
   document.getElementById('loginScreen').style.display = 'none';
@@ -92,13 +95,14 @@ async function initAdmin() {
   renderArticlesTable();
   fillSettingsForm();
   initTabs();
+  updateFab('lawyers');
 }
 
 /* ===== TABS ===== */
 const TAB_TITLES = { lawyers: 'Управление адвокатами', articles: 'Управление статьями', settings: 'Общие настройки' };
 
 function initTabs() {
-  document.querySelectorAll('.admin-nav-item').forEach(item => {
+  document.querySelectorAll('.admin-nav-item:not(.admin-nav-mobile-only)').forEach(item => {
     item.addEventListener('click', () => switchTab(item.dataset.tab));
   });
 }
@@ -107,6 +111,24 @@ function switchTab(tabId) {
   document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tabId));
   document.querySelectorAll('.admin-section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + tabId));
   document.getElementById('tabTitle').textContent = TAB_TITLES[tabId] || tabId;
+  updateFab(tabId);
+}
+
+function updateFab(tabId) {
+  const fab = document.getElementById('adminFab');
+  if (!fab) return;
+  if (tabId === 'settings') {
+    fab.classList.add('fab-hidden');
+  } else {
+    fab.classList.remove('fab-hidden');
+  }
+}
+
+function handleFabClick() {
+  const activeSection = document.querySelector('.admin-section.active');
+  if (!activeSection) return;
+  if (activeSection.id === 'tab-lawyers') openLawyerModal();
+  else if (activeSection.id === 'tab-articles') openArticleModal();
 }
 
 /* ===== LAWYERS TABLE ===== */
@@ -118,19 +140,19 @@ function renderLawyersTable() {
   }
   tbody.innerHTML = lawyers.map(l => `
     <tr>
-      <td>
+      <td data-mobile="avatar">
         <div class="admin-avatar">
           ${l.photo ? `<img src="${l.photo}" alt="">` : '👤'}
         </div>
       </td>
-      <td>
+      <td data-mobile="main">
         <strong>${l.name}</strong>
         ${l.position ? `<br><span style="font-size:0.78rem;color:var(--text-light)">${l.position}</span>` : ''}
       </td>
-      <td><span class="tag tag-blue">${l.specialization || '—'}</span></td>
-      <td style="font-size:0.85rem;color:var(--text-light)">${l.experience || '—'}</td>
-      <td style="font-size:0.78rem;color:var(--text-light)">${l.regNumber || '—'}</td>
-      <td>
+      <td data-mobile="sub"><span class="tag tag-blue">${l.specialization || '—'}</span></td>
+      <td data-mobile="hide" style="font-size:0.85rem;color:var(--text-light)">${l.experience || '—'}</td>
+      <td data-mobile="hide" style="font-size:0.78rem;color:var(--text-light)">${l.regNumber || '—'}</td>
+      <td data-mobile="actions">
         <button class="btn-sm btn-edit" onclick="openLawyerModal(${l.id})">✏️ Изменить</button>
         <button class="btn-sm btn-delete" onclick="confirmDelete('lawyer', ${l.id})" style="margin-top:4px">🗑</button>
       </td>
@@ -225,17 +247,17 @@ function renderArticlesTable() {
   }
   tbody.innerHTML = articles.map(a => `
     <tr>
-      <td>
+      <td data-mobile="main">
         <strong style="display:block;max-width:260px">${a.title}</strong>
       </td>
-      <td style="white-space:nowrap">
+      <td data-mobile="sub" style="white-space:nowrap">
         ${a.category ? `<span class="tag tag-blue" style="font-size:0.7rem">${a.category}</span>` : '<span style="color:var(--text-light);font-size:0.78rem">—</span>'}
       </td>
-      <td style="white-space:nowrap;font-size:0.82rem;color:var(--text-light)">${formatDate(a.date)}</td>
-      <td style="font-size:0.82rem;color:var(--text-light);max-width:200px">
+      <td data-mobile="sub" style="white-space:nowrap;font-size:0.82rem;color:var(--text-light)">${formatDate(a.date)}</td>
+      <td data-mobile="hide" style="font-size:0.82rem;color:var(--text-light);max-width:200px">
         ${(a.summary || '').substring(0, 80)}${(a.summary || '').length > 80 ? '…' : ''}
       </td>
-      <td>
+      <td data-mobile="actions">
         <button class="btn-sm btn-edit" onclick="openArticleModal(${a.id})">✏️ Изменить</button>
         <button class="btn-sm btn-delete" onclick="confirmDelete('article', ${a.id})" style="margin-top:4px">🗑</button>
       </td>

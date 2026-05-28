@@ -49,6 +49,12 @@
       <div class="admin-nav-item" data-tab="settings">
         <span class="nav-icon">⚙️</span> Настройки
       </div>
+      <a href="../home.html" target="_blank" class="admin-nav-item admin-nav-mobile-only" title="Открыть сайт">
+        <span class="nav-icon">🌐</span>
+      </a>
+      <div class="admin-nav-item admin-nav-mobile-only" id="logoutBtnMobile" title="Выйти">
+        <span class="nav-icon">🚪</span>
+      </div>
     </nav>
     <div class="admin-sidebar-footer">
       <a href="../home.html" target="_blank" style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:14px;transition:color 0.3s">
@@ -229,11 +235,14 @@
 
     </div>
   </main>
+
+  <button class="admin-fab" id="adminFab" aria-label="Добавить" onclick="handleFabClick()">+</button>
 </div>
 
 <!-- ===== MODAL: Lawyer ===== -->
 <div class="admin-modal-overlay" id="lawyerModal">
   <div class="admin-modal">
+    <div class="admin-modal-handle"></div>
     <div class="admin-modal-header">
       <h3 id="lawyerModalTitle">Добавить адвоката</h3>
       <span class="modal-close" onclick="closeLawyerModal()">✕</span>
@@ -290,6 +299,7 @@
 <!-- ===== MODAL: Article ===== -->
 <div class="admin-modal-overlay" id="articleModal">
   <div class="admin-modal">
+    <div class="admin-modal-handle"></div>
     <div class="admin-modal-header">
       <h3 id="articleModalTitle">Добавить статью</h3>
       <span class="modal-close" onclick="closeArticleModal()">✕</span>
@@ -347,6 +357,7 @@
 <!-- ===== CONFIRM DIALOG ===== -->
 <div class="admin-modal-overlay" id="confirmModal">
   <div class="admin-modal" style="max-width:400px">
+    <div class="admin-modal-handle"></div>
     <div class="admin-modal-header">
       <h3>Подтверждение</h3>
       <span class="modal-close" onclick="closeConfirm()">✕</span>
