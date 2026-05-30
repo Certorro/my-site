@@ -207,6 +207,7 @@ function initHeader() {
     nav.classList.remove('open');
     document.body.classList.remove('nav-open');
     burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Открыть меню');
   };
 
   burger?.addEventListener('click', () => {
@@ -214,6 +215,7 @@ function initHeader() {
     nav.classList.toggle('open', open);
     document.body.classList.toggle('nav-open', open);
     burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
   });
 
   nav?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
@@ -230,25 +232,86 @@ function initHeader() {
 }
 
 /* ===== CONTACT FORM ===== */
+function showFieldError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+  const input = document.getElementById(id.replace('-error', ''));
+  if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+}
+
+function validateContactForm(form) {
+  let valid = true;
+  const name = form.querySelector('#name');
+  const phone = form.querySelector('#phone');
+  const consent = form.querySelector('#consent');
+
+  if (!name || name.value.trim().length < 2) {
+    showFieldError('name-error', 'Введите ваше имя (минимум 2 символа)');
+    valid = false;
+  } else {
+    showFieldError('name-error', '');
+  }
+
+  const digits = phone ? phone.value.replace(/\D/g, '') : '';
+  if (digits.length < 10) {
+    showFieldError('phone-error', 'Введите номер телефона (10+ цифр)');
+    valid = false;
+  } else {
+    showFieldError('phone-error', '');
+  }
+
+  if (consent && !consent.checked) {
+    showFieldError('consent-error', 'Необходимо согласие на обработку данных');
+    valid = false;
+  } else {
+    showFieldError('consent-error', '');
+  }
+
+  if (!valid) {
+    const firstErr = form.querySelector('[aria-invalid="true"]');
+    if (firstErr) firstErr.focus();
+  }
+  return valid;
+}
+
 function initContactForm() {
   const form     = document.getElementById('contactForm');
   const modal    = document.getElementById('successModal');
   const closeBtn = document.getElementById('modalCloseBtn');
   const closeX   = document.getElementById('modalClose');
+  const submitBtn = document.getElementById('submitBtn');
   if (!form) return;
+
+  /* Clear errors on input */
+  ['name', 'phone'].forEach(id => {
+    const input = form.querySelector('#' + id);
+    if (input) input.addEventListener('input', () => showFieldError(id + '-error', ''));
+  });
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const consent = form.querySelector('#consent');
-    if (consent && !consent.checked) { consent.focus(); return; }
-    if (modal) modal.classList.add('open');
-    form.reset();
+    if (!validateContactForm(form)) return;
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Отправляется…'; }
+    /* Simulate send (no backend): show success after brief delay */
+    setTimeout(() => {
+      if (modal) modal.classList.add('open');
+      form.reset();
+      ['name-error', 'phone-error', 'consent-error'].forEach(id => showFieldError(id, ''));
+      form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Отправить заявку'; }
+    }, 400);
   });
 
-  const closeModal = () => { if (modal) modal.classList.remove('open'); };
+  const closeModal = () => {
+    if (modal) modal.classList.remove('open');
+    if (submitBtn) submitBtn.focus();
+  };
   closeBtn?.addEventListener('click', closeModal);
   closeX?.addEventListener('click', closeModal);
   modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal?.classList.contains('open')) closeModal(); });
 }
 
 /* ===== MOUSE PARALLAX — all .grid-bg elements ===== */
