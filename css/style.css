@@ -20,14 +20,14 @@
   --shadow-lg:  0 16px 48px rgba(10,31,68,0.16);
   --transition: 0.3s ease;
   --font-head:  'Manrope', 'Montserrat', sans-serif;
-  --font-body:  'Inter', 'Open Sans', 'Segoe UI', sans-serif;
+  --font-body:  'Spectral', Georgia, serif;
   --font-serif: 'Georgia', serif;
 }
 
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
-body { font-family: var(--font-body); color: var(--text); background: var(--bg); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--text); background: var(--bg); line-height: 1.6; -webkit-font-smoothing: antialiased; font-kerning: normal; }
 @media (min-width: 769px) { body { font-size: 1.125rem; } }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
@@ -40,6 +40,19 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); }
 h3 { font-size: clamp(1.05rem, 2vw, 1.3rem); }
 p  { margin-bottom: 1rem; }
 p:last-child { margin-bottom: 0; }
+
+/* ===== FONT-FAMILY OVERRIDES =====
+ * Spectral (serif) is --font-body for all readable content.
+ * UI labels, metadata, badges, form elements use --font-head (Manrope)
+ * for better rendering at small sizes (<14px) and tighter spacing.
+ */
+.logo-sub, .hero-stat-label, .hero-badge, .hero-scroll,
+.about-badge-text, .cat-badge, .service-tag,
+.lawyer-spec, .lawyer-exp, .lawyer-palata,
+.review-case, .contact-label, .breadcrumbs,
+.article-category, .article-date, .article-reading-time,
+.footer-bottom, .footer-disclaimer, .footer-nav a,
+.footer-nav h4 { font-family: var(--font-head); }
 
 /* ===== UTILITIES ===== */
 .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
@@ -295,7 +308,7 @@ p:last-child { margin-bottom: 0; }
 }
 
 .article-category {
-  font-family: var(--font-body);
+  font-family: var(--font-head);
   font-size: 12px;
   font-weight: 600;
   color: var(--gold);
@@ -317,13 +330,14 @@ p:last-child { margin-bottom: 0; }
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--font-body);
+  font-family: var(--font-head);
   font-size: 13px;
-  color: #8a8a8a;
+  color: var(--text-light);
   margin-bottom: 16px;
 }
 
 .article-reading-time {
+  font-family: var(--font-head);
   font-size: 11px;
   font-weight: 600;
   color: var(--gold);
@@ -337,8 +351,8 @@ p:last-child { margin-bottom: 0; }
 .article-excerpt {
   font-family: var(--font-body);
   font-size: 15px;
-  color: #2c3e50;
-  line-height: 1.55;
+  color: var(--text);
+  line-height: 1.65;
   margin-bottom: 20px;
   display: -webkit-box;
   -webkit-line-clamp: 4;
@@ -347,9 +361,9 @@ p:last-child { margin-bottom: 0; }
 }
 
 .read-more {
-  font-family: var(--font-body);
+  font-family: var(--font-head);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--navy);
   text-decoration: none;
   border-bottom: 2px solid var(--gold);
@@ -458,7 +472,7 @@ p:last-child { margin-bottom: 0; }
 .form-group select {
   width: 100%; padding: 11px 14px;
   border: 1.5px solid var(--border); border-radius: 3px;
-  font-family: var(--font-body); font-size: 0.88rem; color: var(--text);
+  font-family: var(--font-head); font-size: 0.88rem; color: var(--text);
   background: var(--bg-white); transition: border-color var(--transition); outline: none;
 }
 .form-group input:focus,
@@ -743,7 +757,7 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 .review-card:hover { border-color: rgba(201,160,61,0.35); }
 .review-stars { color: var(--gold); font-size: 1rem; letter-spacing: 3px; }
 .review-text {
-  color: rgba(255,255,255,0.72); font-size: 0.91rem; line-height: 1.75; flex: 1;
+  color: rgba(255,255,255,0.72); font-size: 0.91rem; line-height: 1.85; flex: 1;
   font-style: italic;
 }
 .review-author { border-top: 1px solid rgba(255,255,255,0.09); padding-top: 14px; }
