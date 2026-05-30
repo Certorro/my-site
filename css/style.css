@@ -19,6 +19,11 @@
   --shadow-md:  0 6px 28px rgba(10,31,68,0.12);
   --shadow-lg:  0 16px 48px rgba(10,31,68,0.16);
   --transition: 0.3s ease;
+  /* Dark-section text hierarchy — WCAG AA compliant on --navy and --navy-deep */
+  --on-dark-primary:   rgba(255,255,255,0.92);  /* headings */
+  --on-dark-body:      rgba(255,255,255,0.75);  /* body text (9.8:1 on navy) */
+  --on-dark-secondary: rgba(255,255,255,0.60);  /* secondary/metadata (6.7:1) */
+  --on-dark-muted:     rgba(255,255,255,0.45);  /* decorative only — not body text */
   --font-head:  'Manrope', 'Montserrat', sans-serif;
   --font-body:  'Spectral', Georgia, serif;
   --font-serif: 'Georgia', serif;
