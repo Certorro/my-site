@@ -90,7 +90,7 @@ function lawyerCardHTML(l) {
     <div class="lawyer-card fade-up">
       <div class="lawyer-photo">${photo}</div>
       <div class="lawyer-info">
-        <h3>${l.name}</h3>
+        <h3>${l.slug ? `<a href="team/${l.slug}.html" style="color:inherit;text-decoration:none">${l.name}</a>` : l.name}</h3>
         <div class="lawyer-spec">${l.specialization || l.position}</div>
         <div class="lawyer-exp">${l.experience}</div>
         ${l.bio ? `<p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">${l.bio}</p>` : ''}
@@ -109,7 +109,7 @@ function lawyerFullCardHTML(l) {
     <div class="lawyer-full-card fade-up">
       <div class="lawyer-full-photo">${photo}</div>
       <div class="lawyer-full-info">
-        <h3>${l.name}</h3>
+        <h3>${l.slug ? `<a href="team/${l.slug}.html" style="color:inherit;text-decoration:none">${l.name}</a>` : l.name}</h3>
         <div class="lawyer-full-spec">${l.specialization || l.position}</div>
         ${l.bio ? `<p class="lawyer-full-bio">${l.bio}</p>` : ''}
         <div class="lawyer-full-meta">

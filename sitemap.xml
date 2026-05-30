@@ -39,6 +39,26 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Профили адвокатов -->
+  <url>
+    <loc>https://al-e.net/team/skriplev-evgeniy-vladimirovich.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://al-e.net/team/samokhin-vladimir-nikolaevich.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://al-e.net/team/gontarenko-ivanna-ivanovna.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Статьи -->
   <url>
     <loc>https://al-e.net/articles/zashhita-prav-podozrevaemogo.html</loc>
