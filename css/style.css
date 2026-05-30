@@ -706,12 +706,14 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
 
 /* ===== HEADER PHONE ===== */
 .header-phone {
+  display: inline-flex; align-items: center; gap: 8px;
   color: var(--gold); font-size: 0.84rem; font-weight: 600;
   white-space: nowrap; text-decoration: none; letter-spacing: 0.02em;
   padding: 7px 14px; border: 1px solid rgba(201,160,61,0.35); border-radius: 4px;
   transition: color var(--transition), border-color var(--transition), background var(--transition);
   flex-shrink: 0;
 }
+.header-phone svg { display: none; width: 18px; height: 18px; flex-shrink: 0; }
 .header-phone:hover { color: #fff; border-color: rgba(201,160,61,0.7); background: rgba(201,160,61,0.08); }
 
 /* ===== TESTIMONIALS (home page dark section) ===== */
@@ -913,7 +915,10 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
   .steps-grid .step:first-child { border-top: none; }
   .team-full-grid { grid-template-columns: 1fr; }
   .service-full-card { flex-direction: column; }
-  .header-phone   { display: none; }
+  /* P0 fix: phone icon-only on mobile — 44×44 tap target, text hidden */
+  .header-phone { gap: 0; padding: 10px; min-width: 44px; min-height: 44px; justify-content: center; border-radius: 50%; letter-spacing: 0; }
+  .header-phone svg { display: block; }
+  .header-phone-text { display: none; }
   .reviews-grid   { grid-template-columns: 1fr; }
   .after-contact-steps { grid-template-columns: 1fr 1fr; }
 }
@@ -959,6 +964,9 @@ html, body { overflow-x: hidden; }
   .hero-stat  { flex: 1 1 calc(50% - 12px); min-width: 120px; }
   /* Remove the scroll hint — wastes screen space */
   .hero-scroll { display: none; }
+
+  /* ----- Burger: minimum 44×44 tap target (P2 fix) ----- */
+  .burger { padding: 10px 4px; }
 
   /* ----- Buttons: minimum 44×44 tap target ----- */
   .btn { min-height: 44px; padding: 12px 22px; }
