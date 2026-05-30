@@ -2,9 +2,6 @@
    CERTORRO — MAIN STYLESHEET
    ============================================================ */
 
-/* ===== GOOGLE FONTS ===== */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
-
 /* ===== VARIABLES ===== */
 :root {
   --navy:       #0a1f44;
@@ -1282,5 +1279,44 @@ html, body { overflow-x: hidden; }
 
   /* Login screen: comfortable padding on small phones */
   .admin-login-box { padding: 28px 20px; margin: 12px; }
+}
+
+/* ===== ARTICLE STATIC PAGE ===== */
+.article-full-body {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+.article-full-body p {
+  margin-bottom: 1.25rem;
+}
+.article-lead {
+  font-size: 1.125rem;
+  color: var(--text-light);
+  border-left: 3px solid var(--gold);
+  padding-left: 20px;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+.article-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+.article-list li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  color: var(--text);
+}
+.article-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
 }
 

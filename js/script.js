@@ -35,10 +35,10 @@ function readingTime(text) {
 
 /* ===== ACTIVE NAV ===== */
 function setActiveNav() {
-  const page = window.location.pathname.split('/').pop() || 'home.html';
+  const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a').forEach(a => {
     const href = a.getAttribute('href') || '';
-    const hPage = href.split('/').pop().split('#')[0] || 'home.html';
+    const hPage = href.split('/').pop().split('#')[0] || 'index.html';
     a.classList.toggle('nav-active', hPage === page);
   });
 }
@@ -154,7 +154,7 @@ function homeArticleCardHTML(a) {
     <h3>${a.title}</h3>
     <div class="article-date">${formatDate(a.date)}<span class="article-reading-time">${mins} мин</span></div>
     <div class="article-excerpt">${a.summary}</div>
-    <a href="articles.html" class="read-more">Читать далее →</a>
+    <a href="${a.slug ? 'articles/' + a.slug + '.html' : 'articles.html'}" class="read-more">Читать далее →</a>
   </div>`;
 }
 
@@ -295,7 +295,7 @@ function initRipple() {
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded', async () => {
-  const page = window.location.pathname.split('/').pop() || 'home.html';
+  const page = window.location.pathname.split('/').pop() || 'index.html';
 
   initHeader();
   setActiveNav();
