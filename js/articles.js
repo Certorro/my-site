@@ -9,7 +9,7 @@ function articleCardHTML(a) {
     <h3>${a.title}</h3>
     <div class="article-date">${formatDate(a.date)}<span class="article-reading-time">${mins} мин</span></div>
     <div class="article-excerpt">${a.summary}</div>
-    <a href="#" class="read-more" onclick="openArticleModal(${a.id});return false;">Читать далее →</a>
+    <a href="${a.slug ? 'articles/' + a.slug + '.html' : '#'}" class="read-more" onclick="${a.slug ? '' : 'openArticleModal(' + a.id + ');return false;'}">Читать далее →</a>
   </div>`;
 }
 

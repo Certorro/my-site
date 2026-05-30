@@ -3,21 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Контакты — Адвокатская коллегия Альтер-Эго</title>
-  <meta name="description" content="Контакты адвокатской коллегии Альтер-Эго. Телефон, email, адрес в Москве. Запись на первичную консультацию.">
+  <title>Контакты адвоката в Москве — запись на консультацию | Коллегия «Альтер-Эго»</title>
+  <meta name="description" content="Адвокатская коллегия «Альтер-Эго» — телефон +7 (916) 928-65-05, email info@al-e.net, Москва, Хлебников переулок, д. 5. Запись на первичную консультацию.">
+  <link rel="canonical" href="https://al-e.net/contact.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://al-e.net/contact.html">
+  <meta property="og:title" content="Контакты | Адвокатская коллегия «Альтер-Эго» — Москва">
+  <meta property="og:description" content="Телефон: +7 (916) 928-65-05 | Адрес: Хлебников пер. д. 5. Запись на консультацию онлайн.">
+  <meta property="og:site_name" content="Адвокатская коллегия Альтер-Эго">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Контакты | Альтер-Эго">
+  <meta name="twitter:description" content="+7 (916) 928-65-05 · Москва, Хлебников пер. д. 5 · info@al-e.net">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ContactPage",
+        "url": "https://al-e.net/contact.html",
+        "name": "Контакты — Адвокатская коллегия «Альтер-Эго»",
+        "about": {"@id": "https://al-e.net/#organization"}
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://al-e.net/"},
+          {"@type": "ListItem", "position": 2, "name": "Контакты", "item": "https://al-e.net/contact.html"}
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
 <!-- HEADER -->
 <header id="header">
   <div class="container header-inner">
-    <a href="home.html" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo-name">Альтер-Эго</span>
       <span class="logo-sub">Адвокатская коллегия</span>
     </a>
     <nav class="nav-links" id="navLinks">
-      <a href="home.html">Главная</a>
+      <a href="index.html">Главная</a>
       <a href="about.html">О нас</a>
       <a href="services.html">Услуги</a>
       <a href="team.html">Команда</a>
@@ -35,7 +69,7 @@
 <div class="breadcrumbs-bar">
   <div class="container">
     <nav class="breadcrumbs" aria-label="Путь">
-      <a href="home.html">Главная</a>
+      <a href="index.html">Главная</a>
       <span class="bc-sep">›</span>
       <span class="bc-current">Контакты</span>
     </nav>
@@ -235,7 +269,7 @@
     <div class="footer-legal">
       <div class="footer-bottom">
         <div>
-          <div>© 2024 Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
+          <div>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
           <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
         </div>
       </div>
@@ -257,5 +291,6 @@
 </div>
 
 <script src="js/script.js"></script>
+<script>var fy=document.getElementById("footerYear");if(fy)fy.textContent=new Date().getFullYear();</script>
 </body>
 </html>

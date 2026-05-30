@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Политика конфиденциальности — Адвокатская коллегия Альтер-Эго</title>
-  <meta name="description" content="Политика обработки персональных данных адвокатской коллегии Альтер-Эго в соответствии с ФЗ-152.">
+  <title>Политика конфиденциальности — Адвокатская коллегия «Альтер-Эго»</title>
+  <meta name="description" content="Политика обработки персональных данных адвокатской коллегии «Альтер-Эго» в соответствии с ФЗ-152.">
+  <link rel="canonical" href="https://al-e.net/privacy.html">
+  <meta name="robots" content="noindex, follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,12 +18,12 @@
 <!-- HEADER -->
 <header id="header">
   <div class="container header-inner">
-    <a href="home.html" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo-name">Альтер-Эго</span>
       <span class="logo-sub">Адвокатская коллегия</span>
     </a>
     <nav class="nav-links" id="navLinks">
-      <a href="home.html">Главная</a>
+      <a href="index.html">Главная</a>
       <a href="about.html">О нас</a>
       <a href="services.html">Услуги</a>
       <a href="team.html">Команда</a>
@@ -156,7 +162,7 @@
       <div class="footer-nav">
         <h4>Навигация</h4>
         <ul>
-          <li><a href="home.html">Главная</a></li>
+          <li><a href="index.html">Главная</a></li>
           <li><a href="services.html">Услуги</a></li>
           <li><a href="articles.html">Публикации</a></li>
           <li><a href="contact.html">Контакты</a></li>
@@ -171,12 +177,13 @@
     </div>
     <div class="footer-legal">
       <div class="footer-bottom">
-        <span>© 2024 Адвокатская коллегия Альтер-Эго. Все права защищены.</span>
+        <span>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</span>
       </div>
     </div>
   </div>
 </footer>
 
 <script src="js/script.js"></script>
+<script>var fy=document.getElementById("footerYear");if(fy)fy.textContent=new Date().getFullYear();</script>
 </body>
 </html>

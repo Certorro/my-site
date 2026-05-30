@@ -3,21 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Публикации — Адвокатская коллегия Альтер-Эго</title>
-  <meta name="description" content="Статьи и аналитика адвокатов коллегии Альтер-Эго по актуальным вопросам уголовного, гражданского и семейного права.">
+  <title>Статьи адвокатов — уголовное, гражданское, семейное право | Коллегия «Альтер-Эго»</title>
+  <meta name="description" content="Статьи и аналитика адвокатов коллегии «Альтер-Эго»: уголовное право, арбитраж, семейное и гражданское право. Практические руководства и разбор актуальных дел.">
+  <link rel="canonical" href="https://al-e.net/articles.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://al-e.net/articles.html">
+  <meta property="og:title" content="Публикации адвокатов | Коллегия «Альтер-Эго»">
+  <meta property="og:description" content="Аналитика и практические статьи по уголовному, гражданскому и семейному праву от адвокатов с опытом более 20 лет.">
+  <meta property="og:site_name" content="Адвокатская коллегия Альтер-Эго">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Публикации | Альтер-Эго">
+  <meta name="twitter:description" content="Статьи адвокатов по уголовному, гражданскому и семейному праву.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "url": "https://al-e.net/articles.html",
+        "name": "Публикации — Адвокатская коллегия «Альтер-Эго»",
+        "description": "Статьи и аналитика адвокатов по актуальным вопросам уголовного, гражданского, семейного права и арбитража.",
+        "publisher": {"@id": "https://al-e.net/#organization"}
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Главная", "item": "https://al-e.net/"},
+          {"@type": "ListItem", "position": 2, "name": "Публикации", "item": "https://al-e.net/articles.html"}
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
 <!-- HEADER -->
 <header id="header">
   <div class="container header-inner">
-    <a href="home.html" class="logo">
+    <a href="index.html" class="logo">
       <span class="logo-name">Альтер-Эго</span>
       <span class="logo-sub">Адвокатская коллегия</span>
     </a>
     <nav class="nav-links" id="navLinks">
-      <a href="home.html">Главная</a>
+      <a href="index.html">Главная</a>
       <a href="about.html">О нас</a>
       <a href="services.html">Услуги</a>
       <a href="team.html">Команда</a>
@@ -35,7 +70,7 @@
 <div class="breadcrumbs-bar">
   <div class="container">
     <nav class="breadcrumbs" aria-label="Путь">
-      <a href="home.html">Главная</a>
+      <a href="index.html">Главная</a>
       <span class="bc-sep">›</span>
       <span class="bc-current">Публикации</span>
     </nav>
@@ -113,7 +148,7 @@
     <div class="footer-legal">
       <div class="footer-bottom">
         <div>
-          <div>© 2024 Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
+          <div>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
           <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
         </div>
         <div class="social-links">
@@ -140,6 +175,7 @@
 </div>
 
 <script src="js/script.js"></script>
+<script>var fy=document.getElementById("footerYear");if(fy)fy.textContent=new Date().getFullYear();</script>
 <script src="js/articles.js"></script>
 </body>
 </html>
