@@ -137,7 +137,17 @@ p:last-child { margin-bottom: 0; }
 .nav-cta::after { display: none !important; }
 .nav-cta:hover { background: var(--gold) !important; color: var(--navy) !important; }
 
-.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+/* Skip link — visually hidden until focused (keyboard accessibility) */
+.skip-link {
+  position: fixed; top: -100%; left: 50%; transform: translateX(-50%);
+  background: var(--navy); color: #fff; padding: 10px 24px;
+  border-radius: 0 0 6px 6px; z-index: 10001; font-size: 0.88rem;
+  font-family: var(--font-head); font-weight: 600; text-decoration: none;
+  transition: top 0.2s ease; white-space: nowrap;
+}
+.skip-link:focus { top: 0; outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; color: inherit; appearance: none; }
 .burger span { display: block; width: 26px; height: 2px; background: #fff; border-radius: 2px; transition: transform var(--transition), opacity var(--transition); }
 .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .burger.open span:nth-child(2) { opacity: 0; }
@@ -439,6 +449,10 @@ p:last-child { margin-bottom: 0; }
 .contact-form h3 { color: var(--navy); margin-bottom: 28px; }
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 6px; letter-spacing: 0.03em; font-family: var(--font-head); }
+.form-error { display: none; font-size: 0.76rem; color: #c0392b; margin-top: 4px; line-height: 1.4; }
+.form-group input[aria-invalid="true"],
+.form-group textarea[aria-invalid="true"],
+.form-group select[aria-invalid="true"] { border-color: #e74c3c; }
 .form-group input,
 .form-group textarea,
 .form-group select {

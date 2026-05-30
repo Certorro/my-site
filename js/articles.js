@@ -14,10 +14,18 @@ function articleCardHTML(a) {
 }
 
 let allArticlesData = [];
+let _modalLastFocus = null;
+
+function _getFocusable(root) {
+  return [...root.querySelectorAll(
+    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  )].filter(el => el.offsetParent !== null);
+}
 
 function openArticleModal(id) {
   const a = allArticlesData.find(x => x.id === id);
   if (!a) return;
+  _modalLastFocus = document.activeElement;
   document.getElementById('articleModalTitle').textContent = a.title;
   document.getElementById('articleModalMeta').innerHTML = `
     <span class="article-date" style="margin:0">${formatDate(a.date)}</span>
@@ -25,13 +33,20 @@ function openArticleModal(id) {
   `;
   const body = (a.content || a.summary).split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('');
   document.getElementById('articleModalBody').innerHTML = body;
-  document.getElementById('articleModal').classList.add('open');
+  const modal = document.getElementById('articleModal');
+  modal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => {
+    const closeBtn = document.getElementById('articleModalClose');
+    if (closeBtn) closeBtn.focus();
+  });
 }
 
 function closeArticleModal() {
-  document.getElementById('articleModal').classList.remove('open');
+  const modal = document.getElementById('articleModal');
+  modal.classList.remove('open');
   document.body.style.overflow = '';
+  if (_modalLastFocus) { _modalLastFocus.focus(); _modalLastFocus = null; }
 }
 
 let currentCat = 'all';
@@ -121,5 +136,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('articleModal').addEventListener('click', e => {
     if (e.target === document.getElementById('articleModal')) closeArticleModal();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticleModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeArticleModal(); return; }
+    const modal = document.getElementById('articleModal');
+    if (e.key === 'Tab' && modal.classList.contains('open')) {
+      const focusable = _getFocusable(modal);
+      if (!focusable.length) { e.preventDefault(); return; }
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    }
+  });
 });
