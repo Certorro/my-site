@@ -52,6 +52,30 @@ async function loadFromStorage(key) {
   }
 }
 
+/* ===== TRANSLITERATE (ru→lat for slug generation) ===== */
+function transliterate(str) {
+  const map = {
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh',
+    'з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o',
+    'п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts',
+    'ч':'ch','ш':'sh','щ':'shch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+  };
+  return str.toLowerCase().split('')
+    .map(c => map[c] !== undefined ? map[c] : (/[a-z0-9]/.test(c) ? c : ' '))
+    .join('').trim().replace(/\s+/g, '-').replace(/-+/g, '-').substring(0, 60);
+}
+
+/* ===== DOWNLOAD HTML FILE ===== */
+function downloadFile(filename, content) {
+  const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 /* ===== AUTH ===== */
 function checkAuth() {
   return sessionStorage.getItem('certorro_admin') === '1';
@@ -179,6 +203,7 @@ function openLawyerModal(id = null) {
     document.getElementById('lawyer-experience').value = l.experience || '';
     document.getElementById('lawyer-bio').value = l.bio || '';
     document.getElementById('lawyer-photo').value = l.photo || '';
+    document.getElementById('lawyer-palata').value = l.palata || '';
     if (l.photo) preview.innerHTML = `<img src="${l.photo}" style="max-width:120px;max-height:120px;border-radius:4px;object-fit:cover">`;
   } else {
     title.textContent = 'Добавить адвоката';
@@ -190,6 +215,7 @@ function openLawyerModal(id = null) {
     document.getElementById('lawyer-experience').value = '';
     document.getElementById('lawyer-bio').value = '';
     document.getElementById('lawyer-photo').value = '';
+    document.getElementById('lawyer-palata').value = '';
   }
   modal.classList.add('open');
 }
@@ -223,6 +249,10 @@ function saveLawyer() {
     experience: document.getElementById('lawyer-experience').value.trim(),
     bio: document.getElementById('lawyer-bio').value.trim(),
     photo: document.getElementById('lawyer-photo').value.trim(),
+    palata: document.getElementById('lawyer-palata').value.trim(),
+    slug: id
+      ? (lawyers.find(x => x.id === parseInt(id))?.slug || transliterate(name))
+      : transliterate(name),
   };
 
   if (id) {
@@ -233,9 +263,13 @@ function saveLawyer() {
   }
 
   saveToStorage('lawyers', lawyers);
+  const lawyerHtml = generateLawyerHTML(data);
+  downloadFile(data.slug + '.html', lawyerHtml);
   renderLawyersTable();
   closeLawyerModal();
-  toast(id ? 'Данные адвоката обновлены' : 'Адвокат добавлен');
+  toast(id
+    ? 'Данные адвоката обновлены. HTML-страница скачана → поместите в папку team/ и выполните git push'
+    : 'Адвокат добавлен. HTML-страница скачана → поместите в папку team/ и выполните git push');
 }
 
 /* ===== ARTICLES TABLE ===== */
@@ -302,7 +336,7 @@ function saveArticle() {
   if (!title || !summary) { toast('Заполните заголовок и краткое описание', 'error'); return; }
 
   const id = document.getElementById('article-id').value;
-  const rawTitle = title.toLowerCase().replace(/[^a-zа-яё0-9\s]/gi, '').replace(/\s+/g, '-').substring(0, 50);
+  const slug = (id && articles.find(x => x.id === parseInt(id))?.slug) || transliterate(title);
   const data = {
     id: id ? parseInt(id) : generateId(articles),
     title,
@@ -311,7 +345,7 @@ function saveArticle() {
     photo: document.getElementById('article-photo').value.trim(),
     summary,
     content: document.getElementById('article-content').value.trim(),
-    slug: rawTitle,
+    slug,
   };
 
   if (id) {
@@ -322,9 +356,13 @@ function saveArticle() {
   }
 
   saveToStorage('articles', articles);
+  const articleHtml = generateArticleHTML(data);
+  downloadFile(data.slug + '.html', articleHtml);
   renderArticlesTable();
   closeArticleModal();
-  toast(id ? 'Статья обновлена' : 'Статья добавлена и появится на главной');
+  toast(id
+    ? 'Статья обновлена. HTML-страница скачана → поместите в папку articles/ и выполните git push'
+    : 'Статья добавлена. HTML-страница скачана → поместите в папку articles/ и выполните git push');
 }
 
 /* ===== SETTINGS ===== */
@@ -443,6 +481,354 @@ function clearAllData() {
   if (!confirm('Сбросить ВСЕ данные к значениям по умолчанию? Это действие нельзя отменить.')) return;
   Object.values(DATA_KEYS).forEach(k => localStorage.removeItem(k));
   location.reload();
+}
+
+/* ===== STATIC PAGE GENERATORS ===== */
+
+function articleContentToHtml(content) {
+  if (!content) return '';
+  const lines = content.split('\n');
+  const out = [];
+  let inList = false;
+  lines.forEach(line => {
+    const t = line.trim();
+    if (!t) { if (inList) { out.push('</ul>'); inList = false; } return; }
+    if (t.startsWith('—') || t.startsWith('- ')) {
+      if (!inList) { out.push('<ul class="article-list">'); inList = true; }
+      out.push('  <li>' + t.replace(/^[—\-]\s*/, '') + '</li>');
+    } else {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<p>' + t + '</p>');
+    }
+  });
+  if (inList) out.push('</ul>');
+  return out.join('\n');
+}
+
+function articleReadingTime(article) {
+  const words = ((article.content || '') + ' ' + (article.summary || '')).trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+function articleFormatDate(d) {
+  const months = ['января','февраля','марта','апреля','мая','июня',
+    'июля','августа','сентября','октября','ноября','декабря'];
+  try {
+    const parts = d.split('-');
+    return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]} г.`;
+  } catch(e) { return d; }
+}
+
+function sharedHead(title, description, canonical, ogType, extra) {
+  return `  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <meta name="description" content="${description.replace(/"/g,'&quot;')}">
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:type" content="${ogType || 'website'}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description.replace(/"/g,'&quot;')}">
+  <meta property="og:site_name" content="Адвокатская коллегия Альтер-Эго">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description.replace(/"/g,'&quot;').substring(0,160)}">
+  ${extra || ''}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"></noscript>
+  <link rel="stylesheet" href="../css/style.css">`;
+}
+
+function sharedHeader() {
+  return `<header id="header">
+  <div class="container header-inner">
+    <a href="../index.html" class="logo">
+      <span class="logo-name">Альтер-Эго</span>
+      <span class="logo-sub">Адвокатская коллегия</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="../index.html">Главная</a>
+      <a href="../about.html">О нас</a>
+      <a href="../services.html">Услуги</a>
+      <a href="../team.html">Команда</a>
+      <a href="../articles.html">Статьи</a>
+      <a href="../contact.html" class="nav-cta">Связаться</a>
+    </nav>
+    <a href="tel:+79169286505" class="header-phone">+7 (916) 928-65-05</a>
+    <div class="burger" id="burger" aria-label="Меню" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</header>`;
+}
+
+function sharedCtaBand() {
+  return `<section class="cta-band" style="position:relative;overflow:hidden">
+  <div class="grid-bg" style="opacity:.4"></div>
+  <div class="container" style="position:relative;z-index:1">
+    <h2>Нужна юридическая помощь?</h2>
+    <p>Запишитесь на консультацию — адвокат разберёт вашу ситуацию и предложит варианты действий.</p>
+    <div>
+      <a href="../contact.html" class="btn btn-gold">Записаться на консультацию</a>
+      <a href="tel:+79169286505" class="btn btn-outline" style="margin-left:12px">Позвонить</a>
+    </div>
+  </div>
+</section>`;
+}
+
+function sharedFooter() {
+  return `<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-name">Альтер-Эго</span>
+          <span class="logo-sub">Адвокатская коллегия</span>
+        </div>
+        <p style="margin-top:16px">Профессиональная юридическая помощь. Действуем на основании ФЗ-63 «Об адвокатской деятельности и адвокатуре в РФ».</p>
+      </div>
+      <div class="footer-nav">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="../about.html">О коллегии</a></li>
+          <li><a href="../services.html">Услуги</a></li>
+          <li><a href="../team.html">Команда</a></li>
+          <li><a href="../articles.html">Публикации</a></li>
+          <li><a href="../contact.html">Контакты</a></li>
+        </ul>
+      </div>
+      <div class="footer-nav">
+        <h4>Правовое</h4>
+        <ul>
+          <li><a href="../privacy.html">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <div class="footer-bottom">
+        <div>
+          <div>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
+          <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>`;
+}
+
+function generateArticleHTML(article) {
+  const slug = article.slug || '';
+  const canonical = `https://al-e.net/articles/${slug}.html`;
+  const dateFormatted = articleFormatDate(article.date || '');
+  const mins = articleReadingTime(article);
+  const category = article.category || 'Публикация';
+  const title = `${article.title} | Адвокатская коллегия «Альтер-Эго»`;
+  const description = (article.summary || '').substring(0, 160);
+  const ogExtra = `<meta property="article:published_time" content="${article.date || ''}T00:00:00+03:00">
+  <meta property="article:section" content="${category}">`;
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: article.title,
+        description: article.summary || '',
+        datePublished: (article.date || '') + 'T00:00:00+03:00',
+        dateModified: (article.date || '') + 'T00:00:00+03:00',
+        author: { '@id': 'https://al-e.net/#organization' },
+        publisher: { '@id': 'https://al-e.net/#organization' },
+        mainEntityOfPage: canonical,
+        articleSection: category,
+        inLanguage: 'ru'
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://al-e.net/' },
+          { '@type': 'ListItem', position: 2, name: 'Публикации', item: 'https://al-e.net/articles.html' },
+          { '@type': 'ListItem', position: 3, name: article.title, item: canonical }
+        ]
+      }
+    ]
+  }, null, 2);
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+${sharedHead(title, description, canonical, 'article', ogExtra)}
+  <script type="application/ld+json">
+${jsonLd}
+  </script>
+</head>
+<body>
+
+${sharedHeader()}
+
+<div class="breadcrumbs-bar">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Путь">
+      <a href="../index.html">Главная</a>
+      <span class="bc-sep">›</span>
+      <a href="../articles.html">Публикации</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current">${category}</span>
+    </nav>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="hero-base" style="opacity:.8"></div>
+  <div class="grid-bg"></div>
+  <div class="grid-shimmer"></div>
+  <div class="container page-hero-content">
+    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${category}</span>
+    <h1 style="max-width:800px">${article.title}</h1>
+    <p style="position:relative;z-index:2">${dateFormatted} · ${mins} мин чтения</p>
+  </div>
+</section>
+
+<article class="section section-alt" style="position:relative;overflow:hidden">
+  <div class="grid-bg grid-bg-light" style="opacity:.35"></div>
+  <div class="container" style="position:relative;z-index:1;max-width:800px">
+    <div class="article-full-body">
+      <p class="article-lead"><em>${article.summary || ''}</em></p>
+      ${articleContentToHtml(article.content || '')}
+    </div>
+    <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <a href="../articles.html" class="btn btn-navy" style="display:inline-flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Все публикации
+      </a>
+      <a href="../contact.html" class="btn btn-gold">Задать вопрос адвокату</a>
+    </div>
+  </div>
+</article>
+
+${sharedCtaBand()}
+
+${sharedFooter()}
+
+<script src="../js/script.js"></script>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+</body>
+</html>`;
+}
+
+function generateLawyerHTML(lawyer) {
+  const slug = lawyer.slug || transliterate(lawyer.name || '');
+  const canonical = `https://al-e.net/team/${slug}.html`;
+  const title = `${lawyer.name} — адвокат | Коллегия «Альтер-Эго»`;
+  const description = (lawyer.bio || '').substring(0, 160);
+  const position = lawyer.position || 'Адвокат';
+  const spec = lawyer.specialization || '';
+  const photoHtml = lawyer.photo
+    ? `<img src="../${lawyer.photo}" alt="${lawyer.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:4px">`
+    : `<div style="width:120px;height:120px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(201,160,61,0.4)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        '@id': canonical + '#person',
+        name: lawyer.name,
+        jobTitle: position,
+        description: lawyer.bio || '',
+        worksFor: { '@id': 'https://al-e.net/#organization' },
+        identifier: `Рег. № ${lawyer.regNumber || ''}${lawyer.palata ? ', ' + lawyer.palata : ''}`
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://al-e.net/' },
+          { '@type': 'ListItem', position: 2, name: 'Команда', item: 'https://al-e.net/team.html' },
+          { '@type': 'ListItem', position: 3, name: lawyer.name, item: canonical }
+        ]
+      }
+    ]
+  }, null, 2);
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+${sharedHead(title, description, canonical, 'profile', '')}
+  <script type="application/ld+json">
+${jsonLd}
+  </script>
+</head>
+<body>
+
+${sharedHeader()}
+
+<div class="breadcrumbs-bar">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Путь">
+      <a href="../index.html">Главная</a>
+      <span class="bc-sep">›</span>
+      <a href="../team.html">Команда</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current">${lawyer.name}</span>
+    </nav>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="hero-base" style="opacity:.8"></div>
+  <div class="grid-bg"></div>
+  <div class="grid-shimmer"></div>
+  <div class="container page-hero-content">
+    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${position}</span>
+    <h1 style="max-width:800px">${lawyer.name}</h1>
+    <p style="position:relative;z-index:2">${spec}</p>
+  </div>
+</section>
+
+<section class="section section-alt" style="position:relative;overflow:hidden">
+  <div class="grid-bg grid-bg-light" style="opacity:.35"></div>
+  <div class="container" style="position:relative;z-index:1;max-width:800px">
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex-shrink:0">${photoHtml}</div>
+      <div style="flex:1;min-width:240px">
+        <div class="lawyer-full-spec" style="margin-bottom:16px">${spec}</div>
+        ${lawyer.bio ? `<p class="lawyer-full-bio">${lawyer.bio}</p>` : ''}
+        <div class="lawyer-full-meta" style="margin-top:20px">
+          ${lawyer.experience ? `<span><strong>Опыт:</strong> ${lawyer.experience}</span>` : ''}
+          ${lawyer.regNumber  ? `<span><strong>Рег. №</strong> ${lawyer.regNumber}</span>` : ''}
+          ${lawyer.palata     ? `<span><strong>Палата:</strong> ${lawyer.palata}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--border);display:flex;align-items:center;flex-wrap:wrap;gap:12px">
+      <a href="../team.html" class="btn btn-navy" style="display:inline-flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Вся команда
+      </a>
+      <a href="../contact.html" class="btn btn-gold">Записаться на консультацию</a>
+    </div>
+  </div>
+</section>
+
+${sharedCtaBand()}
+
+${sharedFooter()}
+
+<script src="../js/script.js"></script>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+</body>
+</html>`;
+}
+
+/* ===== EXPORT ALL STATIC PAGES ===== */
+function exportAllStaticPages() {
+  const all = [
+    ...articles.filter(a => a.slug).map(a => ({ name: a.slug + '.html', html: generateArticleHTML(a) })),
+    ...lawyers.filter(l => l.slug).map(l => ({ name: l.slug + '.html', html: generateLawyerHTML(l) })),
+  ];
+  if (!all.length) { toast('Нет данных для экспорта', 'error'); return; }
+  all.forEach((item, i) => setTimeout(() => downloadFile(item.name, item.html), i * 400));
+  toast(`Запущена загрузка ${all.length} файлов. Поместите articles/*.html и team/*.html в репозиторий и выполните git push.`);
 }
 
 /* ===== CLOSE MODALS ON OVERLAY CLICK ===== */

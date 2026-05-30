@@ -231,6 +231,16 @@
             </div>
           </div>
         </div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2>Статические HTML-страницы</h2>
+          </div>
+          <div class="admin-card-body">
+            <p style="color:var(--text-light);font-size:0.88rem;margin-bottom:8px">Скачать HTML-файлы всех статей и профилей адвокатов для размещения на сервере.</p>
+            <p style="color:var(--text-light);font-size:0.82rem;margin-bottom:20px">После скачивания: поместите файлы статей в папку <code>articles/</code>, профили адвокатов в папку <code>team/</code>, затем выполните <code>git push</code>.</p>
+            <button class="btn btn-navy btn-sm" onclick="exportAllStaticPages()">📄 Экспортировать все страницы</button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -276,6 +286,10 @@
       <div class="form-group">
         <label>Биография</label>
         <textarea id="lawyer-bio" style="min-height:100px" placeholder="Краткая биография адвоката..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Адвокатская палата</label>
+        <input type="text" id="lawyer-palata" placeholder="Адвокатская палата г. Москвы">
       </div>
       <div class="form-group">
         <label>Фото (URL или путь)</label>
