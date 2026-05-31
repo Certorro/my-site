@@ -677,11 +677,11 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
   box-shadow: var(--shadow-lg);
   transform: translateY(80px); opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  border-left: 3px solid var(--gold); max-width: 340px;
+  border-top: 3px solid var(--gold); max-width: 340px;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-left-color: #27ae60; }
-.toast.error   { border-left-color: #e74c3c; }
+.toast.success { border-top-color: #27ae60; }
+.toast.error   { border-top-color: #e74c3c; }
 
 .empty-state { text-align: center; padding: 48px 24px; color: var(--text-light); }
 .empty-state-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.35; }
@@ -878,11 +878,13 @@ footer { background: var(--navy-deep); color: rgba(255,255,255,0.55); padding: 6
   position: relative; overflow: hidden;
 }
 .service-full-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--gold); transform: scaleY(0); transition: transform var(--transition);
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--transition);
 }
 .service-full-card:hover { transform: translateY(-4px); border-color: var(--gold); }
-.service-full-card:hover::before { transform: scaleY(1); }
+.service-full-card:hover::before { transform: scaleX(1); }
 .service-full-icon { width: 54px; height: 54px; background: var(--gold-dim); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
 .service-full-icon svg { width: 26px; height: 26px; }
 .service-full-body h3  { color: var(--navy); margin-bottom: 10px; }
@@ -1334,12 +1336,13 @@ html, body { overflow-x: hidden; }
   margin-bottom: 1.25rem;
 }
 .article-lead {
-  font-size: 1.125rem;
+  font-size: 1.15rem;
+  font-style: italic;
   color: var(--text-light);
-  border-left: 3px solid var(--gold);
-  padding-left: 20px;
+  border-top: 2px solid var(--gold);
+  padding-top: 1.25rem;
   margin-bottom: 2rem;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 .article-list {
   list-style: none;
