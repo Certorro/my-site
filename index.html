@@ -149,27 +149,24 @@
 </header>
 <main id="main-content">
 
-<!-- ===== HERO ===== -->
+<!-- ===== HERO (split layout) ===== -->
 <section id="hero">
-  <div class="hero-base"></div>
-  <div class="grid-bg" id="heroBg"></div>
-  <div class="grid-shimmer"></div>
-  <div class="container">
-    <div class="hero-content">
-      <span class="hero-badge">Московская коллегия адвокатов</span>
-      <h1 class="hero-title">
-        Адвокатская<br>коллегия <em id="heroSiteName">Альтер-Эго</em>
-      </h1>
+
+  <!-- LEFT — paper bg, editorial content -->
+  <div class="hero-left">
+    <span class="hero-badge">Московская коллегия адвокатов</span>
+    <h1 class="hero-title">Право.<br><em>Опыт.<br>Результат.</em></h1>
+    <div class="hero-sub">
       <p class="hero-subtitle" id="heroSubtitle">Профессиональная юридическая помощь с 2015 года</p>
-      <div class="hero-actions">
-        <a href="contact.html" class="btn btn-gold">Получить консультацию</a>
-        <a href="about.html" class="btn btn-outline">Узнать о нас</a>
-      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="contact.html" class="btn btn-primary">Получить консультацию</a>
+      <a href="about.html" class="btn btn-ghost">О коллегии</a>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
         <div class="hero-stat-num">10+</div>
-        <div class="hero-stat-label">Лет на рынке</div>
+        <div class="hero-stat-label">Лет практики</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-num">500+</div>
@@ -177,18 +174,31 @@
       </div>
       <div class="hero-stat">
         <div class="hero-stat-num">3</div>
-        <div class="hero-stat-label">Адвоката в штате</div>
+        <div class="hero-stat-label">Адвоката</div>
       </div>
       <div class="hero-stat">
         <div class="hero-stat-num">ФЗ-63</div>
-        <div class="hero-stat-label">Статус адвокатского образования</div>
+        <div class="hero-stat-label">Статус коллегии</div>
       </div>
     </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span>Листать</span>
+    </div>
   </div>
-  <div class="hero-scroll" aria-hidden="true">
-    <div class="scroll-line"></div>
-    <span>Прокрутите вниз</span>
+
+  <!-- RIGHT — ink bg, decorative quote -->
+  <div class="hero-right" aria-hidden="true">
+    <div class="hero-grid-overlay"></div>
+    <div class="hero-deco-letter">Æ</div>
+    <div class="hero-deco-lines"><span></span><span></span><span></span></div>
+    <div class="hero-quote">
+      <div class="hero-quote-mark">"</div>
+      <p class="hero-quote-text">Достоинство адвоката есть достояние всего сословия</p>
+      <div class="hero-quote-attr">Франсуа Этьен Молло&nbsp;·&nbsp;1794–1870</div>
+    </div>
   </div>
+
 </section>
 
 <!-- ===== ABOUT TEASER ===== -->
