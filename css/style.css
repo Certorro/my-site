@@ -167,14 +167,14 @@ p:last-child { margin-bottom: 0; }
 .grid-bg {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(184,152,58,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(184,152,58,0.035) 1px, transparent 1px);
+    linear-gradient(rgba(184,152,58,0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,152,58,0.024) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 .grid-bg-light {
   background-image:
-    linear-gradient(rgba(212,207,197,0.7) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,207,197,0.7) 1px, transparent 1px);
+    linear-gradient(rgba(212,207,197,0.49) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,207,197,0.49) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 .grid-shimmer { display: none; }
@@ -298,8 +298,8 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .hero-grid-overlay {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(184,152,58,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(184,152,58,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(184,152,58,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,152,58,0.028) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 .hero-deco-letter {
