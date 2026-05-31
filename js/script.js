@@ -1,5 +1,5 @@
 /* ===== DATA LAYER =====
- * localStorage (admin edits) → JSON files (defaults)
+ * Always fetches fresh JSON from server. Admin uses its own loadFromStorage.
  */
 const DATA_KEYS = {
   lawyers:  'certorro_lawyers',
@@ -7,14 +7,18 @@ const DATA_KEYS = {
   settings: 'certorro_settings',
 };
 
+/* Root-relative path: '' for root pages, '../' for articles/, team/ */
+const ROOT = (() => {
+  const parts = location.pathname.replace(/\/$/, '').split('/').filter(Boolean);
+  const depth = parts.length > 0 ? parts.length - 1 : 0;
+  return '../'.repeat(depth);
+})();
+
 async function loadData(key, jsonPath) {
-  const cached = localStorage.getItem(key);
-  if (cached) { try { return JSON.parse(cached); } catch(e) {} }
   try {
-    const res = await fetch(jsonPath);
-    const data = await res.json();
-    localStorage.setItem(key, JSON.stringify(data));
-    return data;
+    const res = await fetch(jsonPath + '?v=' + Date.now());
+    if (!res.ok) throw new Error(res.status);
+    return await res.json();
   } catch(e) {
     console.warn('Could not load', jsonPath, e);
     return key === DATA_KEYS.settings ? {} : [];
@@ -45,7 +49,7 @@ function setActiveNav() {
 
 /* ===== SETTINGS ===== */
 async function applySettings() {
-  const s = await loadData(DATA_KEYS.settings, 'data/settings.json');
+  const s = await loadData(DATA_KEYS.settings, ROOT + 'data/settings.json');
   if (!s) return;
 
   if (s.siteName) {
@@ -123,19 +127,19 @@ function lawyerFullCardHTML(l) {
 
 /* ===== TEAM (home page — max 3) ===== */
 async function renderTeam() {
-  const lawyers = await loadData(DATA_KEYS.lawyers, 'data/lawyers.json');
+  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   const grid = document.getElementById('teamGrid');
   if (!grid) return;
   if (!lawyers.length) {
     grid.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;grid-column:1/-1;padding:32px">Информация о команде скоро появится</p>';
     return;
   }
-  grid.innerHTML = lawyers.slice(0, 3).map(lawyerCardHTML).join('');
+  grid.innerHTML = lawyers.map(lawyerCardHTML).join('');
 }
 
 /* ===== TEAM FULL (team.html) ===== */
 async function renderFullTeam() {
-  const lawyers = await loadData(DATA_KEYS.lawyers, 'data/lawyers.json');
+  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   const grid = document.getElementById('teamFullGrid');
   if (!grid) return;
   if (!lawyers.length) {
@@ -160,7 +164,7 @@ function homeArticleCardHTML(a) {
 
 /* ===== ARTICLES (home page — first 3) ===== */
 async function renderArticles() {
-  const articles = await loadData(DATA_KEYS.articles, 'data/articles.json');
+  const articles = await loadData(DATA_KEYS.articles, ROOT + 'data/articles.json');
   const grid = document.getElementById('articlesGrid');
   if (!grid) return;
   const recent = articles.slice(0, 3);
