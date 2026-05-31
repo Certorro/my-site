@@ -1,2 +1,5 @@
 .DS_Store
 context/
+
+# Local admin credentials (never commit)
+admin/local.json

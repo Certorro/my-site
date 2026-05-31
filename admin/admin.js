@@ -112,6 +112,16 @@ function showPanel() {
 
 /* ===== INIT ===== */
 async function initAdmin() {
+  /* Load local.json (git-ignored) — auto-populate GitHub credentials */
+  try {
+    const localRes = await fetch('local.json');
+    if (localRes.ok) {
+      const local = await localRes.json();
+      if (local.githubToken) localStorage.setItem('certorro_gh_token', local.githubToken);
+      if (local.githubRepo)  localStorage.setItem('certorro_gh_repo',  local.githubRepo);
+    }
+  } catch(e) { /* file absent — user enters token manually */ }
+
   lawyers = await loadFromStorage('lawyers');
   articles = await loadFromStorage('articles');
   settings = await loadFromStorage('settings');
