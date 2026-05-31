@@ -72,7 +72,10 @@ p:last-child { margin-bottom: 0; }
 .section-subtitle { text-align: center; color: var(--text-light); margin: 0 auto 56px; font-size: 1rem; max-width: 580px; }
 .section-dark .section-subtitle { color: rgba(255,255,255,0.55); margin-bottom: 56px; }
 
-.gold-line { display: block; width: 48px; height: 2px; background: var(--gold); margin: 12px auto 0; border-radius: 2px; }
+.gold-line { display: block; width: 32px; height: 1px; background: var(--gold); margin: 10px auto 0; border-radius: 1px; opacity: 0.7; }
+/* Key page headings get full-weight accent */
+.page-hero .gold-line,
+.hero-content .gold-line { width: 44px; height: 2px; opacity: 1; margin-top: 14px; }
 .gold-line-left { margin-left: 0; }
 
 /* ===== BUTTONS ===== */
