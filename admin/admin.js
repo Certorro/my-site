@@ -382,6 +382,9 @@ function fillSettingsForm() {
   document.getElementById('set-telegram').value     = settings.social?.telegram || '';
   document.getElementById('set-whatsapp').value     = settings.social?.whatsapp || '';
   document.getElementById('set-vk').value           = settings.social?.vk || '';
+  /* GitHub (stored separately in localStorage, never committed) */
+  document.getElementById('set-gh-token').value = localStorage.getItem('certorro_gh_token') || '';
+  document.getElementById('set-gh-repo').value  = localStorage.getItem('certorro_gh_repo')  || 'Certorro/my-site';
 }
 
 function saveSettings() {
@@ -405,7 +408,13 @@ function saveSettings() {
     },
   };
   saveToStorage('settings', settings);
-  toast('Настройки сохранены. Обновите главную страницу для применения.');
+  /* Save GitHub credentials locally only — never push them to the repo */
+  const ghToken = document.getElementById('set-gh-token').value.trim();
+  const ghRepo  = document.getElementById('set-gh-repo').value.trim();
+  if (ghToken) localStorage.setItem('certorro_gh_token', ghToken);
+  else         localStorage.removeItem('certorro_gh_token');
+  if (ghRepo)  localStorage.setItem('certorro_gh_repo', ghRepo);
+  toast('Настройки сохранены локально. Нажмите «Опубликовать» для отправки на сайт.');
 }
 
 /* ===== DELETE / CONFIRM ===== */
@@ -521,6 +530,7 @@ function articleFormatDate(d) {
 
 function sharedHead(title, description, canonical, ogType, extra) {
   return `  <meta charset="UTF-8">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <meta name="description" content="${description.replace(/"/g,'&quot;')}">
@@ -537,32 +547,14 @@ function sharedHead(title, description, canonical, ogType, extra) {
   ${extra || ''}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&family=Raleway:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&family=Raleway:wght@300;400;500&display=swap"></noscript>
   <link rel="stylesheet" href="../css/style.css">`;
 }
 
 function sharedHeader() {
-  return `<header id="header">
-  <div class="container header-inner">
-    <a href="../index.html" class="logo">
-      <span class="logo-name">Альтер-Эго</span>
-      <span class="logo-sub">Адвокатская коллегия</span>
-    </a>
-    <nav class="nav-links" id="navLinks">
-      <a href="../index.html">Главная</a>
-      <a href="../about.html">О нас</a>
-      <a href="../services.html">Услуги</a>
-      <a href="../team.html">Команда</a>
-      <a href="../articles.html">Статьи</a>
-      <a href="../contact.html" class="nav-cta">Связаться</a>
-    </nav>
-    <a href="tel:+79169286505" class="header-phone">+7 (916) 928-65-05</a>
-    <div class="burger" id="burger" aria-label="Меню" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</header>`;
+  return `<div id="header-placeholder"></div>
+<script src="../js/components.js"></script>`;
 }
 
 function sharedCtaBand() {
@@ -580,43 +572,7 @@ function sharedCtaBand() {
 }
 
 function sharedFooter() {
-  return `<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="logo">
-          <span class="logo-name">Альтер-Эго</span>
-          <span class="logo-sub">Адвокатская коллегия</span>
-        </div>
-        <p style="margin-top:16px">Профессиональная юридическая помощь. Действуем на основании ФЗ-63 «Об адвокатской деятельности и адвокатуре в РФ».</p>
-      </div>
-      <div class="footer-nav">
-        <h4>Навигация</h4>
-        <ul>
-          <li><a href="../about.html">О коллегии</a></li>
-          <li><a href="../services.html">Услуги</a></li>
-          <li><a href="../team.html">Команда</a></li>
-          <li><a href="../articles.html">Публикации</a></li>
-          <li><a href="../contact.html">Контакты</a></li>
-        </ul>
-      </div>
-      <div class="footer-nav">
-        <h4>Правовое</h4>
-        <ul>
-          <li><a href="../privacy.html">Политика конфиденциальности</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-legal">
-      <div class="footer-bottom">
-        <div>
-          <div>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
-          <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>`;
+  return `<div id="footer-placeholder"></div>`;
 }
 
 function generateArticleHTML(article) {
@@ -664,8 +620,11 @@ ${jsonLd}
   </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
 ${sharedHeader()}
+
+<main id="main-content">
 
 <div class="breadcrumbs-bar">
   <div class="container">
@@ -709,10 +668,12 @@ ${sharedHeader()}
 
 ${sharedCtaBand()}
 
+</main>
+
 ${sharedFooter()}
 
 <script src="../js/script.js"></script>
-<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script>AE.injectFooter(); AE.initMetrika();</script>
 </body>
 </html>`;
 }
@@ -759,8 +720,11 @@ ${jsonLd}
   </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
 ${sharedHeader()}
+
+<main id="main-content">
 
 <div class="breadcrumbs-bar">
   <div class="container">
@@ -812,10 +776,12 @@ ${sharedHeader()}
 
 ${sharedCtaBand()}
 
+</main>
+
 ${sharedFooter()}
 
 <script src="../js/script.js"></script>
-<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script>AE.injectFooter(); AE.initMetrika();</script>
 </body>
 </html>`;
 }
@@ -829,6 +795,79 @@ function exportAllStaticPages() {
   if (!all.length) { toast('Нет данных для экспорта', 'error'); return; }
   all.forEach((item, i) => setTimeout(() => downloadFile(item.name, item.html), i * 400));
   toast(`Запущена загрузка ${all.length} файлов. Поместите articles/*.html и team/*.html в репозиторий и выполните git push.`);
+}
+
+/* ===== GITHUB PUBLISH ===== */
+
+async function githubPutFile(token, repo, filePath, content, message) {
+  const url = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+  const headers = {
+    'Authorization': `token ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+
+  /* Get current file SHA (needed to update existing files) */
+  let sha = null;
+  try {
+    const res = await fetch(url, { headers });
+    if (res.ok) { sha = (await res.json()).sha; }
+  } catch(e) {}
+
+  /* Encode content to Base64 (handles UTF-8 via TextEncoder) */
+  const bytes = new TextEncoder().encode(content);
+  let b64 = '';
+  for (let i = 0; i < bytes.length; i += 3) {
+    const chunk = Array.from(bytes.slice(i, i + 3));
+    b64 += btoa(String.fromCharCode(...chunk));
+  }
+
+  const body = { message, content: b64, branch: 'main' };
+  if (sha) body.sha = sha;
+
+  const put = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
+  return put.ok;
+}
+
+async function syncToGitHub() {
+  const token = localStorage.getItem('certorro_gh_token');
+  const repo  = localStorage.getItem('certorro_gh_repo') || 'Certorro/my-site';
+
+  if (!token) {
+    toast('Укажите GitHub-токен в Настройках → GitHub', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('publishBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Публикация…'; }
+  toast('Отправка файлов на GitHub…');
+
+  const tasks = [
+    { path: 'data/settings.json', content: JSON.stringify(settings, null, 2) },
+    { path: 'data/lawyers.json',  content: JSON.stringify(lawyers, null, 2)  },
+    { path: 'data/articles.json', content: JSON.stringify(articles, null, 2) },
+    ...articles.filter(a => a.slug).map(a => ({
+      path: `articles/${a.slug}.html`, content: generateArticleHTML(a),
+    })),
+    ...lawyers.filter(l => l.slug).map(l => ({
+      path: `team/${l.slug}.html`, content: generateLawyerHTML(l),
+    })),
+  ];
+
+  let ok = 0, fail = 0;
+  for (const task of tasks) {
+    const success = await githubPutFile(token, repo, task.path, task.content,
+      `cms: обновление ${task.path}`);
+    success ? ok++ : fail++;
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '🚀 Опубликовать на сайте'; }
+
+  if (fail === 0) {
+    toast(`✓ Опубликовано ${ok} файлов. Сайт обновится через ~1 минуту.`);
+  } else {
+    toast(`Опубликовано: ${ok}, ошибок: ${fail}. Проверьте токен и права репозитория.`, 'error');
+  }
 }
 
 /* ===== CLOSE MODALS ON OVERLAY CLICK ===== */
