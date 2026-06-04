@@ -1,5 +1,4 @@
 /* ===== CONSTANTS ===== */
-const ADMIN_PASSWORD = 'admin123';
 const DATA_KEYS = {
   lawyers: 'certorro_lawyers',
   articles: 'certorro_articles',
@@ -10,6 +9,20 @@ const JSON_PATHS = {
   articles: '../data/articles.json',
   settings: '../data/settings.json',
 };
+
+/* ===== AUTH CONSTANTS ===== */
+const HASH_KEY    = 'ae_admin_hash';
+const FAIL_KEY    = 'ae_admin_fails';
+const LOCKOUT_KEY = 'ae_admin_lockout';
+const MAX_FAILS   = 5;
+const LOCKOUT_MS  = 15 * 60 * 1000; /* 15 min */
+
+/* ===== UTILS ===== */
+function escHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 
 /* ===== STATE ===== */
 let lawyers = [];
@@ -77,21 +90,73 @@ function downloadFile(filename, content) {
 }
 
 /* ===== AUTH ===== */
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function lockoutRemaining() {
+  return Math.max(0, parseInt(localStorage.getItem(LOCKOUT_KEY) || '0') - Date.now());
+}
+
+function recordFail() {
+  const fails = parseInt(localStorage.getItem(FAIL_KEY) || '0') + 1;
+  if (fails >= MAX_FAILS) {
+    localStorage.setItem(LOCKOUT_KEY, Date.now() + LOCKOUT_MS);
+    localStorage.removeItem(FAIL_KEY);
+  } else {
+    localStorage.setItem(FAIL_KEY, String(fails));
+  }
+  return fails;
+}
+
+function clearFails() {
+  localStorage.removeItem(FAIL_KEY);
+  localStorage.removeItem(LOCKOUT_KEY);
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
 function checkAuth() {
   return sessionStorage.getItem('certorro_admin') === '1';
 }
 
-document.getElementById('loginForm').addEventListener('submit', e => {
+document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
+
+  const remaining = lockoutRemaining();
+  if (remaining > 0) {
+    showLoginError('Аккаунт заблокирован. Повторите через ' + Math.ceil(remaining / 60000) + ' мин.');
+    return;
+  }
+
+  const storedHash = localStorage.getItem(HASH_KEY);
+  if (!storedHash) {
+    showLoginError('Панель не настроена. Укажите пароль в local.json на устройстве разработчика.');
+    return;
+  }
+
   const pw = document.getElementById('loginPassword').value;
-  const errEl = document.getElementById('loginError');
-  if (pw === ADMIN_PASSWORD) {
+  document.getElementById('loginPassword').value = '';
+  const inputHash = await sha256(pw);
+
+  if (inputHash === storedHash) {
+    clearFails();
     sessionStorage.setItem('certorro_admin', '1');
     showPanel();
   } else {
-    errEl.style.display = 'block';
-    document.getElementById('loginPassword').value = '';
     document.getElementById('loginPassword').focus();
+    const fails = recordFail();
+    if (lockoutRemaining() > 0) {
+      showLoginError('Аккаунт заблокирован на 15 минут после ' + MAX_FAILS + ' неверных попыток.');
+    } else {
+      showLoginError('Неверный пароль. Осталось попыток: ' + (MAX_FAILS - fails) + '.');
+    }
   }
 });
 
@@ -112,16 +177,6 @@ function showPanel() {
 
 /* ===== INIT ===== */
 async function initAdmin() {
-  /* Load local.json (git-ignored) — auto-populate GitHub credentials */
-  try {
-    const localRes = await fetch('local.json');
-    if (localRes.ok) {
-      const local = await localRes.json();
-      if (local.githubToken) localStorage.setItem('certorro_gh_token', local.githubToken);
-      if (local.githubRepo)  localStorage.setItem('certorro_gh_repo',  local.githubRepo);
-    }
-  } catch(e) { /* file absent — user enters token manually */ }
-
   lawyers = await loadFromStorage('lawyers');
   articles = await loadFromStorage('articles');
   settings = await loadFromStorage('settings');
@@ -172,26 +227,28 @@ function renderLawyersTable() {
     tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">👥</div><p>Адвокаты не добавлены</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = lawyers.map(l => `
+  tbody.innerHTML = lawyers.map(l => {
+    const id = parseInt(l.id, 10) || 0;
+    return `
     <tr>
       <td data-mobile="avatar">
         <div class="admin-avatar">
-          ${l.photo ? `<img src="${l.photo}" alt="">` : '👤'}
+          ${l.photo ? `<img src="${escHtml(l.photo)}" alt="">` : '👤'}
         </div>
       </td>
       <td data-mobile="main">
-        <strong>${l.name}</strong>
-        ${l.position ? `<br><span style="font-size:0.78rem;color:var(--text-light)">${l.position}</span>` : ''}
+        <strong>${escHtml(l.name)}</strong>
+        ${l.position ? `<br><span style="font-size:0.78rem;color:var(--text-light)">${escHtml(l.position)}</span>` : ''}
       </td>
-      <td data-mobile="sub"><span class="tag tag-blue">${l.specialization || '—'}</span></td>
-      <td data-mobile="hide" style="font-size:0.85rem;color:var(--text-light)">${l.experience || '—'}</td>
-      <td data-mobile="hide" style="font-size:0.78rem;color:var(--text-light)">${l.regNumber || '—'}</td>
+      <td data-mobile="sub"><span class="tag tag-blue">${escHtml(l.specialization || '—')}</span></td>
+      <td data-mobile="hide" style="font-size:0.85rem;color:var(--text-light)">${escHtml(l.experience || '—')}</td>
+      <td data-mobile="hide" style="font-size:0.78rem;color:var(--text-light)">${escHtml(l.regNumber || '—')}</td>
       <td data-mobile="actions">
-        <button class="btn-sm btn-edit" onclick="openLawyerModal(${l.id})">✏️ Изменить</button>
-        <button class="btn-sm btn-delete" onclick="confirmDelete('lawyer', ${l.id})" style="margin-top:4px">🗑</button>
+        <button class="btn-sm btn-edit" onclick="openLawyerModal(${id})">✏️ Изменить</button>
+        <button class="btn-sm btn-delete" onclick="confirmDelete('lawyer', ${id})" style="margin-top:4px">🗑</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 /* ===== LAWYER MODAL ===== */
@@ -289,24 +346,27 @@ function renderArticlesTable() {
     tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="empty-state-icon">📝</div><p>Статьи не добавлены</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = articles.map(a => `
+  tbody.innerHTML = articles.map(a => {
+    const id = parseInt(a.id, 10) || 0;
+    const summary = escHtml((a.summary || '').substring(0, 80)) + ((a.summary || '').length > 80 ? '…' : '');
+    return `
     <tr>
       <td data-mobile="main">
-        <strong style="display:block;max-width:260px">${a.title}</strong>
+        <strong style="display:block;max-width:260px">${escHtml(a.title)}</strong>
       </td>
       <td data-mobile="sub" style="white-space:nowrap">
-        ${a.category ? `<span class="tag tag-blue" style="font-size:0.7rem">${a.category}</span>` : '<span style="color:var(--text-light);font-size:0.78rem">—</span>'}
+        ${a.category ? `<span class="tag tag-blue" style="font-size:0.7rem">${escHtml(a.category)}</span>` : '<span style="color:var(--text-light);font-size:0.78rem">—</span>'}
       </td>
-      <td data-mobile="sub" style="white-space:nowrap;font-size:0.82rem;color:var(--text-light)">${formatDate(a.date)}</td>
+      <td data-mobile="sub" style="white-space:nowrap;font-size:0.82rem;color:var(--text-light)">${escHtml(formatDate(a.date))}</td>
       <td data-mobile="hide" style="font-size:0.82rem;color:var(--text-light);max-width:200px">
-        ${(a.summary || '').substring(0, 80)}${(a.summary || '').length > 80 ? '…' : ''}
+        ${summary}
       </td>
       <td data-mobile="actions">
-        <button class="btn-sm btn-edit" onclick="openArticleModal(${a.id})">✏️ Изменить</button>
-        <button class="btn-sm btn-delete" onclick="confirmDelete('article', ${a.id})" style="margin-top:4px">🗑</button>
+        <button class="btn-sm btn-edit" onclick="openArticleModal(${id})">✏️ Изменить</button>
+        <button class="btn-sm btn-delete" onclick="confirmDelete('article', ${id})" style="margin-top:4px">🗑</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 /* ===== ARTICLE MODAL ===== */
@@ -514,10 +574,10 @@ function articleContentToHtml(content) {
     if (!t) { if (inList) { out.push('</ul>'); inList = false; } return; }
     if (t.startsWith('—') || t.startsWith('- ')) {
       if (!inList) { out.push('<ul class="article-list">'); inList = true; }
-      out.push('  <li>' + t.replace(/^[—\-]\s*/, '') + '</li>');
+      out.push('  <li>' + escHtml(t.replace(/^[—\-]\s*/, '')) + '</li>');
     } else {
       if (inList) { out.push('</ul>'); inList = false; }
-      out.push('<p>' + t + '</p>');
+      out.push('<p>' + escHtml(t) + '</p>');
     }
   });
   if (inList) out.push('</ul>');
@@ -539,21 +599,25 @@ function articleFormatDate(d) {
 }
 
 function sharedHead(title, description, canonical, ogType, extra) {
+  const t = escHtml(title);
+  const d = escHtml(description);
+  const c = escHtml(canonical);
+  const d160 = escHtml(description.substring(0, 160));
   return `  <meta charset="UTF-8">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
-  <meta name="description" content="${description.replace(/"/g,'&quot;')}">
-  <link rel="canonical" href="${canonical}">
+  <title>${t}</title>
+  <meta name="description" content="${d}">
+  <link rel="canonical" href="${c}">
   <meta property="og:type" content="${ogType || 'website'}">
-  <meta property="og:url" content="${canonical}">
-  <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${description.replace(/"/g,'&quot;')}">
+  <meta property="og:url" content="${c}">
+  <meta property="og:title" content="${t}">
+  <meta property="og:description" content="${d}">
   <meta property="og:site_name" content="Адвокатская коллегия Альтер-Эго">
   <meta property="og:locale" content="ru_RU">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="${title}">
-  <meta name="twitter:description" content="${description.replace(/"/g,'&quot;').substring(0,160)}">
+  <meta name="twitter:title" content="${t}">
+  <meta name="twitter:description" content="${d160}">
   ${extra || ''}
   <link rel="stylesheet" href="../fonts/fonts.css">
   <link rel="stylesheet" href="../css/style.css">`;
@@ -640,7 +704,7 @@ ${sharedHeader()}
       <span class="bc-sep">›</span>
       <a href="../articles.html">Публикации</a>
       <span class="bc-sep">›</span>
-      <span class="bc-current">${category}</span>
+      <span class="bc-current">${escHtml(category)}</span>
     </nav>
   </div>
 </div>
@@ -650,8 +714,8 @@ ${sharedHeader()}
   <div class="grid-bg"></div>
   <div class="grid-shimmer"></div>
   <div class="container page-hero-content">
-    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${category}</span>
-    <h1 style="max-width:800px">${article.title}</h1>
+    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${escHtml(category)}</span>
+    <h1 style="max-width:800px">${escHtml(article.title)}</h1>
     <p style="position:relative;z-index:2">${dateFormatted} · ${mins} мин чтения</p>
   </div>
 </section>
@@ -660,7 +724,7 @@ ${sharedHeader()}
   <div class="grid-bg grid-bg-light" style="opacity:.35"></div>
   <div class="container" style="position:relative;z-index:1;max-width:800px">
     <div class="article-full-body">
-      <p class="article-lead"><em>${article.summary || ''}</em></p>
+      <p class="article-lead"><em>${escHtml(article.summary || '')}</em></p>
       ${articleContentToHtml(article.content || '')}
     </div>
     <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
@@ -693,7 +757,7 @@ function generateLawyerHTML(lawyer) {
   const position = lawyer.position || 'Адвокат';
   const spec = lawyer.specialization || '';
   const photoHtml = lawyer.photo
-    ? `<img src="../${lawyer.photo}" alt="${lawyer.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:4px">`
+    ? `<img src="../${escHtml(lawyer.photo)}" alt="${escHtml(lawyer.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:4px">`
     : `<div style="width:120px;height:120px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="rgba(201,160,61,0.4)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
@@ -740,7 +804,7 @@ ${sharedHeader()}
       <span class="bc-sep">›</span>
       <a href="../team.html">Команда</a>
       <span class="bc-sep">›</span>
-      <span class="bc-current">${lawyer.name}</span>
+      <span class="bc-current">${escHtml(lawyer.name)}</span>
     </nav>
   </div>
 </div>
@@ -750,9 +814,9 @@ ${sharedHeader()}
   <div class="grid-bg"></div>
   <div class="grid-shimmer"></div>
   <div class="container page-hero-content">
-    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${position}</span>
-    <h1 style="max-width:800px">${lawyer.name}</h1>
-    <p style="position:relative;z-index:2">${spec}</p>
+    <span class="hero-badge" style="position:relative;z-index:2;margin-bottom:16px">${escHtml(position)}</span>
+    <h1 style="max-width:800px">${escHtml(lawyer.name)}</h1>
+    <p style="position:relative;z-index:2">${escHtml(spec)}</p>
   </div>
 </section>
 
@@ -762,12 +826,12 @@ ${sharedHeader()}
     <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
       <div style="flex-shrink:0">${photoHtml}</div>
       <div style="flex:1;min-width:240px">
-        <div class="lawyer-full-spec" style="margin-bottom:16px">${spec}</div>
-        ${lawyer.bio ? `<p class="lawyer-full-bio">${lawyer.bio}</p>` : ''}
+        <div class="lawyer-full-spec" style="margin-bottom:16px">${escHtml(spec)}</div>
+        ${lawyer.bio ? `<p class="lawyer-full-bio">${escHtml(lawyer.bio)}</p>` : ''}
         <div class="lawyer-full-meta" style="margin-top:20px">
-          ${lawyer.experience ? `<span><strong>Опыт:</strong> ${lawyer.experience}</span>` : ''}
-          ${lawyer.regNumber  ? `<span><strong>Рег. №</strong> ${lawyer.regNumber}</span>` : ''}
-          ${lawyer.palata     ? `<span><strong>Палата:</strong> ${lawyer.palata}</span>` : ''}
+          ${lawyer.experience ? `<span><strong>Опыт:</strong> ${escHtml(lawyer.experience)}</span>` : ''}
+          ${lawyer.regNumber  ? `<span><strong>Рег. №</strong> ${escHtml(lawyer.regNumber)}</span>` : ''}
+          ${lawyer.palata     ? `<span><strong>Палата:</strong> ${escHtml(lawyer.palata)}</span>` : ''}
         </div>
       </div>
     </div>
@@ -887,8 +951,29 @@ async function syncToGitHub() {
 });
 
 /* ===== AUTO-INIT ===== */
-if (checkAuth()) {
-  showPanel();
-} else {
-  document.getElementById('loginScreen').style.display = 'flex';
-}
+(async () => {
+  /* Load local.json (git-ignored) — credentials + bootstrap password hash once */
+  try {
+    const res = await fetch('local.json');
+    if (res.ok) {
+      const cfg = await res.json();
+      if (cfg.githubToken) localStorage.setItem('certorro_gh_token', cfg.githubToken);
+      if (cfg.githubRepo)  localStorage.setItem('certorro_gh_repo',  cfg.githubRepo);
+      /* Hash is stored in localStorage, plaintext never leaves local.json */
+      if (cfg.password && !localStorage.getItem(HASH_KEY)) {
+        localStorage.setItem(HASH_KEY, await sha256(cfg.password));
+      }
+    }
+  } catch(e) { /* file absent on production — admin requires manual setup */ }
+
+  if (checkAuth()) {
+    showPanel();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    if (!localStorage.getItem(HASH_KEY)) {
+      showLoginError('Панель не настроена. Укажите пароль в local.json на устройстве разработчика.');
+      const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+    }
+  }
+})();
