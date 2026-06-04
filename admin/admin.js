@@ -555,10 +555,7 @@ function sharedHead(title, description, canonical, ogType, extra) {
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${description.replace(/"/g,'&quot;').substring(0,160)}">
   ${extra || ''}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&family=Raleway:wght@300;400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&family=Raleway:wght@300;400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="../fonts/fonts.css">
   <link rel="stylesheet" href="../css/style.css">`;
 }
 
