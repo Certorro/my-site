@@ -14,6 +14,12 @@ const ROOT = (() => {
   return '../'.repeat(depth);
 })();
 
+function escHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 async function loadData(key, jsonPath) {
   try {
     const res = await fetch(jsonPath + '?v=' + Date.now());
@@ -88,18 +94,18 @@ function setEl(id, text) { const el = document.getElementById(id); if (el) el.te
 /* ===== LAWYER CARD HTML (dark team section on home.html) ===== */
 function lawyerCardHTML(l) {
   const photo = l.photo
-    ? `<img src="${l.photo}" alt="${l.name}" loading="lazy">`
+    ? `<img src="${escHtml(l.photo)}" alt="${escHtml(l.name)}" loading="lazy">`
     : `<div class="lawyer-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
   return `
     <div class="lawyer-card fade-up">
       <div class="lawyer-photo">${photo}</div>
       <div class="lawyer-info">
-        <h3>${l.slug ? `<a href="team/${l.slug}.html" style="color:inherit;text-decoration:none">${l.name}</a>` : l.name}</h3>
-        <div class="lawyer-spec">${l.specialization || l.position}</div>
-        <div class="lawyer-exp">${l.experience}</div>
-        ${l.bio ? `<p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">${l.bio}</p>` : ''}
-        ${l.regNumber ? `<div class="lawyer-reg">Рег. № ${l.regNumber}</div>` : ''}
-        ${l.palata    ? `<div class="lawyer-palata">${l.palata}</div>` : ''}
+        <h3>${l.slug ? `<a href="team/${escHtml(l.slug)}.html" style="color:inherit;text-decoration:none">${escHtml(l.name)}</a>` : escHtml(l.name)}</h3>
+        <div class="lawyer-spec">${escHtml(l.specialization || l.position)}</div>
+        <div class="lawyer-exp">${escHtml(l.experience)}</div>
+        ${l.bio ? `<p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">${escHtml(l.bio)}</p>` : ''}
+        ${l.regNumber ? `<div class="lawyer-reg">Рег. № ${escHtml(l.regNumber)}</div>` : ''}
+        ${l.palata    ? `<div class="lawyer-palata">${escHtml(l.palata)}</div>` : ''}
       </div>
     </div>`;
 }
@@ -107,19 +113,19 @@ function lawyerCardHTML(l) {
 /* ===== LAWYER FULL CARD HTML (team.html) ===== */
 function lawyerFullCardHTML(l) {
   const photo = l.photo
-    ? `<img src="${l.photo}" alt="${l.name}" loading="lazy">`
+    ? `<img src="${escHtml(l.photo)}" alt="${escHtml(l.name)}" loading="lazy">`
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
   return `
     <div class="lawyer-full-card fade-up">
       <div class="lawyer-full-photo">${photo}</div>
       <div class="lawyer-full-info">
-        <h3>${l.slug ? `<a href="team/${l.slug}.html" style="color:inherit;text-decoration:none">${l.name}</a>` : l.name}</h3>
-        <div class="lawyer-full-spec">${l.specialization || l.position}</div>
-        ${l.bio ? `<p class="lawyer-full-bio">${l.bio}</p>` : ''}
+        <h3>${l.slug ? `<a href="team/${escHtml(l.slug)}.html" style="color:inherit;text-decoration:none">${escHtml(l.name)}</a>` : escHtml(l.name)}</h3>
+        <div class="lawyer-full-spec">${escHtml(l.specialization || l.position)}</div>
+        ${l.bio ? `<p class="lawyer-full-bio">${escHtml(l.bio)}</p>` : ''}
         <div class="lawyer-full-meta">
-          ${l.experience ? `<span><strong>Опыт:</strong> ${l.experience}</span>` : ''}
-          ${l.regNumber  ? `<span><strong>Рег. №</strong> ${l.regNumber}</span>` : ''}
-          ${l.palata     ? `<span><strong>Палата:</strong> ${l.palata}</span>` : ''}
+          ${l.experience ? `<span><strong>Опыт:</strong> ${escHtml(l.experience)}</span>` : ''}
+          ${l.regNumber  ? `<span><strong>Рег. №</strong> ${escHtml(l.regNumber)}</span>` : ''}
+          ${l.palata     ? `<span><strong>Палата:</strong> ${escHtml(l.palata)}</span>` : ''}
         </div>
       </div>
     </div>`;
@@ -152,13 +158,14 @@ async function renderFullTeam() {
 /* ===== ARTICLE CARD HTML (home page — links to articles.html) ===== */
 function homeArticleCardHTML(a) {
   const mins = readingTime(a.content || a.summary || '');
+  const href = a.slug ? 'articles/' + escHtml(a.slug) + '.html' : 'articles.html';
   return `
   <div class="article-card">
-    <div class="article-category">${a.category || ''}</div>
-    <h3>${a.title}</h3>
-    <div class="article-date">${formatDate(a.date)}<span class="article-reading-time">${mins} мин</span></div>
-    <div class="article-excerpt">${a.summary}</div>
-    <a href="${a.slug ? 'articles/' + a.slug + '.html' : 'articles.html'}" class="read-more">Читать далее →</a>
+    <div class="article-category">${escHtml(a.category || '')}</div>
+    <h3>${escHtml(a.title)}</h3>
+    <div class="article-date">${escHtml(formatDate(a.date))}<span class="article-reading-time">${mins} мин</span></div>
+    <div class="article-excerpt">${escHtml(a.summary)}</div>
+    <a href="${href}" class="read-more">Читать далее →</a>
   </div>`;
 }
 
@@ -301,6 +308,7 @@ function initContactForm() {
     /* Simulate send (no backend): show success after brief delay */
     setTimeout(() => {
       if (modal) modal.classList.add('open');
+      if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_submit');
       form.reset();
       ['name-error', 'phone-error', 'consent-error'].forEach(id => showFieldError(id, ''));
       form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
