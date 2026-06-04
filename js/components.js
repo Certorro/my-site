@@ -14,6 +14,7 @@
   var src = me ? (me.getAttribute('src') || '') : '';
   var upCount = (src.match(/\.\.\//g) || []).length;
   var R = '../'.repeat(upCount); /* '' for root, '../' for articles/, team/ */
+  var COOKIE_KEY = 'ae_cookie_consent';
 
   /* --- Phone SVG icons -------------------------------------------- */
   var PHN15 = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012.07-.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.41-.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>';
@@ -97,6 +98,10 @@
     '          <div>© <span id="footerYear"></span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>\n' +
     '          <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>\n' +
     '        </div>\n' +
+    '        <div class="footer-bottom-right">\n' +
+    '          <span class="age-mark">0+</span>\n' +
+    '          <button class="cookie-manage-btn" id="cookieManageBtn" type="button">Управление cookie</button>\n' +
+    '        </div>\n' +
     '      </div>\n' +
     '    </div>\n' +
     '  </div>\n' +
@@ -121,9 +126,51 @@
       footerPh.outerHTML = FOOTER;
       var fy = document.getElementById('footerYear');
       if (fy) fy.textContent = new Date().getFullYear();
+
+      /* Cookie management button — reset consent and reload */
+      var manageBtn = document.getElementById('cookieManageBtn');
+      if (manageBtn) {
+        manageBtn.addEventListener('click', function () {
+          localStorage.removeItem(COOKIE_KEY);
+          window.location.reload();
+        });
+      }
+
+      /* Show cookie banner only when consent is not yet recorded */
+      if (!localStorage.getItem(COOKIE_KEY)) {
+        var banner = document.createElement('div');
+        banner.id = 'cookieBanner';
+        banner.className = 'cookie-banner';
+        banner.setAttribute('role', 'dialog');
+        banner.setAttribute('aria-label', 'Управление cookie');
+        banner.innerHTML =
+          '<div class="cookie-inner">' +
+            '<p class="cookie-text"><strong>Аналитические cookie.</strong> ' +
+            'Мы используем Яндекс.Метрику (Вебвизор, тепловые карты кликов) для анализа посещаемости. ' +
+            'Аналитические cookie устанавливаются только с вашего согласия.</p>' +
+            '<div class="cookie-actions">' +
+              '<button class="cookie-accept" id="cookieAccept" type="button">Принять</button>' +
+              '<button class="cookie-decline" id="cookieDecline" type="button">Отклонить</button>' +
+              '<a class="cookie-more" href="' + R + 'privacy.html">Подробнее</a>' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(banner);
+
+        var AEref = window.AE;
+        document.getElementById('cookieAccept').addEventListener('click', function () {
+          localStorage.setItem(COOKIE_KEY, 'accepted');
+          banner.classList.add('cookie-banner--hidden');
+          if (AEref && AEref.initMetrika) AEref.initMetrika();
+        });
+        document.getElementById('cookieDecline').addEventListener('click', function () {
+          localStorage.setItem(COOKIE_KEY, 'declined');
+          banner.classList.add('cookie-banner--hidden');
+        });
+      }
     },
 
     initMetrika: function () {
+      if (localStorage.getItem(COOKIE_KEY) !== 'accepted') return;
       (function (m, e, t, r, i, k, a) {
         m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
         m[i].l = 1 * new Date();
@@ -140,6 +187,10 @@
         ssr: true, webvisor: true, clickmap: true,
         ecommerce: 'dataLayer', referrer: document.referrer,
         url: location.href, accurateTrackBounce: true, trackLinks: true
+      });
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('a[href^="tel:"]'))    ym(109534459, 'reachGoal', 'phone_click');
+        if (e.target.closest('a[href^="mailto:"]')) ym(109534459, 'reachGoal', 'email_click');
       });
       var ns = document.createElement('noscript');
       ns.innerHTML = '<div><img src="https://mc.yandex.ru/watch/109534459" style="position:absolute;left:-9999px" alt=""/></div>';
