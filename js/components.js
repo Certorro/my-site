@@ -89,8 +89,7 @@
     '        <div class="legal-item"><strong>Полное наименование</strong><span id="legalFullName">Адвокатская коллегия «Альтер-Эго»</span></div>\n' +
     '        <div class="legal-item"><strong>ИНН / ОГРН</strong><span id="legalINN">—</span> / <span id="legalOGRN">—</span></div>\n' +
     '        <div class="legal-item"><strong>Реестр адвокатских образований</strong><span id="legalReestry">—</span></div>\n' +
-    '        <div class="legal-item"><strong>Юридический адрес</strong><span id="legalAddress">—</span></div>\n' +
-    '        <div class="legal-item"><strong>Фактический адрес</strong><span id="factAddress">—</span></div>\n' +
+    '        <div class="legal-item"><strong>Адрес</strong><span id="factAddress">—</span></div>\n' +
     '        <div class="legal-item"><strong>Адвокатская палата</strong><span id="advokatPalata">—</span></div>\n' +
     '      </div>\n' +
     '      <div class="footer-bottom">\n' +
