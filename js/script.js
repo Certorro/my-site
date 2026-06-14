@@ -152,7 +152,18 @@ async function renderFullTeam() {
     grid.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:48px">Информация о команде скоро появится</p>';
     return;
   }
-  grid.innerHTML = lawyers.map(lawyerFullCardHTML).join('');
+  const advocates = lawyers.filter(l => l.position !== 'Партнёр');
+  const partners  = lawyers.filter(l => l.position === 'Партнёр');
+  let html = advocates.map(lawyerFullCardHTML).join('');
+  if (partners.length) {
+    html +=
+      '<div class="team-section-divider">' +
+        '<span class="section-label">Партнёры</span>' +
+        '<h3>Партнёры коллегии</h3>' +
+      '</div>' +
+      partners.map(lawyerFullCardHTML).join('');
+  }
+  grid.innerHTML = html;
 }
 
 /* ===== ARTICLE CARD HTML (home page — links to articles.html) ===== */
@@ -242,6 +253,22 @@ function initHeader() {
   });
 }
 
+/* ===== GOOGLE SHEETS ENDPOINT =====
+ * Шаг 1: Создайте Google Sheet (любое имя).
+ * Шаг 2: Extensions → Apps Script → вставьте код:
+ *
+ *   function doPost(e) {
+ *     var p = e.parameter;
+ *     SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+ *       .appendRow([p.timestamp, p.name, p.phone, p.email, p.subject, p.message]);
+ *     return ContentService.createTextResponse('OK');
+ *   }
+ *
+ * Шаг 3: Deploy → New deployment → Web App → Execute as: Me → Who has access: Anyone → Deploy.
+ * Шаг 4: Скопируйте URL сюда:
+ */
+const GOOGLE_SHEET_URL = '';
+
 /* ===== CONTACT FORM ===== */
 function showFieldError(id, msg) {
   const el = document.getElementById(id);
@@ -305,15 +332,34 @@ function initContactForm() {
     e.preventDefault();
     if (!validateContactForm(form)) return;
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Отправляется…'; }
-    /* Simulate send (no backend): show success after brief delay */
-    setTimeout(() => {
+
+    function onSuccess() {
       if (modal) modal.classList.add('open');
       if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_submit');
       form.reset();
       ['name-error', 'phone-error', 'consent-error'].forEach(id => showFieldError(id, ''));
       form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Отправить заявку'; }
-    }, 400);
+    }
+
+    if (GOOGLE_SHEET_URL) {
+      const body = new URLSearchParams({
+        timestamp: new Date().toISOString(),
+        name:    form.querySelector('#name').value.trim(),
+        phone:   form.querySelector('#phone').value.trim(),
+        email:   form.querySelector('#email').value.trim(),
+        subject: form.querySelector('#subject').value,
+        message: form.querySelector('#message').value.trim()
+      });
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString()
+      }).catch(() => {}).finally(onSuccess);
+    } else {
+      setTimeout(onSuccess, 400);
+    }
   });
 
   const closeModal = () => {

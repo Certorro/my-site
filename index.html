@@ -195,10 +195,30 @@
             <line x1="28" y1="68" x2="52" y2="68"/>
             <path d="M32 10 Q40 6 48 10"/>
           </svg>
+          <!-- замок + ключ, небрежно оставленный -->
+          <div style="position:absolute;bottom:22px;right:18px">
+            <svg viewBox="0 0 108 130" style="display:block;width:108px;height:130px" fill="none" stroke="rgba(245,242,236,0.55)" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- шуруп замка -->
+              <path d="M 26 54 L 26 32 Q 26 14 54 14 Q 82 14 82 32 L 82 54"/>
+              <!-- корпус замка -->
+              <rect x="11" y="52" width="86" height="64" rx="5"/>
+              <!-- скважина: круг + прорезь -->
+              <circle cx="54" cy="76" r="7"/>
+              <path d="M 50 82 L 50 91 Q 50 94 54 94 Q 58 94 58 91 L 58 82"/>
+              <!-- ключ, небрежно лежит под углом -->
+              <g transform="translate(66,117) rotate(42)">
+                <circle cx="0" cy="0" r="10.5"/>
+                <circle cx="0" cy="0" r="4.5"/>
+                <line x1="10.5" y1="0" x2="47" y2="0"/>
+                <line x1="30" y1="0" x2="30" y2="7.5"/>
+                <line x1="40" y1="0" x2="40" y2="10"/>
+              </g>
+            </svg>
+          </div>
         </div>
         <div class="about-badge">
           <span class="about-badge-num">10+</span>
-          <span class="about-badge-text">лет на рынке</span>
+          <span class="about-badge-text">лет практики</span>
         </div>
       </div>
       <div class="about-text">
@@ -372,45 +392,78 @@
   </div>
 </section>
 
-<!-- ===== TESTIMONIALS ===== -->
-<section class="section section-dark" style="position:relative;overflow:hidden">
-  <div class="grid-bg" style="opacity:.35"></div>
-  <div class="grid-shimmer"></div>
-  <div class="container" style="position:relative;z-index:1">
-    <h2 class="section-title fade-up">Отзывы доверителей</h2>
-    <span class="gold-line fade-up"></span>
-    <p class="section-subtitle fade-up">Нам важен результат — и именно о нём говорят те, кто обратился к нам</p>
-    <div class="reviews-grid">
-
-      <div class="review-card fade-up">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">Обратился в сложной ситуации по уголовному делу. Адвокат подключился в день задержания, грамотно отработал допрос и добился изменения меры пресечения. Результат превзошёл ожидания — дело прекращено на стадии следствия.</p>
-        <div class="review-author">
-          <div class="review-name">Алексей К.</div>
-          <div class="review-case">Уголовное дело · Москва</div>
-        </div>
-      </div>
-
-      <div class="review-card fade-up" style="transition-delay:.08s">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">Защитили бизнес при попытке рейдерского захвата через банкротство. Юристы работали быстро, знали процедуру изнутри. Субсидиарку удалось снять. Компания продолжает работу. Рекомендую без оговорок.</p>
-        <div class="review-author">
-          <div class="review-name">Дмитрий В.</div>
-          <div class="review-case">Арбитраж · Субсидиарная ответственность</div>
-        </div>
-      </div>
-
-      <div class="review-card fade-up" style="transition-delay:.16s">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">Спор о разделе квартиры тянулся два года до обращения к ним. За три месяца выиграли дело и добились исполнения решения. Адвокат держала нас в курсе на каждом шагу — никаких неожиданностей.</p>
-        <div class="review-author">
-          <div class="review-name">Марина Л.</div>
-          <div class="review-case">Семейное право · Раздел имущества</div>
-        </div>
-      </div>
-
-    </div>
+<!-- ===== INTERACTIVE TRAIL ===== -->
+<section id="trailSection" style="position:relative;overflow:hidden;background:#000;padding:0;line-height:0">
+  <canvas id="trailCanvas" style="display:block;width:100%;cursor:none" aria-hidden="true"></canvas>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:1">
+    <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:rgba(255,255,255,0.18)">Альтер-Эго</span>
   </div>
+  <script>
+  (function () {
+    var canvas = document.getElementById('trailCanvas');
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var mouse = { x: -9999, y: -9999 };
+    var raf;
+
+    function resize() {
+      var rect = canvas.parentElement.getBoundingClientRect();
+      var h = Math.round(window.innerHeight * 0.52);
+      canvas.width  = Math.round(rect.width);
+      canvas.height = h;
+      canvas.style.height = h + 'px';
+    }
+
+    function addParticles(x, y) {
+      for (var i = 0; i < 4; i++) {
+        var angle = Math.random() * Math.PI * 2;
+        var speed = Math.random() * 0.6 + 0.1;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: Math.random() * 2.2 + 0.8,
+          a: 1
+        });
+      }
+      if (particles.length > 600) particles.splice(0, particles.length - 600);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var i = particles.length;
+      while (i--) {
+        var p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.a -= 0.018;
+        if (p.a <= 0) { particles.splice(i, 1); continue; }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,' + p.a.toFixed(3) + ')';
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+
+    function onMove(x, y) {
+      var rect = canvas.getBoundingClientRect();
+      addParticles(x - rect.left, y - rect.top);
+    }
+
+    canvas.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY); });
+    canvas.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+      var t = e.touches[0];
+      onMove(t.clientX, t.clientY);
+    }, { passive: false });
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+  }());
+  </script>
 </section>
 
 <!-- ===== CTA BAND ===== -->
