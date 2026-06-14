@@ -1,20 +1,44 @@
 /* ===== ARTICLES PAGE ===== */
 const PER_PAGE = 6;
 
+function getReads(slug) {
+  return parseInt(localStorage.getItem('ae_reads_' + (slug || '')) || '0');
+}
+
+function pluralSources(n) {
+  if (n === 1) return '1 источник';
+  if (n >= 2 && n <= 4) return n + ' источника';
+  return n + ' источников';
+}
+
 function articleCardHTML(a) {
   const mins = readingTime(a.content || a.summary || '');
+  const reads = getReads(a.slug);
+  const srcCount = (a.sources || []).length;
+  const href = a.slug ? 'articles/' + a.slug + '.html' : '#';
+  const onclick = a.slug ? '' : `openArticleModal(${a.id});return false;`;
   return `
   <div class="article-card">
-    <div class="article-category">${a.category || ''}</div>
+    <div class="article-card-meta-row">
+      <div class="article-category">${a.category || ''}</div>
+      ${reads > 0 ? `<span class="article-reads-badge">${reads} прочт.</span>` : ''}
+    </div>
     <h3>${a.title}</h3>
-    <div class="article-date">${formatDate(a.date)}<span class="article-reading-time">${mins} мин</span></div>
+    <div class="article-date">
+      ${formatDate(a.date)}
+      <span class="article-reading-time">${mins} мин</span>
+      ${srcCount > 0 ? `<span class="article-src-count">${pluralSources(srcCount)}</span>` : ''}
+    </div>
     <div class="article-excerpt">${a.summary}</div>
-    <a href="${a.slug ? 'articles/' + a.slug + '.html' : '#'}" class="read-more" onclick="${a.slug ? '' : 'openArticleModal(' + a.id + ');return false;'}">Читать далее →</a>
+    <a href="${href}" class="read-more" onclick="${onclick}">Читать далее →</a>
   </div>`;
 }
 
 let allArticlesData = [];
 let _modalLastFocus = null;
+let currentCat  = 'all';
+let currentPage = 1;
+let currentSort = 'date';
 
 function _getFocusable(root) {
   return [...root.querySelectorAll(
@@ -49,13 +73,23 @@ function closeArticleModal() {
   if (_modalLastFocus) { _modalLastFocus.focus(); _modalLastFocus = null; }
 }
 
-let currentCat = 'all';
-let currentPage = 1;
+function sortArticles(arr) {
+  const copy = [...arr];
+  if (currentSort === 'sources') {
+    return copy.sort((a, b) => (b.sources || []).length - (a.sources || []).length);
+  }
+  if (currentSort === 'reads') {
+    return copy.sort((a, b) => getReads(b.slug) - getReads(a.slug));
+  }
+  // default: date desc
+  return copy.sort((a, b) => new Date(b.date) - new Date(a.date));
+}
 
 function getFiltered() {
-  return currentCat === 'all'
+  const base = currentCat === 'all'
     ? allArticlesData
     : allArticlesData.filter(a => a.category === currentCat);
+  return sortArticles(base);
 }
 
 function initCardScrollAnimation() {
@@ -124,12 +158,25 @@ function applyFilter(cat) {
   renderPagination(filtered.length);
 }
 
+function applySort(sort) {
+  currentSort = sort;
+  currentPage = 1;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === sort));
+  const filtered = getFiltered();
+  renderGrid(filtered);
+  renderPagination(filtered.length);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   allArticlesData = await loadData(DATA_KEYS.articles, 'data/articles.json');
   applyFilter('all');
 
   document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.addEventListener('click', () => applyFilter(btn.dataset.cat));
+  });
+
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => applySort(btn.dataset.sort));
   });
 
   document.getElementById('articleModalClose').addEventListener('click', closeArticleModal);
