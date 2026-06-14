@@ -85,7 +85,6 @@ async function applySettings() {
   if (s.inn)           setEl('legalINN', s.inn);
   if (s.ogrn)          setEl('legalOGRN', s.ogrn);
   if (s.reestryNumber) setEl('legalReestry', s.reestryNumber);
-  if (s.legalAddress)  setEl('legalAddress', s.legalAddress);
   if (s.address)       setEl('factAddress', s.address);
   if (s.advokatPalata) setEl('advokatPalata', s.advokatPalata);
 }
