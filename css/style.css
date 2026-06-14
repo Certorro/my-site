@@ -391,7 +391,7 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .service-card:hover .service-arrow { opacity: 1; }
 
 /* ===== TEAM ===== */
-.team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; position: relative; z-index: 1; }
+.team-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 24px; position: relative; z-index: 1; }
 .lawyer-card {
   background: transparent; border: none;
   transition: opacity var(--transition);
@@ -848,7 +848,7 @@ footer {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .services-grid { grid-template-columns: repeat(2,1fr); }
-  .team-grid { grid-template-columns: repeat(2,1fr); }
+  .team-grid { grid-template-columns: repeat(3,1fr); }
   .articles-grid { grid-template-columns: repeat(2, 1fr); }
   .about-grid { grid-template-columns: 1fr; gap: 48px; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
@@ -901,7 +901,7 @@ footer {
   .burger { display: flex; padding: 10px 4px; }
 
   .services-grid  { grid-template-columns: 1fr; }
-  .team-grid      { grid-template-columns: 1fr; }
+  .team-grid      { grid-template-columns: repeat(2,1fr); }
   .articles-grid  { grid-template-columns: 1fr; }
   .contacts-grid  { grid-template-columns: 1fr; gap: 40px; }
   .hero-stats     { flex-wrap: wrap; gap: 16px; }
