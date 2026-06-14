@@ -417,6 +417,13 @@ function initRipple() {
 document.addEventListener('DOMContentLoaded', async () => {
   const page = window.location.pathname.split('/').pop() || 'index.html';
 
+  // Track article reads (stored per-article in localStorage)
+  if (window.location.pathname.includes('/articles/') && page.endsWith('.html') && page !== 'articles.html') {
+    const slug = page.replace('.html', '');
+    const key = 'ae_reads_' + slug;
+    localStorage.setItem(key, (parseInt(localStorage.getItem(key) || '0') + 1));
+  }
+
   initHeader();
   setActiveNav();
   initParallax();
