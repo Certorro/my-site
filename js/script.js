@@ -267,7 +267,7 @@ function initHeader() {
  * Шаг 3: Deploy → New deployment → Web App → Execute as: Me → Who has access: Anyone → Deploy.
  * Шаг 4: Скопируйте URL сюда:
  */
-const GOOGLE_SHEET_URL = '';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwVMOdlCCm25uNf74ihEEQsZ3ARaGEnSF0thVSKkFxpOtYvd5j60bj4jc8Qwu2146JV/exec';
 
 /* ===== CONTACT FORM ===== */
 function showFieldError(id, msg) {
