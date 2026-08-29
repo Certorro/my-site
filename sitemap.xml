@@ -16,7 +16,7 @@
   </url>
   <url>
     <loc>https://al-e.net/team.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -67,6 +67,12 @@
   <url>
     <loc>https://al-e.net/team/aksyonova-viktoria-vyacheslavna.html</loc>
     <lastmod>2026-06-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://al-e.net/team/solopova-elena-nikolaevna.html</loc>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
