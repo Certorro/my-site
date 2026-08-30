@@ -775,7 +775,7 @@ function generateLawyerHTML(lawyer) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://al-e.net/' },
-          { '@type': 'ListItem', position: 2, name: 'Команда', item: 'https://al-e.net/team.html' },
+          { '@type': 'ListItem', position: 2, name: 'Партнёры', item: 'https://al-e.net/team.html' },
           { '@type': 'ListItem', position: 3, name: lawyer.name, item: canonical }
         ]
       }
@@ -802,7 +802,7 @@ ${sharedHeader()}
     <nav class="breadcrumbs" aria-label="Путь">
       <a href="../index.html">Главная</a>
       <span class="bc-sep">›</span>
-      <a href="../team.html">Команда</a>
+      <a href="../team.html">Партнёры</a>
       <span class="bc-sep">›</span>
       <span class="bc-current">${escHtml(lawyer.name)}</span>
     </nav>

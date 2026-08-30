@@ -37,7 +37,7 @@
     '      <a href="' + R + 'index.html">Главная</a>\n' +
     '      <a href="' + R + 'about.html">О нас</a>\n' +
     '      <a href="' + R + 'services.html">Услуги</a>\n' +
-    '      <a href="' + R + 'team.html">Команда</a>\n' +
+    '      <a href="' + R + 'team.html">Партнёры</a>\n' +
     '      <a href="' + R + 'articles.html">Статьи</a>\n' +
     '      <a href="' + R + 'contact.html" class="nav-cta">Связаться</a>\n' +
     '      <a href="tel:+79169286505" class="nav-phone-drawer">' + PHN15 + '+7 (916) 928-65-05</a>\n' +
@@ -68,7 +68,7 @@
     '        <ul>\n' +
     '          <li><a href="' + R + 'about.html">О коллегии</a></li>\n' +
     '          <li><a href="' + R + 'services.html">Услуги</a></li>\n' +
-    '          <li><a href="' + R + 'team.html">Команда</a></li>\n' +
+    '          <li><a href="' + R + 'team.html">Партнёры</a></li>\n' +
     '          <li><a href="' + R + 'articles.html">Публикации</a></li>\n' +
     '          <li><a href="' + R + 'contact.html">Контакты</a></li>\n' +
     '        </ul>\n' +
