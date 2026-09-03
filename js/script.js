@@ -20,9 +20,13 @@ function escHtml(str) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/* Версия данных проставляется scripts/build.py при публикации.
+   Раньше здесь стоял Date.now(), из-за чего CDN-кеш не срабатывал ни разу. */
+const DATA_VERSION = '202609040158';
+
 async function loadData(key, jsonPath) {
   try {
-    const res = await fetch(jsonPath + '?v=' + Date.now());
+    const res = await fetch(jsonPath + '?v=' + DATA_VERSION);
     if (!res.ok) throw new Error(res.status);
     return await res.json();
   } catch(e) {
@@ -59,7 +63,8 @@ async function applySettings() {
   if (!s) return;
 
   if (s.siteName) {
-    document.title = s.siteName + ' — Профессиональная юридическая помощь';
+    /* document.title намеренно не трогаем: у каждой страницы свой title,
+       собранный под запрос. Перезапись затирала его generic-заголовком. */
     const el = document.getElementById('heroSiteName');
     if (el) {
       const shortName = s.siteName.replace(/Адвокатская коллегия\s*/i,'').replace(/Коллегия\s*/i,'').trim();
@@ -132,9 +137,9 @@ function lawyerFullCardHTML(l) {
 
 /* ===== TEAM (home page — max 3) ===== */
 async function renderTeam() {
-  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   const grid = document.getElementById('teamGrid');
-  if (!grid) return;
+  if (!grid || grid.dataset.prerendered === 'true') return;
+  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   if (!lawyers.length) {
     grid.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;grid-column:1/-1;padding:32px">Информация о команде скоро появится</p>';
     return;
@@ -144,9 +149,9 @@ async function renderTeam() {
 
 /* ===== TEAM FULL (team.html) ===== */
 async function renderFullTeam() {
-  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   const grid = document.getElementById('teamFullGrid');
-  if (!grid) return;
+  if (!grid || grid.dataset.prerendered === 'true') return;
+  const lawyers = await loadData(DATA_KEYS.lawyers, ROOT + 'data/lawyers.json');
   if (!lawyers.length) {
     grid.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:48px">Информация о команде скоро появится</p>';
     return;
@@ -181,35 +186,57 @@ function homeArticleCardHTML(a) {
 
 /* ===== ARTICLES (home page — first 3) ===== */
 async function renderArticles() {
-  const articles = await loadData(DATA_KEYS.articles, ROOT + 'data/articles.json');
   const grid = document.getElementById('articlesGrid');
   if (!grid) return;
-  const recent = articles.slice(0, 3);
-  if (!recent.length) {
-    grid.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1">Статьи скоро появятся</p>';
-    return;
+
+  if (grid.dataset.prerendered !== 'true') {
+    const articles = await loadData(DATA_KEYS.articles, ROOT + 'data/articles.json');
+    const recent = articles.slice(0, 3);
+    if (!recent.length) {
+      grid.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1">Статьи скоро появятся</p>';
+      return;
+    }
+    grid.innerHTML = recent.map(homeArticleCardHTML).join('');
   }
-  grid.innerHTML = recent.map(homeArticleCardHTML).join('');
+
+  revealCards(grid);
+}
+
+/* Появление карточек — усиление, а не условие показа.
+   Карточки видимы в разметке (.article-card в CSS больше не opacity:0),
+   скрытое состояние навешивается отсюда и только если анимация уместна. */
+function revealCards(grid) {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const cards = grid.querySelectorAll('.article-card');
+  if (!cards.length) return;
+
+  const shifts = [-6, 0, 4];
+  cards.forEach((card, i) => {
+    card.classList.add('pre-reveal');
+    card.style.transform = `translateY(${shifts[i % shifts.length]}px)`;
+  });
+
+  const show = card => {
+    card.classList.remove('pre-reveal');
+    card.style.transform = '';
+  };
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const cards = grid.querySelectorAll('.article-card');
-    const shifts = [-6, 0, 4];
     const obs = new IntersectionObserver(entries => {
       entries.forEach((entry, i) => {
         if (!entry.isIntersecting) return;
-        setTimeout(() => {
-          entry.target.style.opacity = '1';
-          entry.target.style.filter = 'drop-shadow(0 0 0 rgba(201,160,61,0))';
-          entry.target.style.transform = 'scale(1)';
-        }, i * 80);
+        setTimeout(() => show(entry.target), i * 80);
         obs.unobserve(entry.target);
       });
     }, { threshold: 0.12 });
-    cards.forEach((card, i) => {
-      card.style.transform = `translateY(${shifts[i % shifts.length]}px)`;
-      obs.observe(card);
-    });
+    cards.forEach(card => obs.observe(card));
   }));
+
+  /* Страховка: если наблюдатель почему-то не сработал, карточки не должны
+     остаться невидимыми — это контент, а не декорация. */
+  setTimeout(() => cards.forEach(show), 2500);
 }
 
 /* ===== HEADER ===== */

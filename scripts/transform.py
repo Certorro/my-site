@@ -76,8 +76,8 @@ def transform(content, R):
     )
 
     # ── 7. Inject AE calls before </body> (if not already present) ────
-    if 'AE.injectFooter' not in content and '</body>' in content:
-        ae_call = '<script>AE.injectFooter(); AE.initMetrika();</script>\n'
+    if 'AE.initChrome' not in content and '</body>' in content:
+        ae_call = '<script>AE.initChrome(); AE.initMetrika();</script>\n'
         content = content.replace('</body>', ae_call + '</body>', 1)
 
     return content

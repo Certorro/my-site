@@ -443,11 +443,16 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .sort-btn:hover { border-color: var(--gold); color: var(--ink); }
 .sort-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
+/* Карточки видимы по умолчанию: разметка приходит из сборки, и без JS
+   контент обязан читаться. Скрытое состояние — только на время анимации,
+   класс .pre-reveal навешивает js/script.js. */
 .article-card {
   background: var(--paper); padding: 32px 28px;
-  transition: background 0.3s ease; clip-path: none;
-  border: none; opacity: 0; transform: translateY(8px);
+  transition: background 0.3s ease, opacity 0.5s ease, transform 0.5s ease;
+  clip-path: none; border: none;
+  opacity: 1; transform: none;
 }
+.article-card.pre-reveal { opacity: 0; }
 .article-card:hover { background: var(--cream); }
 
 .article-card-meta-row {

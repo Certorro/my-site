@@ -192,7 +192,7 @@ def build_html(a):
 <div id="footer-placeholder"></div>
 
 <script src="../js/script.js"></script>
-<script>AE.injectFooter(); AE.initMetrika();</script>
+<script>AE.initChrome(); AE.initMetrika();</script>
 </body>
 </html>'''
 
