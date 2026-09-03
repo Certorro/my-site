@@ -35,12 +35,20 @@
         "@type": ["LegalService", "LocalBusiness"],
         "@id": "https://al-e.net/#organization",
         "name": "Адвокатская коллегия «Альтер-Эго»",
+        "legalName": "Ассоциация Московская Коллегия Адвокатов «Альтер-Эго»",
+        "taxID": "7722327248",
+        "identifier": [
+          {"@type": "PropertyValue", "name": "ИНН", "value": "7722327248"},
+          {"@type": "PropertyValue", "name": "ОГРН", "value": "1157700006518"}
+        ],
+        "image": "https://al-e.net/images/og-cover.jpg",
         "url": "https://al-e.net",
         "telephone": "+7-916-928-65-05",
-        "email": "info@al-e.net",
+        "email": "post@al-e.net",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Хлебников переулок, д. 5",
+          "streetAddress": "Хлебников пер., д. 5, офис 6",
+          "postalCode": "105120",
           "addressLocality": "Москва",
           "addressCountry": "RU"
         },
@@ -78,6 +86,14 @@
     ]
   }
   </script>
+<!-- AE:OG:START -->
+  <meta property="og:image" content="https://al-e.net/images/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Адвокатская коллегия «Альтер-Эго», Москва">
+  <meta name="twitter:image" content="https://al-e.net/images/og-cover.jpg">
+  <meta property="og:url" content="https://al-e.net/">
+<!-- AE:OG:END -->
 </head>
 <body>
 <a href="#main-content" class="skip-link">Перейти к содержимому</a>
@@ -120,7 +136,32 @@
 </div>
 <noscript><style>#pageLoader{display:none!important}</style></noscript>
 
-<div id="header-placeholder"></div>
+<!-- AE:HEADER:START -->
+<header id="header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="logo.png" alt="" class="logo-mark" aria-hidden="true" width="68" height="68">
+      <div class="logo-text">
+        <span class="logo-name">Альтер-Эго</span>
+        <span class="logo-sub">Адвокатская коллегия</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Основная навигация">
+        <a href="index.html" class="nav-active">Главная</a>
+        <a href="about.html">О нас</a>
+        <a href="services.html">Услуги</a>
+        <a href="team.html">Партнёры</a>
+        <a href="articles.html">Статьи</a>
+      <a href="contact.html" class="nav-cta">Связаться</a>
+      <a href="tel:+79169286505" class="nav-phone-drawer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012.07-.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.41-.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>+7 (916) 928-65-05</a>
+    </nav>
+    <a href="tel:+79169286505" class="header-phone" aria-label="Позвонить: +7 (916) 928-65-05"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012.07-.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.41-.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg><span class="header-phone-text">+7 (916) 928-65-05</span></a>
+    <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+<!-- AE:HEADER:END -->
 <script src="js/components.js"></script>
 <main id="main-content">
 
@@ -346,8 +387,75 @@
       </div>
       <p class="section-desc" style="color:var(--on-dark-secondary)">Каждый специалист коллегии — с многолетним опытом и безупречной репутацией в своей области.</p>
     </div>
-    <div class="team-grid" id="teamGrid">
-      <!-- Заполняется из script.js -->
+    <div class="team-grid" id="teamGrid" data-prerendered="true">
+<!-- AE:TEAM_GRID:START -->
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/Скрипилев.jpeg" alt="Скрипилев Евгений Владимирович" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/skriplev-evgeniy-vladimirovich.html" style="color:inherit;text-decoration:none">Скрипилев Евгений Владимирович</a></h3>
+          <div class="lawyer-spec">Уголовное право</div>
+          <div class="lawyer-exp">Более 25 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Председатель Московской Коллегии адвокатов «Альтер-Эго». Специализируется в области уголовного права, участвует в делах, требующих глубокого знания уголовно-процессуального законодательства. Является медиатором, признанным Министерством юстиции Италии.</p>
+          <div class="lawyer-reg">Рег. № 77/6924</div>
+          <div class="lawyer-palata">Адвокатская палата г. Москвы</div>
+        </div>
+      </div>
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/Фото Самохин В.Н..jpg" alt="Самохин Владимир Николаевич" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/samokhin-vladimir-nikolaevich.html" style="color:inherit;text-decoration:none">Самохин Владимир Николаевич</a></h3>
+          <div class="lawyer-spec">Уголовные дела</div>
+          <div class="lawyer-exp">Более 25 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Член Адвокатской палаты г. Москвы с 2002 года. Заместитель председателя Московской Коллегии адвокатов «Альтер-Эго». Специализируется на уголовных делах на всех стадиях судопроизводства. Обладает значительным опытом в делах, связанных с экономическими преступлениями и защитой прав обвиняемых.</p>
+          <div class="lawyer-reg">Рег. № 77/2707</div>
+          <div class="lawyer-palata">Адвокатская палата г. Москвы</div>
+        </div>
+      </div>
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/Гонтаренко.jpg" alt="Гонтаренко Иванна Ивановна" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/gontarenko-ivanna-ivanovna.html" style="color:inherit;text-decoration:none">Гонтаренко Иванна Ивановна</a></h3>
+          <div class="lawyer-spec">Гражданское и арбитражное право</div>
+          <div class="lawyer-exp">Более 10 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Специализируется в области уголовного, гражданского, семейного, административного и арбитражного права. Окончила юридический факультет по специальности «Юриспруденция». Успешно прошла квалификационный экзамен и является членом адвокатской палаты.</p>
+          <div class="lawyer-reg">Рег. № 31/1034</div>
+          <div class="lawyer-palata">Адвокатская палата Белгородской области</div>
+        </div>
+      </div>
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/kovko.jpg" alt="Ковко Александр Николаевич" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/kovko-alexandr-nikilaevich.html" style="color:inherit;text-decoration:none">Ковко Александр Николаевич</a></h3>
+          <div class="lawyer-spec">Гражданское и арбитражное право</div>
+          <div class="lawyer-exp">Более 25 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Специализируется на сложных, многоэпизодных уголовных делах в сфере экономики, в особенности связанных с расследованием преступлений против государственной власти и интересов государственной службы, хищений бюджетных средств, легализацией преступных доходов или иного имущества, а также уголовных делах против военной службы.</p>
+          <div class="lawyer-reg">Рег. № 61/5863</div>
+          <div class="lawyer-palata">Адвокатская палата Ростовской области</div>
+        </div>
+      </div>
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/aksanova.jpg" alt="Аксанова Виктория Вячеславовна" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/aksyonova-viktoria-vyacheslavna.html" style="color:inherit;text-decoration:none">Аксанова Виктория Вячеславовна</a></h3>
+          <div class="lawyer-spec">Гражданские, административные, арбитражные, уголовные дела</div>
+          <div class="lawyer-exp">Более 20 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Юридическая практика с 2006 г.</p>
+          <div class="lawyer-reg">Рег. № 23/5864</div>
+          <div class="lawyer-palata">Адвокатская палата Краснодарского края</div>
+        </div>
+      </div>
+      <div class="lawyer-card fade-up">
+        <div class="lawyer-photo"><img src="images/solopova.jpg" alt="Солопова Елена Николаевна" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-info">
+          <h3><a href="team/solopova-elena-nikolaevna.html" style="color:inherit;text-decoration:none">Солопова Елена Николаевна</a></h3>
+          <div class="lawyer-spec">Гражданское и арбитражное право</div>
+          <div class="lawyer-exp">Более 20 лет</div>
+          <p style="color:rgba(255,255,255,0.48);font-size:0.82rem;margin-top:10px;line-height:1.6">Партнёр Московской коллегии адвокатов «Альтер-Эго». Ведёт гражданские, арбитражные и административные дела. Гражданские, земельные, налоговые, жилищные, имущественные и другие споры. Представляет интересы доверителей в арбитражных судах и судах общей юрисдикции. Юридическая практика более 20 лет. Юрист, статуса адвоката не имеет.</p>
+          
+          
+        </div>
+      </div>
+<!-- AE:TEAM_GRID:END -->
     </div>
     <div class="articles-more fade-up" style="margin-top:40px">
       <a href="team.html" class="btn btn-outline">Вся команда</a>
@@ -366,8 +474,48 @@
       </div>
       <p class="section-desc">Экспертный взгляд на актуальные правовые вопросы — от разбора кейсов до изменений в законодательстве.</p>
     </div>
-    <div class="articles-grid" id="articlesGrid">
-      <!-- Заполняется из script.js -->
+    <div class="articles-grid" id="articlesGrid" data-prerendered="true">
+<!-- AE:ARTICLES_GRID:START -->
+      <div class="article-card">
+        <div class="article-card-meta-row">
+          <div class="article-category">Уголовное право</div>
+        </div>
+        <h3><a href="articles/zashhita-prav-podozrevaemogo.html">Защита прав подозреваемого на стадии предварительного следствия</a></h3>
+        <div class="article-date">
+          15 ноября 2024 г.
+          <span class="article-reading-time">1 мин</span>
+          
+        </div>
+        <div class="article-excerpt">Разбираем ключевые права подозреваемого при задержании: право на молчание, право на адвоката с первой минуты, порядок обжалования меры пресечения.</div>
+        <a href="articles/zashhita-prav-podozrevaemogo.html" class="read-more">Читать далее →</a>
+      </div>
+      <div class="article-card">
+        <div class="article-card-meta-row">
+          <div class="article-category">Семейное право</div>
+        </div>
+        <h3><a href="articles/razdel-imushhestva-pri-razvode.html">Раздел имущества при разводе: как сохранить активы</a></h3>
+        <div class="article-date">
+          28 октября 2024 г.
+          <span class="article-reading-time">1 мин</span>
+          
+        </div>
+        <div class="article-excerpt">Практическое руководство по защите имущества в бракоразводном процессе. Брачный договор, соглашение о разделе, судебная практика 2024 года.</div>
+        <a href="articles/razdel-imushhestva-pri-razvode.html" class="read-more">Читать далее →</a>
+      </div>
+      <div class="article-card">
+        <div class="article-card-meta-row">
+          <div class="article-category">Арбитраж</div>
+        </div>
+        <h3><a href="articles/subsidiarnaya-otvetstvennost.html">Субсидиарная ответственность руководителя при банкротстве</a></h3>
+        <div class="article-date">
+          10 сентября 2024 г.
+          <span class="article-reading-time">1 мин</span>
+          
+        </div>
+        <div class="article-excerpt">Когда директор и учредитель отвечают по долгам компании личным имуществом. Анализ актуальной судебной практики и стратегии защиты.</div>
+        <a href="articles/subsidiarnaya-otvetstvennost.html" class="read-more">Читать далее →</a>
+      </div>
+<!-- AE:ARTICLES_GRID:END -->
     </div>
     <div class="articles-more fade-up">
       <a href="articles.html" class="btn btn-navy">Все публикации</a>
@@ -463,7 +611,60 @@
 </section>
 
 </main>
-<div id="footer-placeholder"></div>
+<!-- AE:FOOTER:START -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-name">Альтер-Эго</span>
+          <span class="logo-sub">Адвокатская коллегия</span>
+        </div>
+        <p style="margin-top:16px">Профессиональная юридическая помощь. Действуем на основании ФЗ-63 «Об адвокатской деятельности и адвокатуре в РФ».</p>
+      </div>
+      <div class="footer-nav">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="about.html">О коллегии</a></li>
+          <li><a href="services.html">Услуги</a></li>
+          <li><a href="team.html">Партнёры</a></li>
+          <li><a href="articles.html">Публикации</a></li>
+          <li><a href="contact.html">Контакты</a></li>
+        </ul>
+      </div>
+      <div class="footer-nav">
+        <h4>Практика</h4>
+        <ul>
+          <li><a href="services.html">Уголовные дела</a></li>
+          <li><a href="services.html">Арбитраж</a></li>
+          <li><a href="services.html">Семейное право</a></li>
+          <li><a href="services.html">Недвижимость</a></li>
+          <li><a href="privacy.html">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <div class="footer-legal-grid" id="footerLegalGrid">
+        <div class="legal-item"><strong>Полное наименование</strong><span id="legalFullName">Ассоциация Московская Коллегия Адвокатов «Альтер-Эго»</span></div>
+        <div class="legal-item"><strong>ИНН / ОГРН</strong><span id="legalINN">7722327248</span> / <span id="legalOGRN">1157700006518</span></div>
+        <div class="legal-item"><strong>Реестр адвокатских образований</strong><span id="legalReestry">Ассоциация &quot;МКА&quot;Альтер-Эго&quot;</span></div>
+        <div class="legal-item"><strong>Адрес</strong><span id="factAddress">105120, Москва, Хлебников пер., д. 5 офис 6</span></div>
+        <div class="legal-item"><strong>Адвокатская палата</strong><span id="advokatPalata">Адвокатская палата г. Москвы</span></div>
+      </div>
+      <div class="footer-bottom">
+        <div>
+          <div>© <span id="footerYear">2026</span> Адвокатская коллегия Альтер-Эго. Все права защищены.</div>
+          <div class="footer-disclaimer" style="margin-top:6px">Информация на сайте носит общеознакомительный характер и не является юридической консультацией или публичной офертой.</div>
+        </div>
+        <div class="footer-bottom-right">
+          <span class="age-mark">0+</span>
+          <button class="cookie-manage-btn" id="cookieManageBtn" type="button">Управление cookie</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- AE:FOOTER:END -->
 
 <script src="js/script.js"></script>
 
@@ -489,6 +690,6 @@
   }
 }());
 </script>
-<script>AE.injectFooter(); AE.initMetrika();</script>
+<script>AE.initChrome(); AE.initMetrika();</script>
 </body>
 </html>

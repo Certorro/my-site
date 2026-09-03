@@ -20,17 +20,17 @@ function articleCardHTML(a) {
   return `
   <div class="article-card">
     <div class="article-card-meta-row">
-      <div class="article-category">${a.category || ''}</div>
+      <div class="article-category">${escHtml(a.category || '')}</div>
       ${reads > 0 ? `<span class="article-reads-badge">${reads} прочт.</span>` : ''}
     </div>
-    <h3>${a.title}</h3>
+    <h3><a href="${escHtml(href)}">${escHtml(a.title)}</a></h3>
     <div class="article-date">
-      ${formatDate(a.date)}
+      ${escHtml(formatDate(a.date))}
       <span class="article-reading-time">${mins} мин</span>
       ${srcCount > 0 ? `<span class="article-src-count">${pluralSources(srcCount)}</span>` : ''}
     </div>
-    <div class="article-excerpt">${a.summary}</div>
-    <a href="${href}" class="read-more" onclick="${onclick}">Читать далее →</a>
+    <div class="article-excerpt">${escHtml(a.summary)}</div>
+    <a href="${escHtml(href)}" class="read-more" onclick="${onclick}">Читать далее →</a>
   </div>`;
 }
 
@@ -169,7 +169,17 @@ function applySort(sort) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   allArticlesData = await loadData(DATA_KEYS.articles, 'data/articles.json');
-  applyFilter('all');
+
+  /* Сетку целиком отрисовала сборка: все статьи присутствуют в HTML —
+     это и есть критерий индексируемости страницы. Поэтому при загрузке
+     не перерисовываем. Пагинация (PER_PAGE) включается с первого клика
+     по фильтру или сортировке, когда список действительно меняется. */
+  const grid = document.getElementById('allArticlesGrid');
+  if (grid && grid.dataset.prerendered === 'true') {
+    revealCards(grid);
+  } else {
+    applyFilter('all');
+  }
 
   document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.addEventListener('click', () => applyFilter(btn.dataset.cat));
