@@ -22,7 +22,7 @@ function escHtml(str) {
 
 /* Версия данных проставляется scripts/build.py при публикации.
    Раньше здесь стоял Date.now(), из-за чего CDN-кеш не срабатывал ни разу. */
-const DATA_VERSION = '202609040158';
+const DATA_VERSION = '202609040203';
 
 async function loadData(key, jsonPath) {
   try {
