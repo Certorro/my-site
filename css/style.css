@@ -1480,3 +1480,30 @@ html, body { overflow-x: hidden; }
   .cookie-actions { gap: 8px; }
   .footer-bottom-right { gap: 10px; }
 }
+
+/* Заголовки и врезки внутри разбора дела: у тела статьи был стилизован
+   только <p>, а разбор требует структуры — иначе длинный текст читается
+   сплошной простынёй и хуже разбирается на фрагменты ИИ-системами. */
+.article-full-body h2 {
+  font-family: var(--font-head); font-weight: 400;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem); line-height: 1.15;
+  letter-spacing: -0.015em; color: var(--ink);
+  margin: 44px 0 14px; padding-top: 26px; border-top: 1px solid var(--line);
+}
+.article-full-body h2:first-of-type { border-top: 0; padding-top: 0; }
+.article-full-body h3 {
+  font-family: var(--font-body); font-weight: 500; font-size: 1rem;
+  color: var(--ink); margin: 26px 0 8px;
+}
+.article-note {
+  margin: 32px 0 0; padding: 18px 22px;
+  background: var(--cream); border-left: 3px solid var(--gold);
+  font-size: 0.9rem; line-height: 1.65; color: var(--muted);
+}
+.article-note strong { color: var(--ink); }
+.article-refs {
+  margin: 10px 0 0; padding: 0; list-style: none;
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: .04em;
+  color: var(--muted);
+}
+.article-refs li { padding: 3px 0; }
