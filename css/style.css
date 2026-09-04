@@ -1480,3 +1480,10 @@ html, body { overflow-x: hidden; }
   .cookie-actions { gap: 8px; }
   .footer-bottom-right { gap: 10px; }
 }
+
+/* Honeypot: поле для ботов. Не display:none — часть ботов такие поля
+   пропускает; уводим за пределы экрана, оставляя его «настоящим». */
+.hp-field {
+  position: absolute; left: -9999px; width: 1px; height: 1px;
+  overflow: hidden; opacity: 0; pointer-events: none;
+}

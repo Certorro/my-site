@@ -215,6 +215,10 @@
           Информация на сайте не является публичной офертой. Для получения консультации обратитесь по телефону или заполните форму ниже.
         </div>
         <form id="contactForm" novalidate>
+          <div class="hp-field" aria-hidden="true">
+            <label for="website">Не заполняйте это поле</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label for="name">Ваше имя *</label>
@@ -255,6 +259,7 @@
             </label>
           </div>
           <span class="form-error" id="consent-error" role="alert" style="display:none;margin-bottom:10px"></span>
+          <span class="form-error" id="form-error" role="alert" style="display:none;margin-bottom:10px"></span>
           <button type="submit" class="btn btn-navy" id="submitBtn" style="width:100%">Отправить заявку</button>
         </form>
       </div>
