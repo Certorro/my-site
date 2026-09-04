@@ -1,6 +1,40 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
 
+# Краулеры ИИ-систем разрешены явно: цитирование в ответах — целевой канал.
+# Disallow повторяется в каждой группе — правила User-agent: * на них не распространяются.
+
+User-agent: YandexBot
+Allow: /
+Disallow: /admin/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
 Disallow: /admin/
 
 Sitemap: https://al-e.net/sitemap.xml

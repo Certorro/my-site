@@ -744,7 +744,7 @@ ${sharedCtaBand()}
 ${sharedFooter()}
 
 <script src="../js/script.js"></script>
-<script>AE.injectFooter(); AE.initMetrika();</script>
+<script>AE.initChrome(); AE.initMetrika();</script>
 </body>
 </html>`;
 }
@@ -852,7 +852,7 @@ ${sharedCtaBand()}
 ${sharedFooter()}
 
 <script src="../js/script.js"></script>
-<script>AE.injectFooter(); AE.initMetrika();</script>
+<script>AE.initChrome(); AE.initMetrika();</script>
 </body>
 </html>`;
 }
