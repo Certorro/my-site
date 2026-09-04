@@ -22,7 +22,7 @@ function escHtml(str) {
 
 /* Версия данных проставляется scripts/build.py при публикации.
    Раньше здесь стоял Date.now(), из-за чего CDN-кеш не срабатывал ни разу. */
-const DATA_VERSION = '202609040203';
+const DATA_VERSION = '202609040529';
 
 async function loadData(key, jsonPath) {
   try {
@@ -295,6 +295,54 @@ function initHeader() {
  */
 const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwVMOdlCCm25uNf74ihEEQsZ3ARaGEnSF0thVSKkFxpOtYvd5j60bj4jc8Qwu2146JV/exec';
 
+/* ===== ОТПРАВКА ЗАЯВКИ =====
+ * Единственный путь отправки для всех форм сайта.
+ *
+ * Раньше запрос уходил с mode:'no-cors': ответ непрозрачен, отличить
+ * доставку от потери невозможно, поэтому код делал .catch(()=>{}).finally(onSuccess)
+ * и показывал «Заявка отправлена» при любой сетевой ошибке. Цель Метрики
+ * вызывалась там же, так что статистика не различала «заявок нет» и
+ * «заявки теряются».
+ *
+ * Теперь обработчик (scripts/apps-script.gs) отвечает JSON, и успех
+ * показывается только при ok:true. Направление риска изменилось: раньше
+ * возможен был ложный успех, теперь — ложная ошибка, если ответ не удастся
+ * прочитать при уже записанной строке. Это осознанный выбор: заявка,
+ * о которой посетителю честно сказали «не отправилось, позвоните»,
+ * восстановима, а молча потерянная — нет.
+ *
+ * Возвращает { ok, message } либо бросает исключение при сетевом сбое.
+ */
+const LEAD_TIMEOUT_MS = 15000;
+
+async function submitLead(payload) {
+  if (!GOOGLE_SHEET_URL) throw new Error('endpoint not configured');
+
+  /* Apps Script отвечает через цепочку редиректов и иногда медленно.
+     Без предела отправка может «висеть» бесконечно, и посетитель уйдёт,
+     так и не узнав результата. */
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), LEAD_TIMEOUT_MS);
+
+  let res;
+  try {
+    res = await fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(payload).toString(),
+      signal: ctl.signal
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  /* Тело важнее статуса: ContentService в Apps Script не даёт задать код ответа. */
+  const data = await res.json();
+  return data;
+}
+
+const LEAD_FALLBACK = 'Не удалось отправить заявку. Позвоните: +7 (916) 928-65-05';
+
 /* ===== CONTACT FORM ===== */
 function showFieldError(id, msg) {
   const el = document.getElementById(id);
@@ -359,33 +407,38 @@ function initContactForm() {
     if (!validateContactForm(form)) return;
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Отправляется…'; }
 
-    function onSuccess() {
-      if (modal) modal.classList.add('open');
-      if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_submit');
-      form.reset();
-      ['name-error', 'phone-error', 'consent-error'].forEach(id => showFieldError(id, ''));
-      form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+    const done = () => {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Отправить заявку'; }
-    }
+    };
 
-    if (GOOGLE_SHEET_URL) {
-      const body = new URLSearchParams({
-        timestamp: new Date().toISOString(),
-        name:    form.querySelector('#name').value.trim(),
-        phone:   form.querySelector('#phone').value.trim(),
-        email:   form.querySelector('#email').value.trim(),
-        subject: form.querySelector('#subject').value,
-        message: form.querySelector('#message').value.trim()
-      });
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString()
-      }).catch(() => {}).finally(onSuccess);
-    } else {
-      setTimeout(onSuccess, 400);
-    }
+    submitLead({
+      timestamp: new Date().toISOString(),
+      name:    form.querySelector('#name').value.trim(),
+      phone:   form.querySelector('#phone').value.trim(),
+      email:   form.querySelector('#email').value.trim(),
+      subject: form.querySelector('#subject').value,
+      message: form.querySelector('#message').value.trim(),
+      website: form.querySelector('#website') ? form.querySelector('#website').value : '',
+      source:  'contact.html'
+    })
+      .then(data => {
+        if (!data || data.ok !== true) {
+          /* Обработчик ответил, но заявку не принял — показываем его причину */
+          showFieldError('form-error', (data && data.message) || LEAD_FALLBACK);
+          if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_error');
+          return;
+        }
+        if (modal) modal.classList.add('open');
+        if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_submit');
+        form.reset();
+        ['name-error', 'phone-error', 'consent-error', 'form-error'].forEach(id => showFieldError(id, ''));
+        form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+      })
+      .catch(() => {
+        showFieldError('form-error', LEAD_FALLBACK);
+        if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_error');
+      })
+      .finally(done);
   });
 
   const closeModal = () => {
