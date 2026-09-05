@@ -350,6 +350,59 @@ def lawyer_full_card(l, r=""):
       </div>"""
 
 
+
+# ----------------------------------------------------------------------
+# Фото на персональной странице
+# ----------------------------------------------------------------------
+#
+# Кружок с фото был вписан в каждую страницу руками, тремя разными
+# способами, и у троих адвокатов фотографии не было вовсе — стояла
+# заглушка, хотя снимок лежал в data/lawyers.json. Теперь блок
+# проставляет сборка из данных, одинаково для всех.
+
+PROFILE_PHOTO_WRAPPED = re.compile(
+    r'<div style="flex-shrink:0">\s*<div style="width:120px;height:120px;.*?</div>\s*</div>',
+    re.S,
+)
+PROFILE_PHOTO_BARE = re.compile(
+    r'<div style="width:120px;height:120px;.*?</div>', re.S
+)
+
+PROFILE_PLACEHOLDER = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 '
+    '21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+)
+
+
+def render_profile_photo(lawyer, r):
+    photo = lawyer.get("photo")
+    if photo:
+        src = photo if photo.startswith(("http://", "https://", "/")) else f"{r}{photo}"
+        inner = (
+            f'<img src="{esc(src)}" alt="{esc(lawyer.get("name"))}" '
+            'width="120" height="120" loading="eager">'
+        )
+    else:
+        inner = PROFILE_PLACEHOLDER
+    cutout = " profile-photo--cutout" if lawyer.get("photoCutout") else ""
+    return f'<div class="profile-photo{cutout}">{inner}</div>'
+
+
+def set_profile_photo(page, lawyer, r):
+    start, end = "<!-- AE:PROFILE_PHOTO:START -->", "<!-- AE:PROFILE_PHOTO:END -->"
+    block = f"{start}\n      {render_profile_photo(lawyer, r)}\n      {end}"
+
+    marked = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
+    if marked.search(page):
+        return marked.sub(lambda _m: block, page, count=1)
+
+    for pattern in (PROFILE_PHOTO_WRAPPED, PROFILE_PHOTO_BARE):
+        if pattern.search(page):
+            return pattern.sub(lambda _m: block, page, count=1)
+    return page
+
+
 # ----------------------------------------------------------------------
 # Сборка страниц
 # ----------------------------------------------------------------------
@@ -416,6 +469,13 @@ def build_pages(settings, lawyers, articles, year):
 
         # Реквизиты вместо [ИНН] / [ОГРН] / [Номер в реестре] на about.html
         page = fill_legal_outside_footer(page, settings)
+
+        # Фото на персональной странице адвоката — из data/lawyers.json
+        if rel.parts[0] == "team" and len(rel.parts) > 1:
+            slug = rel.name[:-5]
+            lawyer = next((l for l in lawyers if l.get("slug") == slug), None)
+            if lawyer:
+                page = set_profile_photo(page, lawyer, r)
 
         # Пререндер сеток
         if rel.name == "index.html" and depth == 0:
