@@ -4,44 +4,97 @@
 
 /* ===== VARIABLES ===== */
 :root {
-  /* Brand palette */
-  --ink:        #0f0e0c;
+  /* ══ Палитра редизайна 2026 ═══════════════════════════════════════
+     Источник: handoff/redesign-2026.html. Тёплый уголь вместо чистого
+     чёрного; золото разведено на два токена — светлое работает на
+     тёмном фоне, приглушённое на светлом. */
+  --ink:        #131210;
+  --ink-soft:   #1c1a17;
   --paper:      #f5f2ec;
-  --cream:      #ede8df;
-  --gold:       #b8983a;
-  --gold-light: #d4b45a;
-  --gold-dim:   rgba(184,152,58,0.1);
-  --muted:      #7a766e;
-  --line:       #d4cfc5;
+  --paper-card: #ffffff;
+  --paper-line: #e4dfd5;
+  --paper-mute: #ede8df;
 
-  /* Legacy aliases (used by existing HTML + JS + admin) */
-  --navy:       #0f0e0c;
-  --navy-deep:  #0a0908;
-  --navy-mid:   #1c1b18;
-  --bg:         #f5f2ec;
-  --bg-white:   #f5f2ec;
-  --bg-subtle:  #ede8df;
-  --bg-warm:    #ede8df;
-  --text:       #0f0e0c;
-  --text-light: #7a766e;
-  --border:     #d4cfc5;
-  --shadow-sm:  0 1px 3px rgba(15,14,12,0.05);
-  --shadow-md:  0 4px 14px rgba(15,14,12,0.08);
-  --shadow-lg:  0 12px 36px rgba(15,14,12,0.14);
+  --gold-on-dark: #c8a94a;  /* на --ink:   8.23:1 */
+  --gold-ink:     #a8862c;  /* на --paper: 3.08:1 */
+  /* --gold не фиксирован: страница по умолчанию светлая, а тёмные
+     поверхности ниже переопределяют его для своих потомков. Иначе
+     выбирать оттенок пришлось бы в каждом из 43 правил, где золото
+     стоит цветом текста, — и ошибаться в каждом. */
+  --gold:         var(--gold-ink);
+
+  --on-dark:            #eae5db;
+  --on-dark-strong:     #f4f0e8;
+  --on-dark-secondary:  rgba(234,229,219,.6);
+  --on-dark-mute:       rgba(234,229,219,.45);
+  --line-dark:          rgba(234,229,219,.1);
+  --surface-dark:       rgba(234,229,219,.035);
+  --surface-dark-hover: rgba(234,229,219,.06);
+
+  --text-body:  #5f5b54;   /* на --paper: 6.04:1 */
+  --text-mute:  #7a766e;   /* на --paper: 4.05:1 — крупный текст */
+
+  /* Типографика. Все три семейства уже лежат локально в fonts/ */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-ui:      'Raleway', system-ui, -apple-system, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* Радиусы намеренно почти сняты: форму держат волосяные линии и поля */
+  --r-sm: 3px;  --r-md: 4px;  --r-lg: 6px;  --r-xl: 8px;  --r-pill: 999px;
+  --pad-x: 56px;
+  --hair:       1px solid rgba(234,229,219,.12);
+  --hair-paper: 1px solid #ded8cc;
+  --hair-gold:  1px solid rgba(200,169,74,.3);
+
+  /* ══ Совместимость ════════════════════════════════════════════════
+     Эти имена не удаляются, а переводятся на новую палитру: они стоят
+     в 639 правилах style.css и в инлайновых стилях разметки — всего 271
+     употребление. Замена :root целиком увела бы их в unset, и вёрстка
+     поехала бы молча, без единой ошибки в консоли. */
+  --cream:      var(--paper-mute);
+  --gold-light: #d4b45a;
+  --gold-dim:   rgba(200,169,74,.1);
+  --muted:      var(--text-mute);
+  --line:       var(--paper-line);
+
+  --navy:       var(--ink);
+  --navy-deep:  #0d0c0a;
+  --navy-mid:   var(--ink-soft);
+  --bg:         var(--paper);
+  --bg-white:   var(--paper);
+  --bg-subtle:  var(--paper-mute);
+  --bg-warm:    var(--paper-mute);
+  --text:       var(--ink);
+  --text-light: var(--text-mute);
+  --border:     var(--paper-line);
+
+  --shadow-sm:  0 1px 3px rgba(19,18,16,0.05);
+  --shadow-md:  0 4px 14px rgba(19,18,16,0.08);
+  --shadow-lg:  0 12px 36px rgba(19,18,16,0.14);
   --transition: 0.25s ease;
 
-  /* Typography */
-  --font-head:  'Cormorant Garamond', Georgia, serif;
-  --font-body:  'Raleway', system-ui, sans-serif;
-  --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-head:  var(--font-display);
+  --font-body:  var(--font-ui);
+  --font-serif: var(--font-display);
 
-  /* Dark surface text (on --ink background) */
-  --on-dark-primary:   rgba(245,242,236,0.92);
-  --on-dark-body:      rgba(245,242,236,0.75);
-  --on-dark-secondary: rgba(245,242,236,0.60);
-  --on-dark-muted:     rgba(245,242,236,0.40);
+  --on-dark-primary: var(--on-dark-strong);
+  --on-dark-body:    var(--on-dark);
+  --on-dark-muted:   var(--on-dark-mute);
 }
+
+/* ── Золото на тёмных поверхностях ─────────────────────────────────
+   Новый --gold-on-dark на угле даёт 8.23:1, тогда как на бумаге он
+   читался бы как 2.04:1. Переопределение наследуется потомками, поэтому
+   .section-label, .hero-quote-attr, .req-item strong и остальные
+   получают верный оттенок сами, без правки каждого правила. */
+.section-dark, .hero-right, .page-hero, .articles-page-hero, .privacy-hero,
+.cta-band, .requisites-card, .about-img-box, .lawyer-photo, .lawyer-full-photo,
+.admin-login, .admin-sidebar, .cookie-banner, .toast, .after-step-num,
+.admin-fab, .admin-avatar, .skip-link,
+.btn-primary, .btn-navy, .btn-gold {
+  --gold: var(--gold-on-dark);
+}
+
 
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,7 +155,8 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--font-head);
   font-weight: 400;
   font-size: clamp(1.8rem, 3.2vw, 3rem);
-  line-height: 1.05;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
   color: var(--ink);
   text-align: center;
   margin-bottom: 0;
@@ -259,13 +313,12 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .hero-title {
   font-family: var(--font-head); font-weight: 300;
   font-size: clamp(3rem, 5.5vw, 5.5rem);
-  line-height: 1.0; color: var(--ink); margin-bottom: 10px;
-}
+  line-height: 0.94; color: var(--ink); margin-bottom: 10px; letter-spacing: -0.025em;}
 .hero-title em { font-style: italic; color: var(--gold); }
 
 .hero-sub { margin: 28px 0; border-left: 1px solid var(--gold); padding-left: 20px; }
 .hero-subtitle {
-  font-size: 0.9rem; color: var(--muted); line-height: 1.65;
+  font-size: 0.9rem; color: var(--text-body); line-height: 1.65;
   max-width: 400px; font-weight: 300; margin: 0;
 }
 
@@ -278,7 +331,7 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .hero-stat { padding: 0 28px; border-right: 1px solid var(--line); }
 .hero-stat:first-child { padding-left: 0; }
 .hero-stat:last-child  { border-right: none; padding-right: 0; }
-.hero-stat-num   { font-family: var(--font-head); font-size: 2.4rem; font-weight: 300; color: var(--ink); line-height: 1; }
+.hero-stat-num   { font-family: var(--font-head); font-size: 2.4rem; font-weight: 300; color: var(--ink); line-height: 1; letter-spacing: -0.02em;}
 .hero-stat-label { font-family: var(--font-mono); font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
 
 .hero-scroll {
@@ -322,8 +375,7 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 }
 .hero-quote-text {
   font-family: var(--font-head); font-style: italic; font-size: 1.25rem;
-  color: var(--on-dark-primary); line-height: 1.5; max-width: 340px; margin-bottom: 18px;
-}
+  color: var(--on-dark-strong); line-height: 1.28; max-width: 340px; margin-bottom: 18px; font-weight: 300; letter-spacing: -0.01em;}
 .hero-quote-attr {
   font-family: var(--font-mono); font-size: 0.54rem;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); opacity: 0.8;
@@ -1479,6 +1531,214 @@ html, body { overflow-x: hidden; }
   .cookie-inner { padding: 12px 16px; gap: 12px; }
   .cookie-actions { gap: 8px; }
   .footer-bottom-right { gap: 10px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   РЕДИЗАЙН 2026 — первый экран, результаты, партнёры
+   Источник: handoff/redesign-2026.html. Правила идут в конце файла и
+   переопределяют прежние при равной специфичности — прежняя разметка
+   первого экрана была декоративной, новая несёт форму и входы.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ── Первый экран: каркас ──────────────────────────────────────────── */
+#hero { align-items: stretch; }
+.hero-left  { padding: 152px var(--pad-x) 72px; justify-content: center; }
+.hero-right {
+  padding: 152px 48px 72px;
+  display: flex; flex-direction: column; justify-content: center;
+  border-left: var(--hair-gold);
+}
+.hero-head { max-width: 560px; }
+
+/* Монограмма ушла за край и работает водяным знаком, а не орнаментом */
+.hero-mark {
+  position: absolute; right: -40px; top: 44px;
+  font-family: var(--font-display); font-size: 300px; line-height: .8;
+  color: rgba(200,169,74,.055); pointer-events: none; user-select: none;
+}
+
+/* ── Вход словами клиента ──────────────────────────────────────────── */
+.hero-chips {
+  display: flex; flex-wrap: wrap; gap: 0 26px;
+  margin-top: 34px; padding-top: 22px; border-top: var(--hair-paper);
+}
+.hero-chips-label {
+  width: 100%; font-family: var(--font-mono); font-size: 9.5px;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: var(--text-mute); margin-bottom: 12px;
+}
+.chip {
+  font-size: 14.5px; color: var(--ink); padding: 5px 0;
+  border-bottom: 1px solid transparent; transition: color var(--transition), border-color var(--transition);
+}
+.chip:hover, .chip:focus-visible { color: var(--gold-ink); border-bottom-color: var(--gold-ink); }
+
+/* ── Показатели: grid с minmax(0,1fr), иначе min-content распирает колонку ── */
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0;
+  margin-top: 38px; padding-top: 26px; border-top: var(--hair-paper);
+}
+.hero-stat { padding: 0 26px; border-right: var(--hair-paper); min-width: 0; }
+.hero-stat:first-child { padding-left: 0; }
+.hero-stat:last-child  { border-right: 0; padding-right: 0; }
+.hero-stat--accent .hero-stat-num { color: var(--gold-ink); }
+.hero-stat-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--text-mute); margin-top: 9px;
+}
+
+/* ── Цитата: главный голос тёмной половины, а не подпись в углу ────── */
+.hero-quote {
+  position: relative; inset: auto; margin: 0 0 38px; padding-bottom: 34px;
+  border-bottom: var(--hair); max-width: none;
+}
+.hero-quote-mark {
+  font-family: var(--font-display); font-size: 76px; line-height: .55;
+  color: rgba(200,169,74,.45); margin: 0;
+}
+.hero-quote-text { max-width: none; margin: 22px 0 20px; text-wrap: pretty; }
+.hero-quote-attr {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--gold);
+}
+.hero-quote-attr::before { content: ""; width: 32px; height: 1px; background: var(--gold); flex-shrink: 0; }
+
+/* ── Форма-бланк: поля на волосяных подчёркиваниях, без рамок ──────── */
+.intake {
+  position: relative; background: var(--surface-dark); border: var(--hair);
+  border-left: 3px solid var(--gold); border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 32px 30px; box-shadow: 0 20px 50px rgba(0,0,0,.3);
+}
+.intake-eyebrow {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+}
+.intake-eyebrow::after { content: ""; flex: 1; height: 1px; background: rgba(200,169,74,.3); }
+.intake-title {
+  font-family: var(--font-display); font-weight: 400; font-size: 32px;
+  line-height: 1.12; letter-spacing: -.01em; color: var(--on-dark-strong); margin: 0;
+}
+.intake-lede { font-size: 14px; line-height: 1.65; color: var(--on-dark-secondary); margin-top: 12px; max-width: 420px; }
+.intake-form { display: flex; flex-direction: column; gap: 0; margin-top: 24px; border-top: var(--hair); }
+.intake-form input, .intake-form select {
+  width: 100%; background: none; border: 0; border-bottom: var(--hair);
+  border-radius: 0; padding: 15px 2px; font-family: var(--font-ui);
+  font-size: 15px; font-weight: 300; color: var(--on-dark); appearance: none;
+}
+.intake-form input::placeholder { color: var(--on-dark-mute); }
+.intake-form select { color: var(--on-dark-secondary); }
+.intake-form select option { color: var(--ink); background: var(--paper); }
+.intake-form :focus-visible { outline: none; border-bottom-color: var(--gold); }
+.intake-form input[aria-invalid="true"] { border-bottom-color: #e0857c; }
+.intake-form button { width: 100%; margin-top: 22px; padding: 19px 26px; font-size: 11px; letter-spacing: .18em; }
+.intake-note {
+  display: flex; align-items: center; gap: 10px; margin-top: 14px;
+  font-size: 12.5px; line-height: 1.5; color: var(--on-dark-secondary);
+}
+.intake-note + .intake-note { margin-top: 7px; }
+.intake-note::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.intake-status { margin-top: 16px; font-size: 13px; line-height: 1.5; color: var(--on-dark); }
+.intake-status--error { color: #f0a49b; }
+
+/* ── Срочный путь отдельно от формы ────────────────────────────────── */
+.urgent {
+  position: relative; margin-top: 26px; padding-top: 24px; border-top: var(--hair);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.urgent-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+}
+.urgent-text { font-size: 14px; line-height: 1.55; color: var(--on-dark); max-width: 380px; }
+
+/* ── Кнопки редизайна ──────────────────────────────────────────────── */
+.btn--gold { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.btn--gold:hover { filter: brightness(1.08); background: var(--gold); color: var(--ink); }
+.btn--outline {
+  background: none; border: 1px solid rgba(234,229,219,.2); color: var(--on-dark);
+  padding: 13px 18px; font-size: 10px; letter-spacing: .12em; flex-shrink: 0;
+}
+.btn--outline:hover { background: rgba(234,229,219,.08); color: var(--on-dark); }
+
+/* ── «Что мы называем результатом» ─────────────────────────────────── */
+.outcome-grid { display: grid; grid-template-columns: 1fr 1.35fr; gap: 52px; align-items: start; }
+.outcome-disclaimer {
+  display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px;
+  border-radius: var(--r-md); background: rgba(200,169,74,.08);
+  border: 1px solid rgba(200,169,74,.22);
+}
+.outcome-disclaimer::before { content: ""; width: 4px; align-self: stretch; background: var(--gold); border-radius: 3px; flex-shrink: 0; }
+.outcome-disclaimer p { font-size: 13.5px; line-height: 1.6; color: var(--on-dark-secondary); margin: 0; }
+.outcome-list { display: flex; flex-direction: column; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.outcome-item {
+  display: grid; grid-template-columns: 32px minmax(0,1fr) 130px; gap: 16px;
+  align-items: center; border: 1px solid var(--line-dark); background: var(--surface-dark);
+  border-radius: var(--r-md); padding: 18px 20px;
+}
+.outcome-num  { font-family: var(--font-mono); font-size: 10px; color: var(--gold); }
+.outcome-text { font-size: 15px; line-height: 1.5; color: var(--on-dark); }
+.outcome-tag  {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--on-dark-mute); text-align: right;
+}
+
+/* ── Партнёры: шапка секции и ссылка на всех ───────────────────────── */
+.team-header { display: grid; grid-template-columns: 1fr 1.6fr; gap: 48px; align-items: end; }
+.team-header-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.team-all {
+  flex-shrink: 0; padding: 12px 20px; border-radius: var(--r-sm);
+  border: 1px solid rgba(234,229,219,.2); font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--on-dark); white-space: nowrap; transition: background var(--transition);
+}
+.team-all:hover { background: rgba(234,229,219,.08); color: var(--on-dark); }
+
+/* ── Фото, вырезанное по контуру ───────────────────────────────────── */
+.lawyer-photo--cutout, .lawyer-full-photo--cutout {
+  background: var(--ink-soft);
+  background-image: radial-gradient(80% 60% at 50% 18%, rgba(200,169,74,.14), transparent 70%);
+}
+.lawyer-photo--cutout img, .lawyer-full-photo--cutout img {
+  object-fit: contain; object-position: bottom; padding-top: 11%;
+}
+
+/* ── Адаптив: точки перелома из хендоффа ───────────────────────────── */
+@media (max-width: 1180px) {
+  :root { --pad-x: 40px; }
+  .hero-left  { padding: 132px var(--pad-x) 56px; }
+  .hero-right { padding: 132px 40px 56px; }
+  .hero-stats { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px 0; }
+  .hero-stat:nth-child(2) { border-right: 0; padding-right: 0; }
+  .hero-stat:nth-child(3) { padding-left: 0; }
+  .hero-mark  { font-size: 220px; }
+  .outcome-grid { gap: 32px; }
+}
+@media (max-width: 900px) {
+  #hero { grid-template-columns: 1fr; min-height: 0; }
+  .hero-left  { padding: 116px var(--pad-x) 40px; }
+  .hero-right { padding: 40px var(--pad-x) 44px; border-left: 0; border-top: var(--hair-gold); }
+  .hero-chips, .hero-stats { margin-top: 26px; padding-top: 20px; }
+  .hero-mark { font-size: 150px; right: -24px; top: 16px; }
+  .hero-quote-text { margin: 16px 0 16px; }
+  .intake { padding: 24px 20px; }
+  .outcome-grid, .team-header { grid-template-columns: 1fr; gap: 20px; }
+  .outcome-item { grid-template-columns: 24px minmax(0,1fr); }
+  .outcome-tag { display: none; }
+  .urgent { flex-direction: column; align-items: flex-start; }
+  .team-all { align-self: flex-start; }
+  .team-header-row { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 620px) {
+  :root { --pad-x: 20px; }
+  .hero-title { font-size: clamp(2.4rem, 10vw, 3.5rem); }
+  .intake-title { font-size: 26px; }
 }
 
 /* Кружок с фото на персональной странице. Раньше он был вписан в каждую

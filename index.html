@@ -166,56 +166,77 @@
 <main id="main-content">
 
 <!-- ===== HERO (split layout) ===== -->
-<section id="hero">
+<section id="hero" class="hero">
 
-  <!-- LEFT — paper bg, editorial content -->
+  <!-- LEFT — бумага: фактическая сторона -->
   <div class="hero-left">
-    <span class="hero-badge">Московская коллегия адвокатов</span>
-    <h1 class="hero-title">Право.<br><em>Опыт.<br>Результат.</em></h1>
-    <div class="hero-sub">
-      <p class="hero-subtitle" id="heroSubtitle">Профессиональная юридическая помощь с 2015 года</p>
+    <div class="hero-head">
+      <span class="hero-badge">Москва · с 2015 года · ФЗ-63</span>
+      <h1 class="hero-title">Право.<br><em>Опыт.<br>Результат.</em></h1>
+      <p class="hero-subtitle" id="heroSubtitle">Профессиональная юридическая помощь с 2015 года. Уголовные дела, арбитраж, гражданское и семейное право — в судах общей юрисдикции и арбитражных судах.</p>
     </div>
-    <div class="hero-actions">
-      <a href="tel:+79169286505" class="btn hero-call-btn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.07 1.18 2 2 0 012.07-.01h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.41-.41a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-        Позвонить: +7 (916) 928-65-05
-      </a>
-      <a href="contact.html" class="btn btn-primary">Получить консультацию</a>
-      <a href="about.html" class="btn btn-ghost">О коллегии</a>
+
+    <!-- Вход словами клиента, а не названиями отраслей права -->
+    <div class="hero-chips">
+      <span class="hero-chips-label">С чем обращаются</span>
+      <a class="chip" href="services.html#criminal">Задержание или допрос</a>
+      <a class="chip" href="services.html#criminal">Обыск и изъятие</a>
+      <a class="chip" href="services.html#arbitration">Субсидиарная ответственность</a>
+      <a class="chip" href="services.html#arbitration">Спор с контрагентом</a>
+      <a class="chip" href="services.html#family">Раздел имущества</a>
+      <a class="chip" href="services.html#realty">Сроки по ДДУ</a>
     </div>
+
     <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-num">10+</div>
-        <div class="hero-stat-label">Лет практики</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">500+</div>
-        <div class="hero-stat-label">Клиентов</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">10</div>
-        <div class="hero-stat-label">Партнёров</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">ФЗ-63</div>
-        <div class="hero-stat-label">Статус коллегии</div>
-      </div>
-    </div>
-    <div class="hero-scroll" aria-hidden="true">
-      <div class="scroll-line"></div>
-      <span>Листать</span>
+      <div class="hero-stat"><div class="hero-stat-num">10+</div><div class="hero-stat-label">Лет практики</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">500+</div><div class="hero-stat-label">Клиентов</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">10</div><div class="hero-stat-label">Партнёров</div></div>
+      <div class="hero-stat hero-stat--accent"><div class="hero-stat-num">ФЗ-63</div><div class="hero-stat-label">Статус коллегии</div></div>
     </div>
   </div>
 
-  <!-- RIGHT — ink bg, decorative quote -->
-  <div class="hero-right" aria-hidden="true">
-    <div class="hero-grid-overlay"></div>
-    <div class="hero-deco-letter">Æ</div>
-    <div class="hero-deco-lines"><span></span><span></span><span></span></div>
-    <div class="hero-quote">
-      <div class="hero-quote-mark">"</div>
+  <!-- RIGHT — уголь: второе «я», кредо и действие -->
+  <div class="hero-right">
+    <div class="hero-mark" aria-hidden="true">&AElig;</div>
+
+    <figure class="hero-quote">
+      <div class="hero-quote-mark" aria-hidden="true">&ldquo;</div>
       <p class="hero-quote-text">Достоинство адвоката есть достояние всего сословия</p>
-      <div class="hero-quote-attr">Франсуа Этьен Молло&nbsp;·&nbsp;1794–1870</div>
+      <figcaption class="hero-quote-attr">Франсуа Этьен Молло&nbsp;·&nbsp;1794–1870</figcaption>
+    </figure>
+
+    <form class="intake" id="heroIntake" novalidate>
+      <div class="intake-eyebrow">Первичная консультация</div>
+      <h2 class="intake-title">Расскажите, что произошло</h2>
+      <p class="intake-lede">Чтобы понять правовую природу вопроса и варианты действий. Никаких обещаний до изучения документов.</p>
+      <div class="intake-form">
+        <label class="sr-only" for="intakeName">Имя</label>
+        <input type="text" id="intakeName" name="name" placeholder="Имя" autocomplete="name" required>
+        <label class="sr-only" for="intakePhone">Телефон</label>
+        <input type="tel" id="intakePhone" name="phone" placeholder="Телефон" autocomplete="tel" required>
+        <label class="sr-only" for="intakeTopic">Суть вопроса</label>
+        <select id="intakeTopic" name="topic">
+          <option value="">Суть вопроса</option>
+          <option>Уголовное дело</option>
+          <option>Арбитраж или банкротство</option>
+          <option>Недвижимость</option>
+          <option>Наследство</option>
+          <option>Семейное дело</option>
+          <option>Другое</option>
+        </select>
+        <button class="btn btn--gold" type="submit" id="intakeSubmit">Отправить заявку</button>
+      </div>
+      <p class="intake-status" id="intakeStatus" role="status" aria-live="polite" hidden></p>
+      <p class="intake-note">Перезвоним в течение 2 часов в рабочий день</p>
+      <p class="intake-note">Всё, что вы расскажете, защищено адвокатской тайной</p>
+    </form>
+
+    <div class="urgent">
+      <div>
+        <div class="urgent-label">По уголовным делам — срочно</div>
+        <div class="urgent-text">Подключаемся к защите с момента задержания или первого допроса — ст. 51 УПК РФ</div>
+      </div>
+      <a class="btn btn--outline" href="tel:+79169286505">Позвонить</a>
     </div>
   </div>
 
@@ -380,12 +401,15 @@
   <div class="grid-bg"></div>
   <div class="grid-shimmer"></div>
   <div class="container" style="position:relative;z-index:1">
-    <div class="section-header" style="margin-bottom:48px">
+    <div class="team-header" style="margin-bottom:48px">
       <div>
-        <span class="section-label">Команда</span>
-        <h2 class="section-title">Наши<br><em>адвокаты и партнёры</em></h2>
+        <span class="section-label">Партнёры</span>
+        <h2 class="section-title" style="margin-top:0">Партнёры</h2>
       </div>
-      <p class="section-desc" style="color:var(--on-dark-secondary)">Каждый специалист коллегии — с многолетним опытом и безупречной репутацией в своей области.</p>
+      <div class="team-header-row">
+        <p class="section-desc" style="color:var(--on-dark-secondary);max-width:440px">Каждый специалист коллегии — с многолетним опытом и безупречной репутацией в своей области.</p>
+        <a class="team-all" href="team.html">Все партнёры →</a>
+      </div>
     </div>
     <div class="team-grid" id="teamGrid" data-prerendered="true">
 <!-- AE:TEAM_GRID:START -->
@@ -401,7 +425,7 @@
         </div>
       </div>
       <div class="lawyer-card fade-up">
-        <div class="lawyer-photo"><img src="images/Фото Самохин В.Н..jpg" alt="Самохин Владимир Николаевич" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-photo"><img src="images/samokhin.jpg" alt="Самохин Владимир Николаевич" loading="lazy" width="400" height="500"></div>
         <div class="lawyer-info">
           <h3><a href="team/samokhin-vladimir-nikolaevich.html" style="color:inherit;text-decoration:none">Самохин Владимир Николаевич</a></h3>
           <div class="lawyer-spec">Уголовное право</div>
@@ -434,7 +458,7 @@
         </div>
       </div>
       <div class="lawyer-card fade-up">
-        <div class="lawyer-photo"><img src="images/aksanova.jpg" alt="Аксанова Виктория Вячеславовна" loading="lazy" width="400" height="500"></div>
+        <div class="lawyer-photo lawyer-photo--cutout"><img src="images/aksanova-cutout.png" alt="Аксанова Виктория Вячеславовна" loading="lazy" width="400" height="500"></div>
         <div class="lawyer-info">
           <h3><a href="team/aksyonova-viktoria-vyacheslavna.html" style="color:inherit;text-decoration:none">Аксанова Виктория Вячеславовна</a></h3>
           <div class="lawyer-spec">Гражданские, административные, арбитражные, уголовные дела</div>
@@ -595,6 +619,28 @@
     draw();
   }());
   </script>
+</section>
+
+<!-- ===== ЧТО МЫ НАЗЫВАЕМ РЕЗУЛЬТАТОМ ===== -->
+<section class="section section-dark" style="position:relative;overflow:hidden">
+  <div class="container" style="position:relative;z-index:1">
+    <div class="outcome-grid">
+      <div>
+        <span class="section-label">Честно о результате</span>
+        <h2 class="section-title" style="text-align:left">Что мы называем результатом</h2>
+        <p class="section-desc" style="margin:16px 0 18px;color:var(--on-dark-secondary)">Мы не публикуем имена доверителей и чужие приговоры: сведения о них составляют адвокатскую тайну. Вместо этого объясняем, какие исходы вообще достижимы и от чего они зависят.</p>
+        <div class="outcome-disclaimer"><p>Формулировки обезличены и приведены как типовые сценарии, а не как обещание исхода в вашем деле.</p></div>
+      </div>
+      <ol class="outcome-list">
+        <li class="outcome-item"><span class="outcome-num">01</span><span class="outcome-text">Отказ в возбуждении дела по итогам доследственной проверки</span><span class="outcome-tag">Уголовные</span></li>
+        <li class="outcome-item"><span class="outcome-num">02</span><span class="outcome-text">Переквалификация на менее тяжкий состав</span><span class="outcome-tag">Уголовные</span></li>
+        <li class="outcome-item"><span class="outcome-num">03</span><span class="outcome-text">Мера пресечения мягче ареста — домашний арест или запрет действий</span><span class="outcome-tag">Уголовные</span></li>
+        <li class="outcome-item"><span class="outcome-num">04</span><span class="outcome-text">Отказ в привлечении контролирующего лица к субсидиарной ответственности</span><span class="outcome-tag">Банкротство</span></li>
+        <li class="outcome-item"><span class="outcome-num">05</span><span class="outcome-text">Мировое соглашение на условиях, которые устраивают доверителя</span><span class="outcome-tag">Арбитраж</span></li>
+        <li class="outcome-item"><span class="outcome-num">06</span><span class="outcome-text">Признание права собственности и снятие обременений в судебном порядке</span><span class="outcome-tag">Недвижимость</span></li>
+      </ol>
+    </div>
+  </div>
 </section>
 
 <!-- ===== CTA BAND ===== -->

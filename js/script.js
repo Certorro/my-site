@@ -22,7 +22,7 @@ function escHtml(str) {
 
 /* Версия данных проставляется scripts/build.py при публикации.
    Раньше здесь стоял Date.now(), из-за чего CDN-кеш не срабатывал ни разу. */
-const DATA_VERSION = '202609051907';
+const DATA_VERSION = '202609051911';
 
 async function loadData(key, jsonPath) {
   try {
@@ -102,7 +102,7 @@ function lawyerCardHTML(l) {
     : `<div class="lawyer-photo-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
   return `
     <div class="lawyer-card fade-up">
-      <div class="lawyer-photo">${photo}</div>
+      <div class="lawyer-photo${l.photoCutout ? ' lawyer-photo--cutout' : ''}">${photo}</div>
       <div class="lawyer-info">
         <h3>${l.slug ? `<a href="team/${escHtml(l.slug)}.html" style="color:inherit;text-decoration:none">${escHtml(l.name)}</a>` : escHtml(l.name)}</h3>
         <div class="lawyer-spec">${escHtml(l.specialization || l.position)}</div>
@@ -121,7 +121,7 @@ function lawyerFullCardHTML(l) {
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
   return `
     <div class="lawyer-full-card fade-up">
-      <div class="lawyer-full-photo">${photo}</div>
+      <div class="lawyer-full-photo${l.photoCutout ? ' lawyer-full-photo--cutout' : ''}">${photo}</div>
       <div class="lawyer-full-info">
         <h3>${l.slug ? `<a href="team/${escHtml(l.slug)}.html" style="color:inherit;text-decoration:none">${escHtml(l.name)}</a>` : escHtml(l.name)}</h3>
         <div class="lawyer-full-spec">${escHtml(l.specialization || l.position)}</div>
@@ -440,6 +440,86 @@ function initRipple() {
   });
 }
 
+
+/* ===== ФОРМА ПЕРВОГО ЭКРАНА =====
+ * Отдельная короткая форма (имя, телефон, тема) — три поля вместо семи,
+ * остальное выясняется по телефону.
+ *
+ * Ограничение, которое надо знать: эндпоинт Apps Script отвечает непрозрачно
+ * (mode:'no-cors'), поэтому подтвердить запись в таблицу из браузера нельзя.
+ * Но сетевой сбой fetch всё же отклоняет — его мы и показываем честно,
+ * вместе с телефоном как запасным каналом. Полноценная проверка доставки
+ * возможна только со своим обработчиком — это этап 0 плана.
+ */
+function initHeroIntake() {
+  const form = document.getElementById('heroIntake');
+  if (!form) return;
+
+  const nameEl  = form.querySelector('#intakeName');
+  const phoneEl = form.querySelector('#intakePhone');
+  const topicEl = form.querySelector('#intakeTopic');
+  const btn     = form.querySelector('#intakeSubmit');
+  const status  = form.querySelector('#intakeStatus');
+
+  const say = (text, isError) => {
+    if (!status) return;
+    status.textContent = text;
+    status.hidden = false;
+    status.classList.toggle('intake-status--error', !!isError);
+  };
+
+  [nameEl, phoneEl].forEach(el => el?.addEventListener('input', () => {
+    el.removeAttribute('aria-invalid');
+    if (status) status.hidden = true;
+  }));
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const name  = (nameEl?.value  || '').trim();
+    const phone = (phoneEl?.value || '').trim();
+    const digits = phone.replace(/\D/g, '').length;
+
+    if (name.length < 2) {
+      nameEl?.setAttribute('aria-invalid', 'true');
+      nameEl?.focus();
+      return say('Укажите имя — хотя бы два символа.', true);
+    }
+    if (digits < 10) {
+      phoneEl?.setAttribute('aria-invalid', 'true');
+      phoneEl?.focus();
+      return say('Укажите телефон, чтобы мы могли перезвонить.', true);
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Отправляется…'; }
+
+    const body = new URLSearchParams({
+      timestamp: new Date().toISOString(),
+      name, phone, email: '',
+      subject: topicEl?.value || 'Первичная консультация (первый экран)',
+      message: 'Заявка с первого экрана'
+    });
+
+    fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    })
+      .then(() => {
+        say('Заявка отправлена. Перезвоним в течение 2 часов в рабочий день.', false);
+        if (typeof ym !== 'undefined') ym(109534459, 'reachGoal', 'contact_form_submit');
+        form.reset();
+      })
+      .catch(() => {
+        say('Не удалось отправить — проверьте соединение или позвоните: +7 (916) 928-65-05.', true);
+      })
+      .finally(() => {
+        if (btn) { btn.disabled = false; btn.textContent = 'Отправить заявку'; }
+      });
+  });
+}
+
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded', async () => {
   const page = window.location.pathname.split('/').pop() || 'index.html';
@@ -470,4 +550,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (page === 'contact.html') {
     initContactForm();
   }
+
+  initHeroIntake();
 });
