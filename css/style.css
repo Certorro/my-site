@@ -1821,3 +1821,13 @@ html, body { overflow-x: hidden; }
 @media (min-width: 769px) {
   .nav-links a { white-space: nowrap; }
 }
+
+/* ── Сетка убрана с тёмных поверхностей ───────────────────────────────
+   На чёрном фоне клетка проступала и спорила с текстом. Разметка
+   различает два варианта: «.grid-bg grid-bg-light» — светлая сетка на
+   бумаге, просто «.grid-bg» — золотая, и она стоит только на тёмном
+   (hero-base, cta-band, section-dark, requisites-card — проверено по
+   всем страницам). Поэтому достаточно скрыть вариант без модификатора:
+   светлая сетка на светлых секциях остаётся нетронутой. */
+.grid-bg:not(.grid-bg-light) { display: none; }
+.hero-grid-overlay { display: none; }
