@@ -1829,5 +1829,11 @@ html, body { overflow-x: hidden; }
    (hero-base, cta-band, section-dark, requisites-card — проверено по
    всем страницам). Поэтому достаточно скрыть вариант без модификатора:
    светлая сетка на светлых секциях остаётся нетронутой. */
-.grid-bg:not(.grid-bg-light) { display: none; }
-.hero-grid-overlay { display: none; }
+/* Правка уточнена: скрытия одного лишь тёмного варианта не хватило.
+   На странице публикаций сетку рисовал светлый элемент .grid-bg.grid-bg-light
+   высотой 8696px — он растянут на всю страницу и накрывал в том числе тёмную
+   шапку. Поэтому сетка убирается целиком, во всех вариантах. */
+.grid-bg,
+.grid-bg-light,
+.grid-shimmer,
+.hero-grid-overlay { display: none !important; }
