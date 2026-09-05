@@ -312,7 +312,7 @@ def lawyer_card(l, r=""):
     reg = f'<div class="lawyer-reg">Рег. № {esc(l.get("regNumber"))}</div>' if l.get("regNumber") else ""
     palata = f'<div class="lawyer-palata">{esc(l.get("palata"))}</div>' if l.get("palata") else ""
     return f"""      <div class="lawyer-card fade-up">
-        <div class="lawyer-photo">{lawyer_photo(l, r, CARD_PLACEHOLDER)}</div>
+        <div class="lawyer-photo{' lawyer-photo--cutout' if l.get('photoCutout') else ''}">{lawyer_photo(l, r, CARD_PLACEHOLDER)}</div>
         <div class="lawyer-info">
           <h3>{name_html}</h3>
           <div class="lawyer-spec">{esc(l.get('specialization') or l.get('position'))}</div>
@@ -338,7 +338,7 @@ def lawyer_full_card(l, r=""):
     if l.get("palata"):
         meta.append(f'<span><strong>Палата:</strong> {esc(l.get("palata"))}</span>')
     return f"""      <div class="lawyer-full-card fade-up">
-        <div class="lawyer-full-photo">{lawyer_photo(l, r, FULL_PLACEHOLDER)}</div>
+        <div class="lawyer-full-photo{' lawyer-full-photo--cutout' if l.get('photoCutout') else ''}">{lawyer_photo(l, r, FULL_PLACEHOLDER)}</div>
         <div class="lawyer-full-info">
           <h3>{name_html}</h3>
           <div class="lawyer-full-spec">{esc(l.get('specialization') or l.get('position'))}</div>
