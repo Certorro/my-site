@@ -1761,32 +1761,34 @@ html, body { overflow-x: hidden; }
 /* Та же поправка кадрирования для карточек в сетках */
 .lawyer-photo img, .lawyer-full-photo img { object-position: center 40%; }
 .lawyer-photo--cutout img, .lawyer-full-photo--cutout img { object-position: center bottom; }
-/* Профессиональная биография адвоката: перечень дел с годами.
-   Год вынесен в отдельную колонку моноширинным — так перечень читается
-   как реестр практики, а не как сплошной абзац, и лучше разбирается
-   на самостоятельные фрагменты. */
+
+/* Профессиональная биография адвоката. Текст вставлен дословно из
+   документа, предоставленного коллегией: порядок, формулировки и написание
+   не меняются. Оформление — только типографика, без вмешательства в слова. */
 .bio-section { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
 .bio-section h2 {
   font-family: var(--font-head); font-weight: 400;
-  font-size: clamp(1.4rem, 2.4vw, 1.9rem); line-height: 1.15;
-  letter-spacing: -0.015em; color: var(--ink); margin: 0 0 10px;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem); line-height: 1.2;
+  letter-spacing: 0.04em; color: var(--ink); margin: 0 0 18px;
 }
-.bio-intro { color: var(--muted); font-size: 0.92rem; line-height: 1.7; margin: 0 0 28px; max-width: 62ch; }
-.bio-list { list-style: none; margin: 0; padding: 0; }
+.bio-lead {
+  font-size: 0.95rem; line-height: 1.7; color: var(--ink);
+  margin: 0 0 22px; max-width: 68ch;
+}
+.bio-list { list-style: none; margin: 0; padding: 0; max-width: 68ch; }
 .bio-list li {
-  display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 18px;
-  padding: 16px 0; border-top: 1px solid var(--line);
+  position: relative; padding: 14px 0 14px 22px;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem; line-height: 1.7; color: var(--text);
 }
-.bio-list li:first-child { border-top: 0; padding-top: 0; }
-.bio-year {
-  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: .06em;
-  color: var(--gold); padding-top: 4px; white-space: nowrap;
+.bio-list li:first-child { border-top: 0; }
+.bio-list li::before {
+  content: ""; position: absolute; left: 0; top: 25px;
+  width: 8px; height: 1px; background: var(--gold);
 }
-.bio-text { font-size: 0.94rem; line-height: 1.7; color: var(--text); }
-.bio-text strong { font-weight: 500; }
-@media (max-width: 620px) {
-  .bio-list li { grid-template-columns: 1fr; gap: 4px; }
-  .bio-year { padding-top: 0; }
+.bio-closing {
+  margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 0.92rem; line-height: 1.7; color: var(--ink); max-width: 68ch;
 }
 
 /* ── Кегль шапки на десктопе ──────────────────────────────────────────
