@@ -24,6 +24,7 @@
 Запуск:  python3 scripts/build.py
 """
 
+import hashlib
 import html
 import json
 import re
@@ -403,6 +404,46 @@ def set_profile_photo(page, lawyer, r):
     return page
 
 
+
+# ----------------------------------------------------------------------
+# Версии статики
+# ----------------------------------------------------------------------
+#
+# У css/style.css и js/*.js нет версии в имени, а GitHub Pages отдаёт их с
+# cache-control: max-age=600. После публикации посетитель ещё какое-то время
+# видит старые стили, а открытая вкладка — заметно дольше. Поэтому к ссылкам
+# добавляется ?v=<хеш содержимого>.
+#
+# Именно хеш, а не метка времени: версия меняется только когда файл реально
+# изменился, поэтому сборка остаётся идемпотентной и не переписывает все
+# страницы при каждом запуске.
+
+VERSIONED_ASSETS = ("css/style.css", "fonts/fonts.css",
+                    "js/script.js", "js/components.js", "js/articles.js")
+
+
+def asset_hash(rel_path):
+    """Короткий хеш содержимого файла; пусто, если файла нет."""
+    path = ROOT / rel_path
+    if not path.exists():
+        return ""
+    return hashlib.md5(path.read_bytes()).hexdigest()[:10]
+
+
+def stamp_assets(page, versions):
+    """Проставляет ?v=<хеш> ссылкам на стили и скрипты, заменяя прежний."""
+    for rel, ver in versions.items():
+        if not ver:
+            continue
+        name = re.escape(rel)
+        page = re.sub(
+            r'((?:href|src)=")((?:\.\./)*)' + name + r'(?:\?v=[^"]*)?(")',
+            lambda m: f'{m.group(1)}{m.group(2)}{rel}?v={ver}{m.group(3)}',
+            page,
+        )
+    return page
+
+
 # ----------------------------------------------------------------------
 # Сборка страниц
 # ----------------------------------------------------------------------
@@ -436,7 +477,7 @@ def og_tags(rel):
   <meta property="og:url" content="{url}">"""
 
 
-def build_pages(settings, lawyers, articles, year):
+def build_pages(settings, lawyers, articles, year, versions):
     phone = settings.get("phone", "+7 (916) 928-65-05")
     count = 0
 
@@ -498,6 +539,9 @@ def build_pages(settings, lawyers, articles, year):
                 page, "ALL_ARTICLES_GRID", "allArticlesGrid",
                 "\n".join(article_card(a, r) for a in articles),
             )
+
+        # ?v=<хеш> у стилей и скриптов — чтобы браузер не держал старую версию
+        page = stamp_assets(page, versions)
 
         if page != original:
             path.write_text(page, encoding="utf-8")
@@ -632,6 +676,14 @@ def build_sitemap():
 # Версия данных вместо ?v=Date.now()
 # ----------------------------------------------------------------------
 
+def data_version():
+    """Хеш данных: версия меняется только когда данные действительно менялись."""
+    h = hashlib.md5()
+    for rel in ("data/settings.json", "data/lawyers.json", "data/articles.json"):
+        h.update((ROOT / rel).read_bytes())
+    return h.hexdigest()[:10]
+
+
 def stamp_data_version(stamp):
     path = ROOT / "js" / "script.js"
     source = path.read_text(encoding="utf-8")
@@ -654,17 +706,24 @@ def main():
     lawyers = load_json("data/lawyers.json")
     articles = load_json("data/articles.json")
     year = datetime.now().year
-    stamp = datetime.now().strftime("%Y%m%d%H%M")
+    stamp = data_version()
 
-    pages = build_pages(settings, lawyers, articles, year)
-    urls = build_sitemap()
+    # Версию данных пишем ДО подсчёта хешей: она меняет js/script.js,
+    # а значит и его собственную версию.
     stamped = stamp_data_version(stamp)
+    versions = {rel: asset_hash(rel) for rel in VERSIONED_ASSETS}
+
+    pages = build_pages(settings, lawyers, articles, year, versions)
+    urls = build_sitemap()
 
     print(f"Страниц обновлено:      {pages}")
     print(f"URL в sitemap.xml:      {urls}")
     print(f"Статей в data:          {len(articles)}")
     print(f"Адвокатов в data:       {len(lawyers)}")
     print(f"Версия данных:          {stamp} {'(записана)' if stamped else '(без изменений)'}")
+    print("Версии статики:")
+    for rel, ver in versions.items():
+        print(f"  {rel:<22} {ver or '— файла нет'}")
 
 
 if __name__ == "__main__":
