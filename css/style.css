@@ -1971,3 +1971,103 @@ html, body { overflow-x: hidden; }
   .case-lawyer { gap: 14px; }
   .case-lawyer-photo { width: 62px; height: 76px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Ширина страницы и типографика на больших экранах
+
+   Замер на 1920 px показал две разные беды: по 360 px пустоты с каждой
+   стороны — и при этом текст статьи шёл строками по 113 знаков, а
+   вступление в профиле было набрано 13,8 px. То есть места по краям
+   много, а читать всё равно трудно.
+
+   Поэтому оболочка и колонка чтения разведены. Оболочка растёт вслед
+   за экраном, колонка остаётся в пределах меры: строка длиннее ~75
+   знаков утомляет, сколько бы ширины ни было в запасе. Освободившееся
+   место занимает правый рельс, а не пустота.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --shell:     clamp(1200px, 88vw, 1520px);  /* оболочка страницы */
+  --shell-pad: clamp(22px, 3vw, 64px);       /* поля внутри оболочки */
+  --measure:   68ch;                          /* колонка чтения: единица ch
+                                                 считается по глифу «0», который
+                                                 уже средней кириллической буквы,
+                                                 поэтому 68ch дают ~73 знака */
+  --rail:      minmax(290px, 360px);          /* правый рельс */
+}
+
+/* Растёт только на десктопе: до 1200 px остаётся ровно 16 px, поэтому
+   мобильная вёрстка не меняется. rem в формуле сохраняет масштабирование
+   шрифта настройками браузера — на чистых vw оно ломается. */
+html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
+
+.container { max-width: var(--shell); padding-inline: var(--shell-pad); }
+
+/* ── Типографика: текст, который был мельче комфортного ──────────── */
+.article-full-body { font-size: 1.08rem; max-width: var(--measure); }
+.article-lead      { font-size: 1.16rem; }
+.bio-lead          { font-size: 1.05rem; max-width: var(--measure); }
+.bio-list li       { font-size: 1rem; line-height: 1.72; }
+.lawyer-full-bio   { font-size: 0.95rem; line-height: 1.7; max-width: var(--measure); }
+.lawyer-article-title { font-size: 1.12rem; }
+.source-title      { font-size: 0.9rem; }
+
+/* ── Источники: полная рамка вместо цветной полосы слева ─────────── */
+.article-sources {
+  border-left: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,.55);
+  padding: 22px 24px;
+}
+.article-sources h4 {
+  font-family: var(--font-mono); font-size: 0.58rem; font-weight: 400;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 14px;
+}
+
+@media (min-width: 1200px) {
+  /* ── Страница статьи: текст слева, рельс справа ────────────────── */
+  /* :has() — чтобы сетка включалась только там, где рельсу есть чем
+     заполниться. У девяти общеправовых статей нет ни источников, ни
+     адвоката: сетка оставила бы им пустую колонку. */
+  article.section > .container:has(> .article-sources),
+  article.section > .container:has(> .case-lawyers) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--rail);
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: clamp(48px, 4.5vw, 88px);
+  }
+  article.section > .container > .article-full-body { grid-column: 1; grid-row: 1 / 4; }
+  article.section > .container > .case-lawyers      { grid-column: 2; grid-row: 1; margin-top: 0; padding-top: 0; border-top: 0; }
+  article.section > .container > .article-sources   { grid-column: 2; grid-row: 2; margin-top: 28px; }
+  article.section > .container > div:last-child     { grid-column: 1 / -1; grid-row: 4; }
+
+  /* Рельс узкий — карточка адвоката и источники в нём компактнее */
+  .case-lawyers .case-lawyer { gap: 14px; }
+  .case-lawyers .case-lawyer-photo { width: 64px; height: 78px; }
+  article.section > .container > .article-sources .source-thumb { width: 84px; height: 63px; }
+  article.section > .container > .article-sources .source-title { -webkit-line-clamp: 2; font-size: 0.84rem; }
+  article.section > .container > .article-sources .source-link { gap: 11px; padding: 6px; }
+
+  /* Статьи без рельса — колонка чтения по центру, а не прижата влево */
+  article.section > .container:not(:has(> .article-sources)):not(:has(> .case-lawyers)) .article-full-body {
+    margin-inline: auto;
+  }
+
+  /* ── Профиль: биография в две колонки ──────────────────────────── */
+  /* Двадцать дел одной лентой на широком экране читаются как стена.
+     Multicol сохраняет порядок сверху вниз — для перечня это важнее,
+     чем grid, который погнал бы items слева направо. */
+  .bio-section .bio-list {
+    columns: 2;
+    column-gap: clamp(40px, 4vw, 72px);
+    max-width: none;
+  }
+  .bio-section .bio-list li { break-inside: avoid; }
+  .bio-lead, .bio-closing { max-width: var(--measure); }
+
+  /* Список публикаций адвоката: две колонки, когда их много */
+  .lawyer-article-list { columns: 2; column-gap: clamp(40px, 4vw, 72px); }
+  .lawyer-article-item { break-inside: avoid; }
+}
