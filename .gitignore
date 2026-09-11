@@ -3,3 +3,6 @@ context/
 
 # Local admin credentials (never commit)
 admin/local.json
+
+# Исследовательские материалы (личные дела) — не публикуются
+dossiers/

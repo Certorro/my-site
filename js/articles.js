@@ -21,6 +21,7 @@ function articleCardHTML(a) {
   <div class="article-card">
     <div class="article-card-meta-row">
       <div class="article-category">${escHtml(a.category || '')}</div>
+      ${lawyerTagsHTML(a)}
       ${reads > 0 ? `<span class="article-reads-badge">${reads} прочт.</span>` : ''}
     </div>
     <h3><a href="${escHtml(href)}">${escHtml(a.title)}</a></h3>
@@ -168,7 +169,14 @@ function applySort(sort) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  allArticlesData = await loadData(DATA_KEYS.articles, 'data/articles.json');
+  // Адвокаты нужны для тегов на карточках: в статье хранится только slug,
+  // имя берётся из lawyers.json, чтобы не держать вторую копию имени.
+  const [articlesData, lawyersData] = await Promise.all([
+    loadData(DATA_KEYS.articles, 'data/articles.json'),
+    loadData(DATA_KEYS.lawyers, 'data/lawyers.json'),
+  ]);
+  allArticlesData = articlesData;
+  indexLawyers(lawyersData);
 
   /* Сетку целиком отрисовала сборка: все статьи присутствуют в HTML —
      это и есть критерий индексируемости страницы. Поэтому при загрузке

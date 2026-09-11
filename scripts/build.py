@@ -51,6 +51,18 @@ def load_json(rel):
         return json.load(fh)
 
 
+def load_previews():
+    """Кэш превью внешних ссылок. Его может не быть — сборка обязана работать.
+
+    Наполняется отдельно: python3 scripts/fetch-previews.py
+    """
+    path = ROOT / "data/link-previews.json"
+    if not path.exists():
+        return {}
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
 def esc(value):
     """Экранирование текста (в т.ч. кавычек — значения попадают и в атрибуты)."""
     return html.escape("" if value is None else str(value), quote=True)
@@ -250,7 +262,70 @@ def render_footer(r, settings, year):
 # Карточки
 # ----------------------------------------------------------------------
 
-def article_card(a, r=""):
+# ----------------------------------------------------------------------
+# Связка «статья ↔ адвокат»
+#
+# Отношение хранится в одном месте — полем lawyers у статьи в
+# data/articles.json. Обратный список у адвоката намеренно не заводится:
+# две копии одного отношения неизбежно разойдутся. Оба направления —
+# тег на статье и блок публикаций в профиле — выводятся отсюда, поэтому
+# согласованы по построению, а не по дисциплине редактора.
+# ----------------------------------------------------------------------
+
+def short_name(full):
+    """«Скрипилев Евгений Владимирович» → «Скрипилев Е. В.» — для тега."""
+    parts = (full or "").split()
+    if len(parts) >= 3:
+        return f"{parts[0]} {parts[1][0]}. {parts[2][0]}."
+    return full or ""
+
+
+def article_lawyers(a, by_slug):
+    """Пары (адвокат, роль) для статьи. Неизвестные slug молча отбрасываются."""
+    pairs = []
+    for link in (a.get("lawyers") or []):
+        lawyer = by_slug.get(link.get("slug"))
+        if lawyer:
+            pairs.append((lawyer, link.get("role") or ""))
+    return pairs
+
+
+def lawyer_articles(slug, articles):
+    """Публикации адвоката, свежие сверху."""
+    items = [
+        a for a in articles
+        if any(x.get("slug") == slug for x in (a.get("lawyers") or []))
+    ]
+    return sorted(items, key=lambda a: a.get("date") or "", reverse=True)
+
+
+def role_in(a, slug):
+    for link in (a.get("lawyers") or []):
+        if link.get("slug") == slug:
+            return link.get("role") or ""
+    return ""
+
+
+TAG_ICON = (
+    '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" '
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+    'stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>'
+    '<circle cx="12" cy="7" r="4"/></svg>'
+)
+
+
+def lawyer_tag(lawyer, role, r):
+    """Тег со сквозной ссылкой из статьи в личное дело адвоката."""
+    href = f'{r}team/{esc(lawyer.get("slug"))}.html'
+    label = f'{role} — перейти к адвокату' if role else "Перейти к адвокату"
+    return (
+        f'<a class="article-lawyer-tag" href="{href}" title="{esc(label)}">'
+        f'{TAG_ICON}<span>{esc(short_name(lawyer.get("name")))}</span></a>'
+    )
+
+
+def article_card(a, r="", by_slug=None):
     """Карточка статьи для articles.html и главной."""
     mins = reading_time(a.get("content") or a.get("summary") or "")
     src_count = len(a.get("sources") or [])
@@ -260,9 +335,14 @@ def article_card(a, r=""):
         f'<span class="article-src-count">{plural_sources(src_count)}</span>'
         if src_count else ""
     )
+    tags = "".join(
+        lawyer_tag(lawyer, role, r)
+        for lawyer, role in article_lawyers(a, by_slug or {})
+    )
     return f"""      <div class="article-card">
         <div class="article-card-meta-row">
           <div class="article-category">{esc(a.get('category'))}</div>
+          {tags}
         </div>
         <h3><a href="{href}">{esc(a.get('title'))}</a></h3>
         <div class="article-date">
@@ -273,6 +353,145 @@ def article_card(a, r=""):
         <div class="article-excerpt">{esc(a.get('summary'))}</div>
         <a href="{href}" class="read-more">Читать далее →</a>
       </div>"""
+
+
+def insert_block(page_html, name, content, anchor_pattern):
+    """
+    Как replace_block, но при первой сборке якорь не заменяется, а блок
+    встаёт перед ним. Нужно там, где в разметке нет плейсхолдера и его
+    некуда поставить, не трогая авторскую вёрстку страницы.
+    """
+    start, end = f"<!-- AE:{name}:START -->", f"<!-- AE:{name}:END -->"
+    block = f"{start}\n{content}\n{end}"
+
+    marked = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
+    if marked.search(page_html):
+        return marked.sub(lambda _m: block, page_html, count=1)
+
+    if not content:
+        return page_html
+
+    match = re.compile(anchor_pattern, re.S).search(page_html)
+    if not match:
+        return page_html
+    return page_html[: match.start()] + block + "\n\n    " + page_html[match.start():]
+
+
+def render_article_lawyers(a, by_slug, r):
+    """Блок «Адвокат по делу» на странице статьи — подпись под материалом."""
+    pairs = article_lawyers(a, by_slug)
+    if not pairs:
+        return ""
+
+    cards = []
+    for lawyer, role in pairs:
+        href = f'{r}team/{esc(lawyer.get("slug"))}.html'
+        reg = lawyer.get("regNumber")
+        palata = lawyer.get("palata")
+        meta = " · ".join(x for x in (f"рег. № {esc(reg)}" if reg else "",
+                                      esc(palata) if palata else "") if x)
+        cards.append(
+            f'''        <div class="case-lawyer">
+          <a class="case-lawyer-photo" href="{href}" tabindex="-1" aria-hidden="true">
+            {lawyer_photo(lawyer, r, CARD_PLACEHOLDER)}
+          </a>
+          <div class="case-lawyer-body">
+            <div class="case-lawyer-role">{esc(role) or "Адвокат коллегии"}</div>
+            <h4><a href="{href}">{esc(lawyer.get("name"))}</a></h4>
+            <div class="case-lawyer-meta">{meta}</div>
+            <a class="case-lawyer-more" href="{href}">Другие дела адвоката →</a>
+          </div>
+        </div>'''
+        )
+
+    return f'''    <div class="case-lawyers">
+      <h4 class="case-lawyers-title">Адвокат по делу</h4>
+{chr(10).join(cards)}
+    </div>'''
+
+
+def render_lawyer_articles(slug, articles, r):
+    """Блок публикаций в личном деле адвоката — обратное направление связки."""
+    items = lawyer_articles(slug, articles)
+    if not items:
+        return ""
+
+    rows = []
+    for a in items:
+        href = f'{r}articles/{esc(a.get("slug"))}.html'
+        role = role_in(a, slug)
+        src_count = len(a.get("sources") or [])
+        src_html = (f'<span class="lawyer-article-src">{plural_sources(src_count)}</span>'
+                    if src_count else "")
+        rows.append(
+            f'''          <li class="lawyer-article-item">
+            <a class="lawyer-article-link" href="{href}">
+              <span class="lawyer-article-role">{esc(role)}</span>
+              <span class="lawyer-article-title">{esc(a.get("title"))}</span>
+              <span class="lawyer-article-meta">{format_date_ru(a.get("date"))}'''
+            f'''<span class="lawyer-article-cat">{esc(a.get("category"))}</span>{src_html}</span>
+            </a>
+          </li>'''
+        )
+
+    word = "публикация" if len(items) == 1 else (
+        "публикации" if 2 <= len(items) <= 4 else "публикаций")
+    return f'''    <div class="lawyer-articles">
+      <div class="lawyer-articles-head">
+        <span class="section-label">Дела в публикациях</span>
+        <h3>Материалы о делах адвоката</h3>
+        <p class="lawyer-articles-count">{len(items)} {word} — дела, в которых адвокат принимал участие</p>
+      </div>
+      <ul class="lawyer-article-list">
+{chr(10).join(rows)}
+      </ul>
+    </div>'''
+
+
+def source_thumb(preview, r):
+    """Миниатюра единого размера. Если её нет — плашка с буквой издания."""
+    image = (preview or {}).get("image")
+    if image:
+        return (f'<img class="source-thumb" src="{r}{esc(image)}" alt="" '
+                'width="120" height="90" loading="lazy" decoding="async">')
+    letter = esc(((preview or {}).get("outlet") or "?")[:1].upper())
+    return f'<span class="source-thumb source-thumb--blank">{letter}</span>'
+
+
+def render_sources(a, previews, r):
+    """
+    Список источников: заголовок и миниатюра подтягиваются с чужого сайта.
+    Габариты миниатюр одинаковые — в колонке разнобой по высоте ломал бы строй.
+    """
+    sources = a.get("sources") or []
+    if not sources:
+        return ""
+
+    items = []
+    for s in sources:
+        url = s.get("url") or ""
+        preview = previews.get(url) or {}
+        title = s.get("title") or preview.get("title") or url
+        outlet = s.get("outlet") or preview.get("siteName") or preview.get("host") or ""
+        items.append(
+            f'''        <li class="source-item">
+          <a class="source-link" href="{esc(url)}" target="_blank" rel="noopener noreferrer">
+            {source_thumb({**preview, "outlet": outlet}, r)}
+            <span class="source-body">
+              <span class="source-outlet">{esc(outlet)}</span>
+              <span class="source-title">{esc(title)}</span>
+            </span>
+            <svg class="source-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          </a>
+        </li>'''
+        )
+
+    return f'''    <div class="article-sources">
+      <h4>Источники</h4>
+      <ul class="source-list">
+{chr(10).join(items)}
+      </ul>
+    </div>'''
 
 
 def lawyer_photo(l, r, placeholder_svg):
@@ -477,8 +696,60 @@ def og_tags(rel):
   <meta property="og:url" content="{url}">"""
 
 
-def build_pages(settings, lawyers, articles, year, versions):
+def set_article_person_schema(page, a, by_slug):
+    """
+    Добавляет адвоката в разметку статьи как mentions, а не author.
+
+    Author оставлен за коллегией сознательно: текст написан ей, а адвокат
+    участвовал в описанном деле. Указать его автором было бы недостоверным
+    утверждением в структурных данных — поисковики такое наказывают, а не
+    вознаграждают. Mentions описывает связь честно и так же машиночитаемо.
+    """
+    pairs = article_lawyers(a, by_slug)
+    if not pairs:
+        return page
+
+    persons = []
+    for lawyer, _role in pairs:
+        fields = [
+            '"@type": "Person"',
+            f'"name": {json.dumps(lawyer.get("name"), ensure_ascii=False)}',
+            f'"url": "{SITE}/team/{lawyer.get("slug")}.html"',
+        ]
+        if lawyer.get("position"):
+            fields.append(f'"jobTitle": {json.dumps(lawyer["position"], ensure_ascii=False)}')
+        if lawyer.get("regNumber"):
+            fields.append(f'"identifier": {json.dumps(lawyer["regNumber"], ensure_ascii=False)}')
+        fields.append(f'"affiliation": {{"@id": "{SITE}/#organization"}}')
+        persons.append("{" + ", ".join(fields) + "}")
+
+    block = ",\n        " + f'"mentions": [{", ".join(persons)}]'
+    # Шаблон захватывает и уже вставленный блок — пересборка не плодит копии.
+    pattern = re.compile(r'(?:,\s*"mentions": \[.*?\])?,\s*"inLanguage": "ru"', re.S)
+    return pattern.sub(lambda _m: block + ',\n        "inLanguage": "ru"', page, count=1)
+
+
+def set_person_subject_of(page, slug, articles):
+    """Обратная сторона связки в разметке: какие материалы относятся к адвокату."""
+    items = lawyer_articles(slug, articles)
+    if not items:
+        return page
+    refs = ", ".join(
+        '{"@type": "Article", "headline": %s, "url": "%s/articles/%s.html"}'
+        % (json.dumps(a.get("title"), ensure_ascii=False), SITE, a.get("slug"))
+        for a in items
+    )
+    block = ',\n      ' + f'"subjectOf": [{refs}]'
+    pattern = re.compile(r'(?:,\s*"subjectOf": \[.*?\])?,\s*"worksFor"', re.S)
+    if not pattern.search(page):
+        return page
+    return pattern.sub(lambda _m: block + ',\n      "worksFor"', page, count=1)
+
+
+def build_pages(settings, lawyers, articles, year, versions, previews):
     phone = settings.get("phone", "+7 (916) 928-65-05")
+    by_slug = {l.get("slug"): l for l in lawyers}
+    by_article_slug = {a.get("slug"): a for a in articles}
     count = 0
 
     for path, rel in iter_pages():
@@ -511,12 +782,37 @@ def build_pages(settings, lawyers, articles, year, versions):
         # Реквизиты вместо [ИНН] / [ОГРН] / [Номер в реестре] на about.html
         page = fill_legal_outside_footer(page, settings)
 
-        # Фото на персональной странице адвоката — из data/lawyers.json
+        # Личное дело адвоката: фото, блок публикаций и обратная связка в схеме
         if rel.parts[0] == "team" and len(rel.parts) > 1:
             slug = rel.name[:-5]
-            lawyer = next((l for l in lawyers if l.get("slug") == slug), None)
+            lawyer = by_slug.get(slug)
             if lawyer:
                 page = set_profile_photo(page, lawyer, r)
+                page = insert_block(
+                    page, "LAWYER_ARTICLES",
+                    render_lawyer_articles(slug, articles, r),
+                    r'<div style="margin-top:48px;padding-top:32px',
+                )
+                page = set_person_subject_of(page, slug, articles)
+
+        # Страница статьи: источники с превью и подпись «Адвокат по делу»
+        if rel.parts[0] == "articles" and len(rel.parts) > 1:
+            article = by_article_slug.get(rel.name[:-5])
+            if article:
+                page = replace_block(
+                    page, "SOURCES", render_sources(article, previews, r),
+                    r'<div class="article-sources">.*?</div>',
+                )
+                # Якорь берём после сборки источников: иначе блок адвоката
+                # попал бы внутрь маркеров SOURCES и стёрся бы при пересборке.
+                anchor = (r'<!-- AE:SOURCES:START -->'
+                          if "<!-- AE:SOURCES:START -->" in page
+                          else r'<div style="margin-top:48px;padding-top:32px')
+                page = insert_block(
+                    page, "ARTICLE_LAWYERS",
+                    render_article_lawyers(article, by_slug, r), anchor,
+                )
+                page = set_article_person_schema(page, article, by_slug)
 
         # Пререндер сеток
         if rel.name == "index.html" and depth == 0:
@@ -526,7 +822,7 @@ def build_pages(settings, lawyers, articles, year, versions):
             )
             page = prerender_grid(
                 page, "ARTICLES_GRID", "articlesGrid",
-                "\n".join(article_card(a, r) for a in articles[:3]),
+                "\n".join(article_card(a, r, by_slug) for a in articles[:3]),
             )
         elif rel.name == "team.html" and depth == 0:
             page = prerender_grid(
@@ -537,7 +833,7 @@ def build_pages(settings, lawyers, articles, year, versions):
             # Пагинация (PER_PAGE) включается только после клика по фильтру.
             page = prerender_grid(
                 page, "ALL_ARTICLES_GRID", "allArticlesGrid",
-                "\n".join(article_card(a, r) for a in articles),
+                "\n".join(article_card(a, r, by_slug) for a in articles),
             )
 
         # ?v=<хеш> у стилей и скриптов — чтобы браузер не держал старую версию
@@ -705,6 +1001,7 @@ def main():
     settings = load_json("data/settings.json")
     lawyers = load_json("data/lawyers.json")
     articles = load_json("data/articles.json")
+    previews = load_previews()
     year = datetime.now().year
     stamp = data_version()
 
@@ -713,7 +1010,7 @@ def main():
     stamped = stamp_data_version(stamp)
     versions = {rel: asset_hash(rel) for rel in VERSIONED_ASSETS}
 
-    pages = build_pages(settings, lawyers, articles, year, versions)
+    pages = build_pages(settings, lawyers, articles, year, versions, previews)
     urls = build_sitemap()
 
     print(f"Страниц обновлено:      {pages}")

@@ -22,7 +22,7 @@ function escHtml(str) {
 
 /* Версия данных проставляется scripts/build.py при публикации.
    Раньше здесь стоял Date.now(), из-за чего CDN-кеш не срабатывал ни разу. */
-const DATA_VERSION = '709a289400';
+const DATA_VERSION = '1d2d6a3b77';
 
 async function loadData(key, jsonPath) {
   try {
@@ -171,6 +171,43 @@ async function renderFullTeam() {
 }
 
 /* ===== ARTICLE CARD HTML (home page — links to articles.html) ===== */
+/* ── Связка «статья ↔ адвокат» ──────────────────────────────────────
+   Разметку тега задаёт scripts/build.py — здесь она повторена, потому
+   что при фильтрации на странице «Статьи» карточки перерисовываются в
+   браузере. Два определения одного шаблона обязаны меняться вместе:
+   разойдутся — теги пропадут после первого клика по фильтру. */
+
+let LAWYERS_BY_SLUG = {};
+
+function indexLawyers(list) {
+  LAWYERS_BY_SLUG = {};
+  (list || []).forEach(l => { if (l && l.slug) LAWYERS_BY_SLUG[l.slug] = l; });
+  return LAWYERS_BY_SLUG;
+}
+
+function shortName(full) {
+  const p = String(full || '').trim().split(/\s+/);
+  return p.length >= 3 ? `${p[0]} ${p[1][0]}. ${p[2][0]}.` : String(full || '');
+}
+
+const LAWYER_TAG_ICON =
+  '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" ' +
+  'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+function lawyerTagsHTML(a, root) {
+  const prefix = root || '';
+  return (a.lawyers || []).map(link => {
+    const l = LAWYERS_BY_SLUG[link.slug];
+    if (!l) return '';
+    const label = link.role ? link.role + ' — перейти к адвокату' : 'Перейти к адвокату';
+    return `<a class="article-lawyer-tag" href="${prefix}team/${escHtml(l.slug)}.html"` +
+           ` title="${escHtml(label)}">${LAWYER_TAG_ICON}` +
+           `<span>${escHtml(shortName(l.name))}</span></a>`;
+  }).join('');
+}
+
+
 function homeArticleCardHTML(a) {
   const mins = readingTime(a.content || a.summary || '');
   const href = a.slug ? 'articles/' + escHtml(a.slug) + '.html' : 'articles.html';
