@@ -241,5 +241,97 @@
     "image": null,
     "fetched": "2026-09-11",
     "siteName": "Адвокатская газета"
+  },
+  "https://dailystorm.ru/news/mayning-fermu-nashli-za-falshivoy-stenoy-odnogo-iz-moskovskih-restoranov-video": {
+    "outlet": "Daily Storm",
+    "host": "dailystorm.ru",
+    "title": "Майнинг-ферму нашли за фальшивой стеной одного из московских ресторанов — видео",
+    "image": "images/previews/6222ce23fa.jpg",
+    "fetched": "2026-09-11",
+    "siteName": "Daily Storm",
+    "bytes": 14767
+  },
+  "https://360.ru/news/crime/majningovuju-fermu-sluchajno-nashli-v-stene-moskovskogo-restorana/": {
+    "outlet": "360.ru",
+    "host": "360.ru",
+    "title": "Майнинговую ферму случайно нашли в стене московского ресторана. Видео",
+    "image": "images/previews/c3042513bb.jpg",
+    "fetched": "2026-09-11",
+    "siteName": "360°",
+    "bytes": 8962
+  },
+  "https://www.bfm.ru/news/449391": {
+    "outlet": "BFM.ru",
+    "host": "www.bfm.ru",
+    "title": "«Завтра они поставят в Кремле майнинговую ферму и начнут биткоинами торговать»",
+    "image": "images/previews/eaa2f2591b.jpg",
+    "fetched": "2026-09-11",
+    "siteName": "BFM.ru - деловой портал",
+    "bytes": 18513
+  },
+  "https://komionline.ru/news/v-komi-vozbudili-ugolovnoe-delo-ob-afere-s-pensionnymi-nakopleniyami-na-11-milliardov-rublej": {
+    "outlet": "КомиОнлайн",
+    "host": "komionline.ru",
+    "title": "В Коми возбудили уголовное дело об афере с пенсионными накоплениями на 11 миллиардов рублей — КомиОнлайн",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "КомиОнлайн"
+  },
+  "https://www.cnews.ru/news/top/2025-05-16_prokuror_trebuet_dlitelnyh": {
+    "outlet": "CNews",
+    "host": "www.cnews.ru",
+    "title": "Разработчиков новой батареи для космоса хотят надолго посадить и взыскать у них больше 150 миллионов - CNews",
+    "image": "images/previews/a081b4c712.jpg",
+    "fetched": "2026-09-11",
+    "siteName": "CNews.ru",
+    "bytes": 19621
+  },
+  "https://www.forbes.ru/society/537308-kommersant-uznal-detali-dela-roskosmosa-i-cpta": {
+    "outlet": "Forbes",
+    "host": "www.forbes.ru",
+    "title": "",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "Forbes"
+  },
+  "http://debri-dv.com/article/12080/iz_ugolovnogo_dela_o_hishcheniyah_na_vostochnom_ubrali_kosmodrom": {
+    "outlet": "Дебри-ДВ",
+    "host": "debri-dv.com",
+    "title": "Из уголовного дела о хищениях на «Восточном» убрали космодром << Суд, Криминал, Прокуратура | Дебри-ДВ",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "Дебри-ДВ"
+  },
+  "https://web.archive.org/web/20231128172455/https://www.compromat.ru/page_35769.htm": {
+    "outlet": "Compromat.ru (архив)",
+    "host": "web.archive.org",
+    "title": "Хабаровский спикер вляпался в цемент. - Компромат.Ру / Compromat.Ru",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "Compromat.ru (архив)"
+  },
+  "http://old.advgazeta.ru/rubrics/8/1414": {
+    "outlet": "Адвокатская газета (архив)",
+    "host": "old.advgazeta.ru",
+    "title": "Работа сайта приостановлена",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "Адвокатская газета (архив)"
+  },
+  "http://old.advgazeta.ru/arch/179/1414": {
+    "outlet": "Адвокатская газета (архив)",
+    "host": "old.advgazeta.ru",
+    "title": "Работа сайта приостановлена",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "Адвокатская газета (архив)"
+  },
+  "https://ny.russianamerica.com/common/arc/story.php?id_cr=101&id=107022": {
+    "outlet": "RussianAmerica.com",
+    "host": "ny.russianamerica.com",
+    "title": "После вынесения приговора Михаил Коданев попытался покончить с собой, В мире",
+    "image": null,
+    "fetched": "2026-09-11",
+    "siteName": "RussianAmerica.com"
   }
 }

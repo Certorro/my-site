@@ -129,6 +129,16 @@
         "url": "https://dailystorm.ru/news/mayning-fermu-nashli-za-falshivoy-stenoy-odnogo-iz-moskovskih-restoranov-video",
         "title": "Майнинг-ферму нашли за фальшивой стеной одного из московских ресторанов — видео",
         "outlet": "Daily Storm"
+      },
+      {
+        "url": "https://360.ru/news/crime/majningovuju-fermu-sluchajno-nashli-v-stene-moskovskogo-restorana/",
+        "title": "Майнинговую ферму случайно нашли в стене московского ресторана. Видео",
+        "outlet": "360.ru"
+      },
+      {
+        "url": "https://www.bfm.ru/news/449391",
+        "title": "«Завтра они поставят в Кремле майнинговую ферму и начнут биткоинами торговать»",
+        "outlet": "BFM.ru"
       }
     ],
     "slug": "mayning-ferma-restoran-moskva-2019"
@@ -174,6 +184,11 @@
         "url": "https://www.kommersant.ru/doc/8139109",
         "title": "Пенсионные переводы с уголовного",
         "outlet": "Коммерсантъ"
+      },
+      {
+        "url": "https://komionline.ru/news/v-komi-vozbudili-ugolovnoe-delo-ob-afere-s-pensionnymi-nakopleniyami-na-11-milliardov-rublej",
+        "title": "В Коми возбудили уголовное дело об афере с пенсионными накоплениями на 11 миллиардов рублей — КомиОнлайн",
+        "outlet": "КомиОнлайн"
       }
     ],
     "slug": "pensionnoe-delo-pfr-2019-2025"
@@ -182,6 +197,12 @@
     "id": 13,
     "title": "Разработчики космической батареи для Роскосмоса получили условные сроки",
     "category": "Уголовное право",
+    "lawyers": [
+      {
+        "slug": "skriplev-evgeniy-vladimirovich",
+        "role": "Защитник А.А. Софинского"
+      }
+    ],
     "date": "2018-12-12",
     "summary": "Четыре руководителя компании ЗАО ЦПТА обвинялись в мошенничестве при исполнении государственного контракта Роскосмоса на разработку литиевой батареи ТХЛА-1000 для космических аппаратов. Прокуратура добивалась реальных сроков и взыскания 156 млн рублей. В итоге суд назначил условные сроки и постановил уничтожить пять прототипов батарей.",
     "content": "ЗАО ЦПТА (Центр перспективных технологий и аппаратуры) получило государственный контракт Роскосмоса стоимостью около 150 млн рублей на создание нового источника питания — литий-тионилхлоридной батареи ТХЛА-1000, предназначенной для космических аппаратов военного применения.\n\nПо версии следствия, вместо разработки новой технологии руководство ЦПТА предоставило заказчику уже существующую, менее мощную разработку, скрыв этот факт при сдаче работ в 2015 году. К делу были привлечены четыре топ-менеджера: генеральный директор Райгедас Поцюс, первый заместитель Олег Архипенков, коммерческий директор Александр Софинский и главный конструктор Семён Шишкин.\n\nВ декабре 2018 года Московский городской суд рассматривал вопрос о мере пресечения для Софинского — суд отклонил ходатайство о выходе из-под домашнего ареста. Прокуратура настаивала на том, что фигуранты намеренно сфальсифицировали документацию.\n\nВ мае 2025 года прокуратура потребовала реальных сроков заключения для всех четырёх обвиняемых. 2 июня 2025 года суд вынес приговор: условные сроки по статье о мошенничестве. Дополнительно суд постановил уничтожить пять изготовленных прототипов батарей.\n\nЗащита на протяжении всего процесса настаивала, что технология создания литий-тионилхлоридных батарей всё-таки была разработана, и оспаривала факт причинения ущерба государству. Дело длилось более шести лет.",
@@ -213,6 +234,16 @@
         "url": "https://www.kommersant.ru/doc/7774761",
         "title": "Бывших топ-менеджеров ЦПТА приговорили к условным срокам",
         "outlet": "Коммерсантъ"
+      },
+      {
+        "url": "https://myseldon.com/ru/news/index/329470643",
+        "title": "",
+        "outlet": "Seldon News"
+      },
+      {
+        "url": "https://www.forbes.ru/society/537308-kommersant-uznal-detali-dela-roskosmosa-i-cpta",
+        "title": "",
+        "outlet": "Forbes"
       }
     ],
     "slug": "fsb-vzyatka-batareya-roskosmosa-2018-2025"
@@ -243,6 +274,11 @@
         "url": "https://www.bfm.ru/news/376559",
         "title": "Мосгорсуд 5 февраля рассмотрит вопрос об освобождении врача Мисюриной",
         "outlet": "BFM.ru"
+      },
+      {
+        "url": "https://ru.ruwiki.ru/wiki/%D0%94%D0%B5%D0%BB%D0%BE_%D0%95%D0%BB%D0%B5%D0%BD%D1%8B_%D0%9C%D0%B8%D1%81%D1%8E%D1%80%D0%B8%D0%BD%D0%BE%D0%B9",
+        "title": "Дело Елены Мисюриной",
+        "outlet": "Рувики"
       }
     ],
     "slug": "delo-misyurinoy-vrach-gematolog-2018"
@@ -327,6 +363,11 @@
         "url": "https://www.bfm.ru/news/295078",
         "title": "Сердечная болезнь и склероз не помешали аресту главы Хабаровской думы",
         "outlet": "BFM.ru"
+      },
+      {
+        "url": "https://web.archive.org/web/20231128172455/https://www.compromat.ru/page_35769.htm",
+        "title": "Хабаровский спикер вляпался в цемент. - Компромат.Ру / Compromat.Ru",
+        "outlet": "Compromat.ru (архив)"
       }
     ],
     "slug": "vostochny-kosmodrom-khishcheniya-2015"
@@ -399,11 +440,6 @@
         "outlet": "The New York Times"
       },
       {
-        "url": "https://aif.ru/incidents/42718",
-        "title": "Публикация об инциденте",
-        "outlet": "Аргументы и факты"
-      },
-      {
         "url": "https://www.nytimes.com/2011/02/20/world/europe/20russia.html",
         "title": "Trial Starts in Moscow Killings of Lawyer and Reporter",
         "outlet": "The New York Times"
@@ -412,6 +448,16 @@
         "url": "https://www.youtube.com/watch?v=wbPzYgT4ydk",
         "title": "Показания Тихонова по делу БОРН",
         "outlet": "YouTube"
+      },
+      {
+        "url": "https://por-triunfo.livejournal.com/22993.html",
+        "title": "",
+        "outlet": "LiveJournal"
+      },
+      {
+        "url": "https://lenta.ru/articles/2014/09/18/tikhonov/",
+        "title": "",
+        "outlet": "Lenta.ru"
       }
     ],
     "slug": "ubiystvo-markelova-baborovoy-2009"
@@ -472,6 +518,11 @@
         "url": "https://www.bfm.ru/news/375134",
         "title": "Заказчик убийства депутата Юшенкова может выйти по УДО",
         "outlet": "BFM.ru"
+      },
+      {
+        "url": "https://ru.ruwiki.ru/wiki/%D0%9A%D0%BE%D0%B4%D0%B0%D0%BD%D1%91%D0%B2,_%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B5%D0%B2%D0%B8%D1%87",
+        "title": "Коданёв, Михаил Николаевич",
+        "outlet": "Рувики"
       }
     ],
     "slug": "liberalnaya-rossiya-ugolovnoe-delo-2003"
