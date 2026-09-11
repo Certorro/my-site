@@ -1839,3 +1839,135 @@ html, body { overflow-x: hidden; }
 .grid-bg-light,
 .grid-shimmer,
 .hero-grid-overlay { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   Связка «статья ↔ адвокат»
+   Три элемента одной связи: тег на карточке статьи, подпись адвоката
+   под материалом и список публикаций в личном деле. Разметку для всех
+   трёх собирает scripts/build.py — правки по месту разъедутся с ним.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Тег со сквозной ссылкой в личное дело ──────────────────────── */
+.article-lawyer-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: 0 0 auto; max-width: 52%;
+  font-family: var(--font-mono); font-size: 0.53rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-body); text-decoration: none;
+  padding: 4px 9px; border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: var(--paper-card);
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.article-lawyer-tag svg { flex: 0 0 auto; opacity: .55; }
+.article-lawyer-tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.article-lawyer-tag:hover,
+.article-lawyer-tag:focus-visible {
+  color: var(--gold); border-color: var(--gold); background: var(--paper-mute);
+}
+.article-lawyer-tag:hover svg { opacity: 1; }
+
+/* ── Подпись «Адвокат по делу» на странице статьи ────────────────── */
+.case-lawyers { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
+.case-lawyers-title {
+  font-family: var(--font-mono); font-size: 0.58rem; font-weight: 400;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); margin: 0 0 18px;
+}
+.case-lawyer { display: flex; align-items: flex-start; gap: 18px; }
+.case-lawyer + .case-lawyer { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.case-lawyer-photo {
+  flex: 0 0 auto; width: 76px; height: 92px; overflow: hidden;
+  border-radius: var(--r-sm); background: var(--paper-mute); display: block;
+}
+.case-lawyer-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+.case-lawyer-body { min-width: 0; }
+.case-lawyer-role {
+  font-family: var(--font-mono); font-size: 0.54rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+}
+.case-lawyer-body h4 { font-family: var(--font-display); font-size: 1.18rem; font-weight: 500; margin: 0 0 4px; line-height: 1.25; }
+.case-lawyer-body h4 a { color: var(--ink); text-decoration: none; }
+.case-lawyer-body h4 a:hover { color: var(--gold); }
+.case-lawyer-meta { font-size: 0.76rem; color: var(--muted); margin-bottom: 10px; }
+.case-lawyer-more {
+  font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gold); text-decoration: none;
+  border-bottom: 1px solid transparent; transition: border-color .2s ease;
+}
+.case-lawyer-more:hover { border-bottom-color: var(--gold); }
+
+/* ── Публикации в личном деле адвоката ───────────────────────────── */
+.lawyer-articles { margin-top: 48px; padding-top: 36px; border-top: 1px solid var(--line); }
+.lawyer-articles-head { margin-bottom: 22px; }
+.lawyer-articles-head h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 500; margin: 0 0 6px; }
+.lawyer-articles-count { font-size: 0.84rem; color: var(--muted); margin: 0; }
+.lawyer-article-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.lawyer-article-item { border-bottom: 1px solid var(--line); }
+.lawyer-article-link {
+  display: block; padding: 16px 34px 16px 0; position: relative;
+  text-decoration: none; color: inherit; transition: padding-left .2s ease;
+}
+.lawyer-article-link::after {
+  content: "→"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  color: var(--gold); opacity: 0; transition: opacity .2s ease, right .2s ease;
+}
+.lawyer-article-link:hover { padding-left: 10px; background: var(--paper-mute); }
+.lawyer-article-link:hover::after { opacity: 1; right: 14px; }
+.lawyer-article-role {
+  display: block; font-family: var(--font-mono); font-size: 0.53rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 5px;
+}
+.lawyer-article-title {
+  display: block; font-family: var(--font-display); font-size: 1.08rem;
+  line-height: 1.35; color: var(--ink); margin-bottom: 6px;
+}
+.lawyer-article-link:hover .lawyer-article-title { color: var(--gold); }
+.lawyer-article-meta {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: 0.54rem; color: var(--muted);
+}
+.lawyer-article-cat, .lawyer-article-src { border-left: 1px solid var(--line); padding-left: 10px; }
+
+/* ── Источники: внешние ссылки с миниатюрой ──────────────────────── */
+.source-list { list-style: none; margin: 0; padding: 0; }
+.source-item + .source-item { margin-top: 10px; }
+.source-link {
+  display: flex; align-items: center; gap: 14px; padding: 8px;
+  text-decoration: none; color: inherit; border: 1px solid transparent;
+  border-radius: var(--r-sm); transition: border-color .2s ease, background .2s ease;
+}
+.source-link:hover { border-color: var(--line); background: var(--paper-card); }
+/* Габариты миниатюр строго одинаковые: список идёт колонкой, и разнобой
+   по высоте ломал бы строй. Кадрирование по центру делает fetch-previews.py,
+   object-fit здесь — страховка на случай подменённого файла. */
+.source-thumb {
+  flex: 0 0 auto; width: 120px; height: 90px;
+  object-fit: cover; display: block;
+  border-radius: var(--r-sm); background: var(--paper-mute);
+}
+.source-thumb--blank {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 1.6rem; color: var(--gold);
+  border: 1px solid var(--line);
+}
+.source-body { min-width: 0; flex: 1 1 auto; }
+.source-outlet {
+  display: block; font-family: var(--font-mono); font-size: 0.53rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px;
+}
+.source-title {
+  display: block; font-size: 0.86rem; line-height: 1.4; color: var(--text-body);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.source-link:hover .source-title { color: var(--ink); }
+.source-arrow { flex: 0 0 auto; color: var(--muted); opacity: 0; transition: opacity .2s ease; }
+.source-link:hover .source-arrow { opacity: 1; color: var(--gold); }
+
+@media (max-width: 640px) {
+  .article-card-meta-row { flex-wrap: wrap; }
+  .article-lawyer-tag { max-width: 100%; }
+  .source-thumb { width: 88px; height: 66px; }
+  .source-title { -webkit-line-clamp: 2; font-size: 0.8rem; }
+  .case-lawyer { gap: 14px; }
+  .case-lawyer-photo { width: 62px; height: 76px; }
+}
