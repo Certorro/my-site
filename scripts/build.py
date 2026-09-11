@@ -634,12 +634,38 @@ def render_profile_photo(lawyer, r):
         src = photo if photo.startswith(("http://", "https://", "/")) else f"{r}{photo}"
         inner = (
             f'<img src="{esc(src)}" alt="{esc(lawyer.get("name"))}" '
-            'width="120" height="120" loading="eager">'
+            'width="240" height="240" loading="eager">'
         )
     else:
         inner = PROFILE_PLACEHOLDER
     cutout = " profile-photo--cutout" if lawyer.get("photoCutout") else ""
     return f'<div class="profile-photo{cutout}">{inner}</div>'
+
+
+HERO_SPEC = re.compile(r'(</h1>\s*<p\b[^>]*>)(.*?)(</p>)', re.S)
+FULL_SPEC = re.compile(r'(<div class="lawyer-full-spec"[^>]*>)(.*?)(</div>)', re.S)
+
+
+def set_profile_specialization(page, lawyer):
+    """
+    Подставляет специализацию из data/lawyers.json в оба места на странице
+    адвоката: в подзаголовок шапки и в строку под фотографией.
+
+    Раньше обе строки были вписаны в разметку вручную, и у трёх адвокатов
+    из шести они разошлись с данными. У Гонтаренко в карточке команды
+    значилось «Гражданское, административное, уголовное и арбитражное
+    право», а в личном деле — «Гражданское и арбитражное право».
+
+    Замена идемпотентна по построению: подставляется одно и то же значение
+    поверх прежнего, поэтому маркеры здесь не нужны.
+    """
+    spec = lawyer.get("specialization")
+    if not spec:
+        return page
+    value = esc(spec)
+    page = HERO_SPEC.sub(lambda m: m.group(1) + value + m.group(3), page, count=1)
+    page = FULL_SPEC.sub(lambda m: m.group(1) + value + m.group(3), page, count=1)
+    return page
 
 
 def set_profile_photo(page, lawyer, r):
@@ -840,6 +866,7 @@ def build_pages(settings, lawyers, articles, year, versions, previews):
             lawyer = by_slug.get(slug)
             if lawyer:
                 page = set_profile_photo(page, lawyer, r)
+                page = set_profile_specialization(page, lawyer)
                 page = insert_block(
                     page, "LAWYER_ARTICLES",
                     render_lawyer_articles(slug, articles, r),
