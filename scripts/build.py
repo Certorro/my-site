@@ -189,6 +189,35 @@ def render_header(r, active, phone_text):
 </header>"""
 
 
+MAIL_ICON = (
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
+)
+
+
+def render_mobile_bar(r, phone_text):
+    """
+    Нижняя панель связи для узких экранов.
+
+    Это toolbar, а не таб-бар: Apple прямо разделяет их — «Use a tab bar to
+    support navigation, not to provide actions… use a toolbar instead».
+    Звонок и заявка — действия, поэтому панель действий.
+
+    Появляется там же, где из шапки пропадает телефон (ниже 1180 px). До
+    этого номер на узком экране был доступен только после открытия меню —
+    для коллегии, где основная конверсия звонок, это прямая потеря.
+    """
+    return f"""<div class="mobile-bar" role="toolbar" aria-label="Быстрая связь">
+  <a class="mobile-bar-btn mobile-bar-btn--call" href="{PHONE_HREF}" aria-label="Позвонить: {esc(phone_text)}">
+    {phone_icon(19)}<span>Позвонить</span>
+  </a>
+  <a class="mobile-bar-btn" href="{r}contact.html">
+    {MAIL_ICON}<span>Написать</span>
+  </a>
+</div>"""
+
+
 FOOTER_NAV = [
     ("about.html", "О коллегии"),
     ("services.html", "Услуги"),
@@ -787,6 +816,18 @@ def build_pages(settings, lawyers, articles, year, versions, previews):
             page = page.replace(
                 "</head>",
                 f"<!-- AE:OG:START -->\n{og_tags(rel)}\n<!-- AE:OG:END -->\n</head>",
+                1,
+            )
+
+        # Панель связи внизу узких экранов — вставляется один раз перед </body>
+        if "<!-- AE:MOBILEBAR:START -->" in page:
+            page = replace_block(page, "MOBILEBAR", render_mobile_bar(r, phone), None)
+        else:
+            page = page.replace(
+                "</body>",
+                "<!-- AE:MOBILEBAR:START -->\n"
+                f"{render_mobile_bar(r, phone)}\n"
+                "<!-- AE:MOBILEBAR:END -->\n</body>",
                 1,
             )
 

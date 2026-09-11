@@ -2071,3 +2071,106 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
   .lawyer-article-list { columns: 2; column-gap: clamp(40px, 4vw, 72px); }
   .lawyer-article-item { break-inside: avoid; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   Панель связи внизу узких экранов
+
+   Это toolbar, а не таб-бар. Apple разделяет их прямо: «Use a tab bar to
+   support navigation, not to provide actions… use a toolbar instead».
+   Звонок и заявка — действия, значит панель действий.
+
+   Появляется ровно там, где из шапки пропадает телефон (ниже 1180 px).
+   До этого номер на узком экране открывался только через бургер-меню —
+   для коллегии, где основная конверсия звонок, это была прямая потеря.
+
+   Материал — Liquid Glass, вариант regular: он размывает и подстраивает
+   яркость фона ради читаемости. Вариант clear предназначен для панелей
+   поверх фото и видео, здесь под панелью обычный текст.
+   ══════════════════════════════════════════════════════════════════ */
+
+.mobile-bar {
+  display: none;
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  /* Отступ от индикатора «домой»: без safe-area панель на iPhone
+     оказывается под системной полосой и половина кнопки не нажимается. */
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 900;            /* ниже шапки (1000) и баннера cookie (9000):
+                              открытое меню должно перекрывать панель */
+  gap: 6px;
+  padding: 6px;
+  border-radius: 22px;
+  background: rgba(245, 242, 236, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(19, 18, 16, 0.08);
+  box-shadow: 0 1px 1px rgba(19, 18, 16, .04), 0 8px 28px rgba(19, 18, 16, .16);
+}
+
+.mobile-bar-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  /* 44 px — минимальная область нажатия. Визуально кнопка может быть
+     меньше, но зона касания меньше 44 px промахивается. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Радиус концентричен панели: 22 внешний − 6 внутренний отступ = 16. */
+  border-radius: 16px;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(19, 18, 16, 0.06);
+  transition: transform .18s ease, background .18s ease;
+}
+.mobile-bar-btn svg { flex: 0 0 auto; }
+.mobile-bar-btn:active { transform: scale(0.97); }
+
+.mobile-bar-btn--call {
+  background: var(--gold-ink);
+  border-color: transparent;
+  color: #131210;
+  font-weight: 600;
+}
+
+@media (max-width: 1179px) {
+  .mobile-bar { display: flex; }
+  /* Панель плавает над содержимым, поэтому подвалу нужен запас снизу —
+     иначе последние строки и ссылки окажутся под ней. */
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Системные настройки доступности меняют поведение Liquid Glass —
+   при уменьшенной прозрачности материал заменяется сплошным фоном. */
+@media (prefers-reduced-transparency: reduce) {
+  .mobile-bar {
+    background: var(--paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: rgba(19, 18, 16, 0.16);
+  }
+  .mobile-bar-btn { background: rgba(19, 18, 16, 0.05); }
+}
+
+@media (prefers-contrast: more) {
+  .mobile-bar { background: var(--paper); border-color: var(--ink); }
+  .mobile-bar-btn { border-color: rgba(19, 18, 16, 0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-bar-btn { transition: none; }
+  .mobile-bar-btn:active { transform: none; }
+}
+
+/* Браузеры без backdrop-filter получат сплошной фон, а не полупрозрачный
+   слой, сквозь который текст под панелью читается насквозь. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mobile-bar { background: var(--paper); }
+}
