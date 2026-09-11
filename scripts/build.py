@@ -471,15 +471,19 @@ def render_sources(a, previews, r):
     for s in sources:
         url = s.get("url") or ""
         preview = previews.get(url) or {}
-        title = s.get("title") or preview.get("title") or url
+        title = s.get("title") or preview.get("title")
         outlet = s.get("outlet") or preview.get("siteName") or preview.get("host") or ""
+        # Часть изданий закрыта для сборщика превью (403, геоблок), и заголовка
+        # взять неоткуда. Подставлять URL вместо названия смысла нет — издание
+        # уже подписано строкой выше; строку заголовка просто не рисуем.
+        title_html = f'<span class="source-title">{esc(title)}</span>' if title else ""
         items.append(
             f'''        <li class="source-item">
           <a class="source-link" href="{esc(url)}" target="_blank" rel="noopener noreferrer">
             {source_thumb({**preview, "outlet": outlet}, r)}
             <span class="source-body">
               <span class="source-outlet">{esc(outlet)}</span>
-              <span class="source-title">{esc(title)}</span>
+              {title_html}
             </span>
             <svg class="source-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
@@ -671,6 +675,13 @@ def iter_pages():
     for path in sorted(ROOT.rglob("*.html")):
         rel = path.relative_to(ROOT)
         if set(rel.parts) & EXCLUDE_DIRS:
+            continue
+        # Любой служебный каталог, а не только перечисленные. Списком было
+        # не поймать .claude/worktrees: сборка заходила в рабочую копию репозитория
+        # внутри него, перебирала второй экземпляр сайта и дописывала его
+        # страницы в sitemap.xml — 64 URL вместо 32, половина из них
+        # несуществующие. Для поисковой выдачи это прямой вред.
+        if any(part.startswith(".") for part in rel.parts[:-1]):
             continue
         if rel.name in EXCLUDE_FILES or rel.name.startswith("yandex_"):
             continue
