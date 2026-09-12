@@ -2198,3 +2198,50 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
     margin-inline: 0;   /* в строку рядом с текстом — прижат влево */
   }
 }
+
+/* ── Ссылки на источники внутри биографии ───────────────────────── */
+/* Тот же язык, что у меток адвоката на карточках статей: моношрифт,
+   капитель, волосяная рамка. Источник по делу — это подтверждение,
+   а не украшение, поэтому набран мелко и не спорит с текстом дела. */
+.bio-case { display: block; }
+.bio-case-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+.bio-case-links a {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  transition: color .2s ease, border-color .2s ease;
+}
+.bio-case-links a:hover,
+.bio-case-links a:focus-visible {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* ── Оговорка о гонораре ────────────────────────────────────────── */
+/* Публиковать расценки коллегия сознательно не стала: опубликованный
+   прайс работает как публичная оферта, а фактический гонорар по делу
+   от него отличается — это повод для претензий. Вместо цен ссылка на
+   ст. 421 ГК РФ о свободе договора. */
+.fee-note {
+  max-width: var(--measure);
+  margin: 40px 0 0;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
