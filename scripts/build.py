@@ -642,6 +642,56 @@ def render_profile_photo(lawyer, r):
     return f'<div class="profile-photo{cutout}">{inner}</div>'
 
 
+def render_biography(lawyer):
+    """
+    Собирает раздел «Профессиональная биография» из data/lawyers.json.
+
+    Раньше перечень дел был вписан в страницу вручную: ни одной ссылки на
+    источники, статьи УК упомянуты в трёх пунктах из девятнадцати, фамилии
+    разошлись с тем, что адвокат ведёт сам. Теперь и текст, и ссылки лежат
+    в данных, а страница собирается из них.
+    """
+    bio = lawyer.get("biography")
+    if not bio:
+        return None
+
+    items = []
+    for case in bio.get("cases", []):
+        links = "".join(
+            f'<a href="{esc(l["url"])}" target="_blank" rel="noopener noreferrer">'
+            f'{esc(l["label"])}</a>'
+            for l in (case.get("links") or [])
+        )
+        links_html = f'\n          <span class="bio-case-links">{links}</span>' if links else ""
+        items.append(
+            f'        <li>\n          <span class="bio-case">{esc(case["text"])}</span>'
+            f'{links_html}\n        </li>'
+        )
+
+    closing = (f'\n      <p class="bio-closing">{esc(bio["closing"])}</p>'
+               if bio.get("closing") else "")
+
+    return (
+        '    <div class="bio-section">\n'
+        '      <h2>ПРОФЕССИОНАЛЬНАЯ БИОГРАФИЯ</h2>\n'
+        f'      <p class="bio-lead">{esc(bio.get("lead", ""))}</p>\n'
+        '      <ul class="bio-list">\n'
+        + "\n".join(items) + "\n"
+        '      </ul>'
+        + closing + '\n'
+        '    </div>'
+    )
+
+
+def set_biography(page, lawyer):
+    content = render_biography(lawyer)
+    if content is None:
+        return page
+    # Внутри .bio-section вложенных div нет, поэтому нежадный шаблон
+    # останавливается на её собственном закрывающем теге.
+    return replace_block(page, "BIO", content, r'<div class="bio-section">.*?</div>')
+
+
 HERO_SPEC = re.compile(r'(</h1>\s*<p\b[^>]*>)(.*?)(</p>)', re.S)
 FULL_SPEC = re.compile(r'(<div class="lawyer-full-spec"[^>]*>)(.*?)(</div>)', re.S)
 
@@ -867,6 +917,7 @@ def build_pages(settings, lawyers, articles, year, versions, previews):
             if lawyer:
                 page = set_profile_photo(page, lawyer, r)
                 page = set_profile_specialization(page, lawyer)
+                page = set_biography(page, lawyer)
                 page = insert_block(
                     page, "LAWYER_ARTICLES",
                     render_lawyer_articles(slug, articles, r),
