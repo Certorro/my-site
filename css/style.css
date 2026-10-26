@@ -16,7 +16,8 @@
   --paper-mute: #ede8df;
 
   --gold-on-dark: #c8a94a;  /* на --ink:   8.23:1 */
-  --gold-ink:     #a8862c;  /* на --paper: 3.08:1 */
+  --gold-ink:     #806419;  /* на --paper: 5.01:1, на белом 5.59:1 — WCAG AA */
+  --gold-fill:    #a8862c;  /* заливка под тёмным текстом: с --ink 5.4:1 */
   /* --gold не фиксирован: страница по умолчанию светлая, а тёмные
      поверхности ниже переопределяют его для своих потомков. Иначе
      выбирать оттенок пришлось бы в каждом из 43 правил, где золото
@@ -26,13 +27,13 @@
   --on-dark:            #eae5db;
   --on-dark-strong:     #f4f0e8;
   --on-dark-secondary:  rgba(234,229,219,.6);
-  --on-dark-mute:       rgba(234,229,219,.45);
+  --on-dark-mute:       rgba(234,229,219,.58); /* на --ink ≥ 5:1 */
   --line-dark:          rgba(234,229,219,.1);
   --surface-dark:       rgba(234,229,219,.035);
   --surface-dark-hover: rgba(234,229,219,.06);
 
   --text-body:  #5f5b54;   /* на --paper: 6.04:1 */
-  --text-mute:  #7a766e;   /* на --paper: 4.05:1 — крупный текст */
+  --text-mute:  #6b675f;   /* на --paper: 5.04:1 — WCAG AA для любого текста */
 
   /* Типографика. Все три семейства уже лежат локально в fonts/ */
   --font-display: 'Cormorant Garamond', Georgia, serif;
@@ -468,7 +469,7 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 .lawyer-spec       { font-family: var(--font-mono); color: var(--gold); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; font-weight: 400; }
 .lawyer-exp        { color: var(--on-dark-secondary); font-size: 0.8rem; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-weight: 300; }
 .lawyer-exp::before{ content: ''; display: inline-block; width: 16px; height: 1px; background: var(--gold); flex-shrink: 0; }
-.lawyer-reg        { font-family: var(--font-mono); font-size: 0.56rem; color: rgba(245,242,236,0.2); margin-top: 6px; letter-spacing: 0.1em; }
+.lawyer-reg        { font-family: var(--font-mono); font-size: 0.56rem; color: rgba(245,242,236,0.6); margin-top: 6px; letter-spacing: 0.1em; }
 .lawyer-palata     { font-family: var(--font-mono); font-size: 0.56rem; color: var(--gold); margin-top: 2px; opacity: 0.7; }
 
 /* ===== ARTICLES (MAIN PAGE + ARTICLES PAGE) ===== */
@@ -1100,7 +1101,7 @@ footer {
   .article-reading-time   { font-size: 0.62rem; }
   .read-more              { font-size: 0.66rem; letter-spacing: 0.12em; }
   .lawyer-spec            { font-size: 0.68rem; letter-spacing: 0.14em; }
-  .lawyer-reg             { font-size: 0.64rem; color: rgba(245,242,236,0.4); }
+  .lawyer-reg             { font-size: 0.64rem; color: rgba(245,242,236,0.6); }
   .lawyer-palata          { font-size: 0.64rem; }
   .breadcrumbs            { font-size: 0.68rem; }
   .contact-label          { font-size: 0.64rem; }
@@ -1644,6 +1645,15 @@ html, body { overflow-x: hidden; }
 }
 .intake-note + .intake-note { margin-top: 7px; }
 .intake-note::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.intake-consent {
+  display: flex; align-items: flex-start; gap: 10px; margin-top: 18px;
+  font-size: 12.5px; line-height: 1.55; color: var(--on-dark-secondary); cursor: pointer;
+}
+.intake-form .intake-consent input {
+  width: 16px; height: 16px; padding: 0; margin: 2px 0 0; flex-shrink: 0;
+  border: 0; appearance: auto; accent-color: var(--gold-on-dark); cursor: pointer;
+}
+.intake-consent a { color: var(--gold-on-dark); text-decoration: underline; }
 .intake-status { margin-top: 16px; font-size: 13px; line-height: 1.5; color: var(--on-dark); }
 .intake-status--error { color: #f0a49b; }
 
@@ -2134,7 +2144,7 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
 .mobile-bar-btn:active { transform: scale(0.97); }
 
 .mobile-bar-btn--call {
-  background: var(--gold-ink);
+  background: var(--gold-fill);
   border-color: transparent;
   color: #131210;
   font-weight: 600;
