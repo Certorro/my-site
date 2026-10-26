@@ -495,6 +495,7 @@ function initHeroIntake() {
   const nameEl  = form.querySelector('#intakeName');
   const phoneEl = form.querySelector('#intakePhone');
   const topicEl = form.querySelector('#intakeTopic');
+  const consentEl = form.querySelector('#intakeConsent');
   const btn     = form.querySelector('#intakeSubmit');
   const status  = form.querySelector('#intakeStatus');
 
@@ -505,7 +506,7 @@ function initHeroIntake() {
     status.classList.toggle('intake-status--error', !!isError);
   };
 
-  [nameEl, phoneEl].forEach(el => el?.addEventListener('input', () => {
+  [nameEl, phoneEl, consentEl].forEach(el => el?.addEventListener('input', () => {
     el.removeAttribute('aria-invalid');
     if (status) status.hidden = true;
   }));
@@ -526,6 +527,11 @@ function initHeroIntake() {
       phoneEl?.setAttribute('aria-invalid', 'true');
       phoneEl?.focus();
       return say('Укажите телефон, чтобы мы могли перезвонить.', true);
+    }
+    if (consentEl && !consentEl.checked) {
+      consentEl.setAttribute('aria-invalid', 'true');
+      consentEl.focus();
+      return say('Отметьте согласие на обработку персональных данных.', true);
     }
 
     if (btn) { btn.disabled = true; btn.textContent = 'Отправляется…'; }
