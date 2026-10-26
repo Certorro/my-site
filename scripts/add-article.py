@@ -24,6 +24,20 @@ Fields per article:
 """
 
 import json
+
+def meta_desc(text, limit=160):
+    \"\"\"Описание до limit знаков по границе предложения, без обрыва слова.\"\"\"
+    import re as _re
+    out = ""
+    for sent in _re.split(r"(?<=[.!?])\s+", text.strip()):
+        cand = (out + " " + sent).strip()
+        if len(cand) > limit:
+            break
+        out = cand
+    if not out:
+        cut = text[:limit - 1].rsplit(" ", 1)[0].rstrip(",;:—- ")
+        out = cut + "…"
+    return out
 from pathlib import Path
 
 BASE = Path(__file__).parent.parent
@@ -78,19 +92,19 @@ def build_html(a):
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{a['title']} | Адвокатская коллегия «Альтер-Эго»</title>
-  <meta name="description" content="{a['summary'][:160]}">
+  <meta name="description" content="{meta_desc(a['summary'])}">
   <link rel="canonical" href="https://al-e.net/articles/{a['slug']}.html">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://al-e.net/articles/{a['slug']}.html">
   <meta property="og:title" content="{a['title']}">
-  <meta property="og:description" content="{a['summary'][:200]}">
+  <meta property="og:description" content="{meta_desc(a['summary'])}">
   <meta property="og:site_name" content="Адвокатская коллегия Альтер-Эго">
   <meta property="og:locale" content="ru_RU">
   <meta property="article:published_time" content="{pub_date}">
   <meta property="article:section" content="{a['category']}">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="{a['title']}">
-  <meta name="twitter:description" content="{a['summary'][:200]}">
+  <meta name="twitter:description" content="{meta_desc(a['summary'])}">
   <link rel="stylesheet" href="../fonts/fonts.css">
   <link rel="stylesheet" href="../css/style.css">
   <script type="application/ld+json">
@@ -100,7 +114,7 @@ def build_html(a):
       {{
         "@type": "Article",
         "headline": "{a['title']}",
-        "description": "{a['summary'][:200]}",
+        "description": "{meta_desc(a['summary'])}",
         "datePublished": "{pub_date}",
         "dateModified": "{pub_date}",
         "author": {{"@id": "https://al-e.net/#organization"}},
