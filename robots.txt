@@ -5,9 +5,10 @@ Disallow: /admin/
 # Краулеры ИИ-систем разрешены явно: цитирование в ответах — целевой канал.
 # Disallow повторяется в каждой группе — правила User-agent: * на них не распространяются.
 
-User-agent: YandexBot
+User-agent: Yandex
 Allow: /
 Disallow: /admin/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&fbclid&ysclid&_openstat&from
 
 User-agent: GPTBot
 Allow: /

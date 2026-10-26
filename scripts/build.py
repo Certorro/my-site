@@ -252,13 +252,13 @@ def render_footer(r, settings, year):
         <p style="margin-top:16px">Профессиональная юридическая помощь. Действуем на основании ФЗ-63 «Об адвокатской деятельности и адвокатуре в РФ».</p>
       </div>
       <div class="footer-nav">
-        <h4>Навигация</h4>
+        <p class="footer-nav-title">Навигация</p>
         <ul>
 {li(FOOTER_NAV)}
         </ul>
       </div>
       <div class="footer-nav">
-        <h4>Практика</h4>
+        <p class="footer-nav-title">Практика</p>
         <ul>
 {li(FOOTER_PRACTICE)}
         </ul>
@@ -426,7 +426,7 @@ def render_article_lawyers(a, by_slug, r):
           </a>
           <div class="case-lawyer-body">
             <div class="case-lawyer-role">{esc(role) or "Адвокат коллегии"}</div>
-            <h4><a href="{href}">{esc(lawyer.get("name"))}</a></h4>
+            <h3><a href="{href}">{esc(lawyer.get("name"))}</a></h3>
             <div class="case-lawyer-meta">{meta}</div>
             <a class="case-lawyer-more" href="{href}">Другие дела адвоката →</a>
           </div>
@@ -434,7 +434,7 @@ def render_article_lawyers(a, by_slug, r):
         )
 
     return f'''    <div class="case-lawyers">
-      <h4 class="case-lawyers-title">Адвокат по делу</h4>
+      <h2 class="case-lawyers-title">Адвокат по делу</h2>
 {chr(10).join(cards)}
     </div>'''
 
@@ -520,7 +520,7 @@ def render_sources(a, previews, r):
         )
 
     return f'''    <div class="article-sources">
-      <h4>Источники</h4>
+      <h2 class="article-sources-title">Источники</h2>
       <ul class="source-list">
 {chr(10).join(items)}
       </ul>
@@ -809,7 +809,10 @@ def og_tags(rel):
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Адвокатская коллегия «Альтер-Эго», Москва">
   <meta name="twitter:image" content="{OG_IMAGE}">
-  <meta property="og:url" content="{url}">"""
+  <meta property="og:url" content="{url}">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="120x120" href="/favicon-120.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">"""
 
 
 def set_article_person_schema(page, a, by_slug):
@@ -1067,6 +1070,10 @@ def build_sitemap():
     entries = []
     for path, rel in iter_pages():
         rel_str = str(rel).replace("\\", "/")
+        # Страницы с noindex и 404 в sitemap не нужны: Вебмастер и Search Console
+        # считают такой URL ошибкой («отправлен, но закрыт от индексации»).
+        if rel_str == "404.html" or re.search(r'<meta name="robots" content="[^"]*noindex', path.read_text(encoding="utf-8")):
+            continue
         loc = SITE + "/" + ("" if rel_str == "index.html" else rel_str)
         lastmod = datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).strftime("%Y-%m-%d")
 
