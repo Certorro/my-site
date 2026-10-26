@@ -2261,3 +2261,13 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
 .notfound-links { margin: 0 0 1.5rem 1.2rem; }
 .notfound-links li { margin: 6px 0; }
 .notfound-links a { color: var(--gold); text-decoration: underline; }
+
+/* ── Страницы направлений (ugolovnye-dela/) ─────────────────────── */
+.practice-page h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); margin: 2.2rem 0 .9rem; color: var(--ink); }
+.practice-page h3 { font-size: 1.25rem; margin: 1.4rem 0 .5rem; color: var(--ink); }
+.practice-page ul, .practice-page ol { margin: 0 0 1.2rem 1.3rem; }
+.practice-page li { margin: .4rem 0; line-height: 1.65; color: var(--text-body); }
+.practice-page ul li { list-style: disc; }
+.practice-page ol li { list-style: decimal; }
+.practice-page a { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
+.service-more { display: inline-block; margin-top: 14px; color: var(--gold); font-size: .9rem; text-decoration: underline; text-underline-offset: 2px; }
