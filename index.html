@@ -24,7 +24,7 @@
   <!-- Fonts — non-blocking -->
   <link rel="stylesheet" href="fonts/fonts.css?v=8a7b531bf9">
 
-  <link rel="stylesheet" href="css/style.css?v=9f660dfa28">
+  <link rel="stylesheet" href="css/style.css?v=9e65ca8317">
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
@@ -224,6 +224,10 @@
           <option>Семейное дело</option>
           <option>Другое</option>
         </select>
+        <label class="intake-consent" for="intakeConsent">
+          <input type="checkbox" id="intakeConsent" name="consent" required>
+          <span>Даю согласие на обработку персональных данных в соответствии с&nbsp;<a href="privacy.html" target="_blank" rel="noopener">Политикой конфиденциальности</a> (152-ФЗ)</span>
+        </label>
         <button class="btn btn--gold" type="submit" id="intakeSubmit">Отправить заявку</button>
       </div>
       <p class="intake-status" id="intakeStatus" role="status" aria-live="polite" hidden></p>
@@ -554,7 +558,7 @@
 <section id="trailSection" style="position:relative;overflow:hidden;background:#000;padding:0;line-height:0">
   <canvas id="trailCanvas" style="display:block;width:100%;cursor:none" aria-hidden="true"></canvas>
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:1">
-    <span style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:rgba(255,255,255,0.18)">Альтер-Эго</span>
+    <span aria-hidden="true" style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:rgba(255,255,255,0.18)">Альтер-Эго</span>
   </div>
   <script>
   (function () {
@@ -715,7 +719,7 @@
 </footer>
 <!-- AE:FOOTER:END -->
 
-<script src="js/script.js?v=89b3cb1053"></script>
+<script src="js/script.js?v=7e2d59d21a"></script>
 
 <script>
 
