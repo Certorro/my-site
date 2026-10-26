@@ -227,7 +227,7 @@ FOOTER_NAV = [
 ]
 
 FOOTER_PRACTICE = [
-    ("services.html", "Уголовные дела"),
+    ("ugolovnye-dela.html", "Уголовные дела"),
     ("services.html", "Арбитраж"),
     ("services.html", "Семейное право"),
     ("services.html", "Недвижимость"),
@@ -799,6 +799,8 @@ def active_page_for(rel):
         return "articles.html" if len(rel.parts) > 1 else rel.name
     if rel.parts[0] == "team":
         return "team.html" if len(rel.parts) > 1 else rel.name
+    if rel.parts[0] in ("ugolovnye-dela", "ugolovnye-dela.html"):
+        return "services.html"
     return rel.name
 
 
@@ -1060,6 +1062,7 @@ PRIORITIES = {
     "services.html": ("0.9", "monthly"),
     "team.html": ("0.8", "monthly"),
     "articles.html": ("0.8", "weekly"),
+    "ugolovnye-dela.html": ("0.9", "monthly"),
     "about.html": ("0.7", "monthly"),
     "contact.html": ("0.7", "monthly"),
     "privacy.html": ("0.3", "yearly"),
@@ -1081,6 +1084,8 @@ def build_sitemap():
             priority, freq = "0.6", "yearly"
         elif rel.parts[0] == "team" and len(rel.parts) > 1:
             priority, freq = "0.6", "yearly"
+        elif rel.parts[0] == "ugolovnye-dela" and len(rel.parts) > 1:
+            priority, freq = "0.8", "monthly"
         else:
             priority, freq = PRIORITIES.get(rel.name, ("0.5", "monthly"))
 
