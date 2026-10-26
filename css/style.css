@@ -304,6 +304,7 @@ footer .logo { flex-direction: column; align-items: flex-start; gap: 2px; }
 }
 
 .hero-badge {
+  font-weight: 400; line-height: 1.4;
   display: inline-flex; align-items: center; gap: 12px;
   font-family: var(--font-mono); font-size: 0.58rem;
   letter-spacing: 0.3em; text-transform: uppercase;
@@ -696,7 +697,7 @@ footer {
 .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 36px; }
 .footer-brand .logo-name { font-size: 1.1rem; }
 .footer-brand p { font-family: var(--font-body); font-size: 0.82rem; max-width: 300px; line-height: 1.65; font-weight: 300; margin-top: 12px; }
-.footer-nav h4 {
+.footer-nav-title {
   font-family: var(--font-mono); color: var(--ink); font-size: 0.58rem;
   letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; font-weight: 400;
 }
@@ -773,7 +774,7 @@ footer {
 /* ===== AFTER-CONTACT STEPS ===== */
 .after-contact-wrap { padding: 36px 0 0; }
 .after-contact-intro { text-align: center; margin-bottom: 20px; }
-.after-contact-intro h3 { font-family: var(--font-head); font-size: 1.2rem; color: var(--ink); margin-bottom: 6px; font-weight: 400; }
+.after-contact-intro h2 { font-family: var(--font-head); font-size: 1.2rem; color: var(--ink); margin-bottom: 6px; font-weight: 400; }
 .after-contact-intro p  { font-size: 0.87rem; color: var(--muted); font-weight: 300; }
 .after-contact-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .after-step { display: flex; align-items: flex-start; gap: 12px; padding: 16px 14px; border: 1px solid var(--line); }
@@ -880,7 +881,8 @@ footer {
 .step { padding: 32px 28px; border-left: 1px solid var(--line); position: relative; }
 .step:first-child { border-left: none; }
 .step-num { font-family: var(--font-head); font-size: 2.8rem; font-weight: 300; color: var(--gold); opacity: 0.2; line-height: 1; margin-bottom: 14px; }
-.step h4  { font-family: var(--font-head); color: var(--ink); margin-bottom: 8px; font-size: 1.1rem; font-weight: 400; }
+.step h3  { font-family: var(--font-head); color: var(--ink); margin-bottom: 8px; font-size: 1.1rem; font-weight: 400; }
+.step h3 { margin-top: 0; }
 .step p   { color: var(--muted); font-size: 0.85rem; margin: 0; line-height: 1.65; font-weight: 300; }
 
 /* ===== TEAM PAGE ===== */
@@ -1237,7 +1239,7 @@ html, body { overflow-x: hidden; }
   transform: translateY(-50%); width: 6px; height: 1px; background: var(--gold);
 }
 .article-sources { margin-top: 40px; padding: 24px 28px; background: rgba(0,0,0,.03); border-left: 3px solid var(--gold); }
-.article-sources h4 { font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+.article-sources-title { font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 .article-sources ul { list-style: none; padding: 0; margin: 0; }
 .article-sources li { padding: 5px 0; font-size: 0.875rem; color: var(--muted); }
 .article-sources li a { color: var(--navy); text-decoration: underline; text-underline-offset: 2px; }
@@ -1895,9 +1897,9 @@ html, body { overflow-x: hidden; }
   font-family: var(--font-mono); font-size: 0.54rem;
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
 }
-.case-lawyer-body h4 { font-family: var(--font-display); font-size: 1.18rem; font-weight: 500; margin: 0 0 4px; line-height: 1.25; }
-.case-lawyer-body h4 a { color: var(--ink); text-decoration: none; }
-.case-lawyer-body h4 a:hover { color: var(--gold); }
+.case-lawyer-body h3 { font-family: var(--font-display); font-size: 1.18rem; font-weight: 500; margin: 0 0 4px; line-height: 1.25; }
+.case-lawyer-body h3 a { color: var(--ink); text-decoration: none; }
+.case-lawyer-body h3 a:hover { color: var(--gold); }
 .case-lawyer-meta { font-size: 0.76rem; color: var(--muted); margin-bottom: 10px; }
 .case-lawyer-more {
   font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.1em;
@@ -2030,7 +2032,7 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
   background: rgba(255,255,255,.55);
   padding: 22px 24px;
 }
-.article-sources h4 {
+.article-sources-title {
   font-family: var(--font-mono); font-size: 0.58rem; font-weight: 400;
   letter-spacing: 0.28em; text-transform: uppercase;
   color: var(--gold); margin: 0 0 14px;
@@ -2255,3 +2257,7 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
   line-height: 1.65;
   color: var(--muted);
 }
+
+.notfound-links { margin: 0 0 1.5rem 1.2rem; }
+.notfound-links li { margin: 6px 0; }
+.notfound-links a { color: var(--gold); text-decoration: underline; }
