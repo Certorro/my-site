@@ -700,7 +700,7 @@ ${sharedHeader()}
 <div class="breadcrumbs-bar">
   <div class="container">
     <nav class="breadcrumbs" aria-label="Путь">
-      <a href="../index.html">Главная</a>
+      <a href="/">Главная</a>
       <span class="bc-sep">›</span>
       <a href="../articles.html">Публикации</a>
       <span class="bc-sep">›</span>
@@ -800,7 +800,7 @@ ${sharedHeader()}
 <div class="breadcrumbs-bar">
   <div class="container">
     <nav class="breadcrumbs" aria-label="Путь">
-      <a href="../index.html">Главная</a>
+      <a href="/">Главная</a>
       <span class="bc-sep">›</span>
       <a href="../team.html">Партнёры</a>
       <span class="bc-sep">›</span>

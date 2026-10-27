@@ -160,16 +160,22 @@ def phone_icon(size):
     )
 
 
+def nav_href(r, page):
+    # Главная — всегда корень сайта: ссылки на index.html Яндекс индексирует
+    # как неканонический дубль https://al-e.net/
+    return "/" if page == "index.html" else f"{r}{page}"
+
+
 def render_header(r, active, phone_text):
     links = []
     for href, label in NAV_ITEMS:
         cls = ' class="nav-active"' if href == active else ""
-        links.append(f'        <a href="{r}{href}"{cls}>{label}</a>')
+        links.append(f'        <a href="{nav_href(r, href)}"{cls}>{label}</a>')
     nav = "\n".join(links)
     cta_cls = "nav-cta nav-active" if active == "contact.html" else "nav-cta"
     return f"""<header id="header">
   <div class="container header-inner">
-    <a href="{r}index.html" class="logo">
+    <a href="/" class="logo">
       <img src="{r}logo.png" alt="" class="logo-mark" aria-hidden="true" width="68" height="68">
       <div class="logo-text">
         <span class="logo-name">Альтер-Эго</span>
