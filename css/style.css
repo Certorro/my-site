@@ -786,7 +786,11 @@ footer {
 .after-step-text { font-size: 0.82rem; color: var(--ink); line-height: 1.45; font-weight: 300; }
 
 /* ===== BREADCRUMBS ===== */
-.breadcrumbs-bar { background: var(--cream); border-bottom: 1px solid var(--line); padding: 10px 0; }
+/* #header is fixed (80px + 1px border): the bar takes the header offset itself,
+   so a hero right after it no longer clears the header and gets symmetric padding */
+.breadcrumbs-bar { background: var(--cream); border-bottom: 1px solid var(--line); padding: 91px 0 10px; }
+.breadcrumbs-bar + .page-hero { padding-top: 56px; }
+.breadcrumbs-bar + .articles-page-hero { padding-top: 60px; }
 .breadcrumbs {
   display: flex; align-items: center; gap: 7px;
   font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; flex-wrap: wrap;
@@ -1031,6 +1035,7 @@ footer {
   .page-hero { padding: 92px 0 36px; }
   .page-hero h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
   .articles-page-hero { padding: 88px 0 36px; }
+  .breadcrumbs-bar + .page-hero, .breadcrumbs-bar + .articles-page-hero { padding-top: 36px; }
   .privacy-hero { padding: 88px 0 40px; }
   .privacy-content { padding: 36px 0 56px; }
   .requisites-card { padding: 22px 16px; }
@@ -1153,6 +1158,7 @@ footer {
   .section { padding: 72px 0; }
   .section-subtitle { margin-bottom: 40px; }
   .page-hero { padding: 104px 0 48px; }
+  .breadcrumbs-bar + .page-hero { padding-top: 48px; }
   .hero-stat { padding: 0 16px; }
 }
 
