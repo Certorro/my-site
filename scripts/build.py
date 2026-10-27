@@ -788,7 +788,7 @@ def iter_pages():
         # несуществующие. Для поисковой выдачи это прямой вред.
         if any(part.startswith(".") for part in rel.parts[:-1]):
             continue
-        if rel.name in EXCLUDE_FILES or rel.name.startswith("yandex_"):
+        if rel.name in EXCLUDE_FILES or rel.name.startswith(("yandex_", "google")):
             continue
         yield path, rel
 
