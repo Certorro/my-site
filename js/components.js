@@ -21,6 +21,20 @@
   var R = '../'.repeat(upCount); /* '' for root, '../' for articles/, team/ */
   var COOKIE_KEY = 'ae_cookie_consent';
 
+  /* Согласие хранится как JSON {analytics, webvisor}. Старые значения
+     'accepted' / 'declined' от прежнего баннера читаются как раньше. */
+  function readConsent() {
+    var v;
+    try { v = localStorage.getItem(COOKIE_KEY); } catch (e) { return null; }
+    if (!v) return null;
+    if (v === 'accepted') return { analytics: true, webvisor: true };
+    if (v === 'declined') return { analytics: false, webvisor: false };
+    try { return JSON.parse(v); } catch (e) { return null; }
+  }
+  function writeConsent(c) {
+    try { localStorage.setItem(COOKIE_KEY, JSON.stringify(c)); } catch (e) {}
+  }
+
   window.AE = {
 
     /* Вызывается в конце <body> каждой страницы. Подвал уже в разметке —
@@ -33,46 +47,76 @@
       var manageBtn = document.getElementById('cookieManageBtn');
       if (manageBtn) {
         manageBtn.addEventListener('click', function () {
-          localStorage.removeItem(COOKIE_KEY);
+          try { localStorage.removeItem(COOKIE_KEY); } catch (e) {}
           window.location.reload();
         });
       }
 
-      /* Show cookie banner only when consent is not yet recorded */
-      if (!localStorage.getItem(COOKIE_KEY)) {
+      /* Баннер: показываем, пока выбор не сохранён. По умолчанию все
+         категории включены; Метрика стартует после «Принять» или «Сохранить». */
+      if (!readConsent()) {
         var banner = document.createElement('div');
         banner.id = 'cookieBanner';
         banner.className = 'cookie-banner';
         banner.setAttribute('role', 'dialog');
-        banner.setAttribute('aria-label', 'Управление cookie');
+        banner.setAttribute('aria-label', 'Настройки cookie');
         banner.innerHTML =
           '<div class="cookie-inner">' +
-            '<p class="cookie-text"><strong>Аналитические cookie.</strong> ' +
-            'Мы используем Яндекс.Метрику (Вебвизор, тепловые карты кликов) для анализа посещаемости. ' +
-            'Аналитические cookie устанавливаются только с вашего согласия.</p>' +
+            '<p class="cookie-text">Мы используем куки для правильной работы сайта.</p>' +
             '<div class="cookie-actions">' +
               '<button class="cookie-accept" id="cookieAccept" type="button">Принять</button>' +
-              '<button class="cookie-decline" id="cookieDecline" type="button">Отклонить</button>' +
+              '<button class="cookie-settings-btn" id="cookieSettingsBtn" type="button" aria-expanded="false" aria-controls="cookieSettings">Настроить</button>' +
               '<a class="cookie-more" href="' + R + 'privacy.html">Подробнее</a>' +
+            '</div>' +
+            '<div class="cookie-settings" id="cookieSettings" hidden>' +
+              '<label class="cookie-opt">' +
+                '<input type="checkbox" checked disabled>' +
+                '<span><strong>Необходимые</strong> — работа сайта и запоминание вашего выбора. Отключить нельзя.</span>' +
+              '</label>' +
+              '<label class="cookie-opt">' +
+                '<input type="checkbox" id="cookieAnalytics" checked>' +
+                '<span><strong>Аналитические</strong> — Яндекс Метрика: статистика посещений, чтобы улучшать сайт.</span>' +
+              '</label>' +
+              '<label class="cookie-opt">' +
+                '<input type="checkbox" id="cookieWebvisor" checked>' +
+                '<span><strong>Вебвизор и карта кликов</strong> — как посетители пользуются страницами. Работают вместе с аналитикой.</span>' +
+              '</label>' +
+              '<button class="cookie-accept" id="cookieSave" type="button">Сохранить</button>' +
             '</div>' +
           '</div>';
         document.body.appendChild(banner);
 
         var AEref = window.AE;
-        document.getElementById('cookieAccept').addEventListener('click', function () {
-          localStorage.setItem(COOKIE_KEY, 'accepted');
+        var an = document.getElementById('cookieAnalytics');
+        var wv = document.getElementById('cookieWebvisor');
+        an.addEventListener('change', function () {
+          wv.disabled = !an.checked;
+          if (!an.checked) wv.checked = false;
+        });
+        var close = function (c) {
+          writeConsent(c);
           banner.classList.add('cookie-banner--hidden');
           if (AEref && AEref.initMetrika) AEref.initMetrika();
+        };
+        document.getElementById('cookieAccept').addEventListener('click', function () {
+          close({ analytics: true, webvisor: true });
         });
-        document.getElementById('cookieDecline').addEventListener('click', function () {
-          localStorage.setItem(COOKIE_KEY, 'declined');
-          banner.classList.add('cookie-banner--hidden');
+        document.getElementById('cookieSettingsBtn').addEventListener('click', function () {
+          var panel = document.getElementById('cookieSettings');
+          panel.hidden = !panel.hidden;
+          this.setAttribute('aria-expanded', String(!panel.hidden));
+        });
+        document.getElementById('cookieSave').addEventListener('click', function () {
+          close({ analytics: an.checked, webvisor: an.checked && wv.checked });
         });
       }
     },
 
     initMetrika: function () {
-      if (localStorage.getItem(COOKIE_KEY) !== 'accepted') return;
+      var c = readConsent();
+      if (!c || !c.analytics) return;
+      if (window.__aeMetrika) return;
+      window.__aeMetrika = true;
       (function (m, e, t, r, i, k, a) {
         m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
         m[i].l = 1 * new Date();
@@ -86,7 +130,7 @@
         a.parentNode.insertBefore(k, a);
       })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=109534459', 'ym');
       ym(109534459, 'init', {
-        ssr: true, webvisor: true, clickmap: true,
+        ssr: true, webvisor: !!c.webvisor, clickmap: !!c.webvisor,
         ecommerce: 'dataLayer', referrer: document.referrer,
         url: location.href, accurateTrackBounce: true, trackLinks: true
       });
