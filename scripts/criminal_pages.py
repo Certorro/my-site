@@ -458,6 +458,7 @@ def render(key, p, skeleton):
     <p>Позвоните и опишите ситуацию. Всё, что вы расскажете, защищено адвокатской тайной.</p>
     <div>
       <a href="{TEL}" class="btn btn-gold">{PHONE}</a>
+      <a href="https://t.me/+79169286505" class="btn btn-outline" style="margin-left:12px" target="_blank" rel="noopener">Telegram</a>
       <a href="{r}contact.html" class="btn btn-outline" style="margin-left:12px">Написать</a>
     </div>
   </div>

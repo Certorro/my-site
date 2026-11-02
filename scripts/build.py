@@ -196,6 +196,15 @@ MAIL_ICON = (
 )
 
 
+TG_HREF = "https://t.me/+79169286505"
+TG_ICON = (
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    '<path d="M21.5 4.5 2.8 11.7c-.8.3-.8 1.4 0 1.7l4.6 1.6 1.8 5.6c.2.7 1.1.9 1.6.4l2.6-2.5 4.8 3.5c.6.4 1.4.1 1.6-.6l3.1-15.2c.2-.8-.6-1.5-1.4-1.2Z"/>'
+    '<path d="m7.4 15 10-7.5-7.6 8.4"/></svg>'
+)
+
+
 def render_mobile_bar(r, phone_text):
     """
     Нижняя панель связи для узких экранов.
@@ -211,6 +220,9 @@ def render_mobile_bar(r, phone_text):
     return f"""<div class="mobile-bar" role="toolbar" aria-label="Быстрая связь">
   <a class="mobile-bar-btn mobile-bar-btn--call" href="{PHONE_HREF}" aria-label="Позвонить: {esc(phone_text)}">
     {phone_icon(19)}<span>Позвонить</span>
+  </a>
+  <a class="mobile-bar-btn mobile-bar-btn--icon" href="{TG_HREF}" target="_blank" rel="noopener" aria-label="Написать в Telegram">
+    {TG_ICON}
   </a>
   <a class="mobile-bar-btn" href="{r}contact.html">
     {MAIL_ICON}<span>Написать</span>

@@ -31,6 +31,21 @@
     if (v === 'declined') return { analytics: false, webvisor: false };
     try { return JSON.parse(v); } catch (e) { return null; }
   }
+  /* Где на странице кнопка: панель, шапка, меню, блок призыва или текст раздела. */
+  function callPlace(a) {
+    if (a.closest('.mobile-bar')) return 'bar';
+    if (a.closest('.nav-phone-drawer, .nav-drawer, .mobile-menu')) return 'menu';
+    if (a.closest('header, .header, .site-header')) return 'header';
+    if (a.closest('.cta-band')) return 'cta';
+    if (a.closest('footer')) return 'footer';
+    var p = location.pathname;
+    if (p.indexOf('/team/') !== -1) return 'profile';
+    if (p.indexOf('/articles/') !== -1) return 'article';
+    if (p.indexOf('/ugolovnye-dela') !== -1) return 'practice';
+    if (p.indexOf('contact') !== -1) return 'contact';
+    if (p === '/' || p.indexOf('index') !== -1) return 'home';
+    return 'other';
+  }
   function writeConsent(c) {
     try { localStorage.setItem(COOKIE_KEY, JSON.stringify(c)); } catch (e) {}
   }
@@ -134,9 +149,25 @@
         ecommerce: 'dataLayer', referrer: document.referrer,
         url: location.href, accurateTrackBounce: true, trackLinks: true
       });
+      /* Цели по месту кнопки: какая кнопка приносит звонки.
+         call_bar — нижняя панель на телефоне, call_header — шапка и меню,
+         call_content — кнопки в тексте страницы; точное место — в параметре place. */
       document.addEventListener('click', function (e) {
-        if (e.target.closest('a[href^="tel:"]'))    ym(109534459, 'reachGoal', 'phone_click');
-        if (e.target.closest('a[href^="mailto:"]')) ym(109534459, 'reachGoal', 'email_click');
+        var a = e.target.closest('a[href^="tel:"], a[href*="t.me/"], a[href^="mailto:"]');
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        var place = callPlace(a);
+        var goal;
+        if (href.indexOf('tel:') === 0) {
+          goal = place === 'bar' ? 'call_bar'
+               : (place === 'header' || place === 'menu') ? 'call_header'
+               : 'call_content';
+        } else if (href.indexOf('t.me/') !== -1) {
+          goal = 'telegram';
+        } else {
+          goal = 'email';
+        }
+        ym(109534459, 'reachGoal', goal, { place: place, page: location.pathname });
       });
       var ns = document.createElement('noscript');
       ns.innerHTML = '<div><img src="https://mc.yandex.ru/watch/109534459" style="position:absolute;left:-9999px" alt=""/></div>';

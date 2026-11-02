@@ -2168,6 +2168,7 @@ html { font-size: clamp(1rem, 0.625rem + 0.5vw, 1.15rem); }
 .mobile-bar-btn svg { flex: 0 0 auto; }
 .mobile-bar-btn:active { transform: scale(0.97); }
 
+.mobile-bar-btn--icon { flex: 0 0 48px; }
 .mobile-bar-btn--call {
   background: var(--gold-fill);
   border-color: transparent;
