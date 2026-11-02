@@ -1477,7 +1477,7 @@ html, body { overflow-x: hidden; }
   transition: background var(--transition), border-color var(--transition);
 }
 .cookie-accept:hover { background: var(--gold-light); border-color: var(--gold-light); }
-.cookie-decline {
+.cookie-settings-btn {
   background: transparent;
   color: var(--on-dark-secondary);
   border: 1px solid rgba(245,242,236,0.2);
@@ -1489,7 +1489,30 @@ html, body { overflow-x: hidden; }
   cursor: pointer;
   transition: color var(--transition), border-color var(--transition);
 }
-.cookie-decline:hover { color: var(--on-dark-primary); border-color: rgba(245,242,236,0.4); }
+.cookie-settings-btn:hover,
+.cookie-settings-btn[aria-expanded="true"] { color: var(--on-dark-primary); border-color: rgba(245,242,236,0.4); }
+.cookie-settings {
+  flex-basis: 100%;
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(245,242,236,0.12);
+}
+.cookie-settings[hidden] { display: none; }
+.cookie-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--on-dark-body);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-weight: 300;
+  cursor: pointer;
+}
+.cookie-opt strong { color: var(--on-dark-primary); font-weight: 500; }
+.cookie-opt input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--gold); flex-shrink: 0; }
+.cookie-opt input:disabled { cursor: not-allowed; }
+.cookie-settings .cookie-accept { justify-self: start; }
 .cookie-more {
   font-family: var(--font-mono);
   font-size: 0.75rem;
