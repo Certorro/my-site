@@ -9,14 +9,14 @@ import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SKIP_DIRS  = {'.git', 'context', 'admin', 'scripts', 'node_modules', '.claude'}
+SKIP_DIRS  = {'context', 'admin', 'scripts', 'node_modules'}
 SKIP_FILES = {'home.html', 'yandex_26758dad9d3b9dfb.html'}
 
 
 def collect_html(root):
     out = []
     for dirpath, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith('.')]
         for f in files:
             if f.endswith('.html') and f not in SKIP_FILES:
                 out.append(os.path.join(dirpath, f))

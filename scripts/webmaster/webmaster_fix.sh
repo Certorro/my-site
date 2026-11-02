@@ -38,4 +38,4 @@ for u in $URLS; do
 done
 echo "Отправлено страниц: $N" | tee -a "$LOG"
 api GET "/recrawl/quota" >> "$LOG" 2>&1
-echo "Готово. Журнал: $LOG — напишите Claude «готово»."
+echo "Готово. Журнал: $LOG ."

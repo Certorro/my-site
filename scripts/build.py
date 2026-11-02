@@ -781,11 +781,8 @@ def iter_pages():
         rel = path.relative_to(ROOT)
         if set(rel.parts) & EXCLUDE_DIRS:
             continue
-        # Любой служебный каталог, а не только перечисленные. Списком было
-        # не поймать .claude/worktrees: сборка заходила в рабочую копию репозитория
-        # внутри него, перебирала второй экземпляр сайта и дописывала его
-        # страницы в sitemap.xml — 64 URL вместо 32, половина из них
-        # несуществующие. Для поисковой выдачи это прямой вред.
+        # Любой скрытый служебный каталог, а не только перечисленные: иначе
+        # сборка может зайти во вложенную рабочую копию и задвоить sitemap.xml.
         if any(part.startswith(".") for part in rel.parts[:-1]):
             continue
         if rel.name in EXCLUDE_FILES or rel.name.startswith(("yandex_", "google")):

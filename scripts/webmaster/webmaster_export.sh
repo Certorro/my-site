@@ -26,4 +26,4 @@ get queries "/search-queries/popular?order_by=TOTAL_SHOWS&query_indicator=TOTAL_
 get recrawl_quota "/recrawl/quota"
 get important_urls "/important-urls"
 get broken_links "/links/internal/broken/samples?limit=100"
-echo "Готово. Файлы в папке $OUT — напишите Claude «выгрузил»."
+echo "Готово. Файлы в папке $OUT ."
